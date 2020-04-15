@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "431278317520",
+    "firebase_url": "https://shop-90345.firebaseio.com",
+    "project_id": "shop-90345",
+    "storage_bucket": "shop-90345.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431278317520:android:a7bc55debf143df38ba3d5",
+        "android_client_info": {
+          "package_name": "com.example.realhome"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "431278317520-s4vepdr18rhr0qfcjbsnocs53d34npsc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZIYGDCCO08hdysw5pgJFauLFRUNT9_Q0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "431278317520-s4vepdr18rhr0qfcjbsnocs53d34npsc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

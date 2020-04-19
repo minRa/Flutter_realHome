@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.realhome">
-
+                           
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
          In most cases you can leave this as-is, but you if you want to provide
@@ -10,6 +10,14 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="realhome"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
+         <meta-data
+                 android:name="com.google.android.gms.ads.APPLICATION_ID"
+                 android:value="ca-app-pub-7333672372977808~8123239007"/>
+
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -23,7 +31,8 @@
                  defined in @style/LaunchTheme). -->
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-                android:value="true" />
+                android:value="true" />            
+           
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

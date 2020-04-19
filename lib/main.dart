@@ -1,34 +1,41 @@
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:realhome/providers/image_provider.dart';
-import 'package:realhome/screens/Detail.dart';
-import 'package:realhome/screens/detail_Image.dart';
-import 'package:realhome/screens/overview.dart';
+import 'package:realhome/services/dialog_service.dart';
+import 'package:realhome/services/navigation_service.dart';
+import 'package:realhome/ui/view/initial_view.dart';
+import 'managers/dialog_manager.dart';
+import 'ui/router.dart';
+import 'locator.dart';
 
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() => runApp(MyApp());
+  // Register all the models and services before the app starts
+  await setupLocator();
+
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-          providers: [
-            ChangeNotifierProvider.value(
-              value: ImageFiles(),
-            ),
-          ],
-          child: MaterialApp(
-          title: 'Flutter Demo',
-         theme: ThemeData(      
-          primarySwatch: Colors.blue,
-        ),
-        home: Overview(),
-        routes: {
-          Detail.id :(ctx)=> Detail(),  
-          DetailImage.id: (ctx) => DetailImage()     
-        } ,
+    return MaterialApp(
+      title: 'Real_Home',
+      builder: (context, child) => Navigator(
+        key: locator<DialogService>().dialogNavigationKey,
+        onGenerateRoute: (settings) => MaterialPageRoute(
+            builder: (context) => DialogManager(child: child)),
       ),
+      navigatorKey: locator<NavigationService>().navigationKey,
+      //navigatorObservers: [locator<AnalyticsService>().getAnalyticsObserver()],
+      theme: ThemeData(
+        primaryColor: Color(0xff19c7c1),
+        textTheme: Theme.of(context).textTheme.apply(
+              fontFamily: 'Open Sans',
+            ),
+      ),
+      home: InitialView(),
+      onGenerateRoute: generateRoute,
     );
   }
 }

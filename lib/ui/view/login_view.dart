@@ -17,56 +17,96 @@ class LoginView extends StatelessWidget {
       builder: (context, model, child) => Scaffold(
           backgroundColor: Colors.white,
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 50),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(
-                  height: 150,
-                  child: Image.asset('assets/images/title.png'),
-                ),
-                InputField(
-                  placeholder: 'Email',
-                  controller: emailController,
-                ),
-                verticalSpaceSmall,
-                InputField(
-                  placeholder: 'Password',
-                  password: true,
-                  controller: passwordController,
-                ),
-                verticalSpaceMedium,
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 100),
+            child:  SingleChildScrollView (
+                child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[    
+                      SizedBox(
+                      height: 120,
+                      child: Row (
+                      children: <Widget>[
+                        Hero(
+                           tag: 'logo',
+                           child: Image.asset('assets/images/logo.png',
+                           scale: 2 ,),
+                        ),
+                        Image.asset('assets/images/title.jpg',
+                        scale: 1.4,),
+                      ],
+                      )
+                    ),
+                  InputField(
+                    placeholder: 'Email',
+                    controller: emailController,
+                  ),
+                  verticalSpaceSmall,
+                  InputField(
+                    placeholder: 'Password',
+                    password: true,
+                    controller: passwordController,
+                  ),
+                  verticalSpaceMedium,
+                  Column(children: <Widget>[
                     BusyButton(
-                      title: 'Login',
-                      busy: model.busy,
-                      onPressed: () {
-                        model.login(
-                          email: emailController.text,
-                          password: passwordController.text,
-                        );
-                      },
-                    )
-                  ],
+                        title: 'Login',
+                        busy: model.busy,
+                        onPressed:() {
+                           model.login(
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
+                        } ,
+                      ),
+                       verticalSpaceMedium,
+                  BusyButton(
+                        title: 'Enter as A GUEST',
+                        onPressed:model.nonUserEnter,
+                      ),
+                  verticalSpaceMedium,
+                  TextLink(
+                    'Create an Account if you\'re new.',
+                    onPressed:model.navigateToSignUp
+                  ),
+                  verticalSpaceMedium,
+                   Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                   crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                  Container(
+                  child: new RawMaterialButton(
+                    onPressed: model.loginWithGoogle,
+                    child: Image.asset('assets/images/google_logo.png',
+                      fit: BoxFit.cover,
+                      width: 40,
+                      height: 40,),
+                    shape: new CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: Colors.white,
+                    padding: const EdgeInsets.all(18.0),
+                  ),
                 ),
-                verticalSpaceMedium,
-                TextLink(
-                  'Create an Account if you\'re new.',
-                  onPressed:model.navigateToSignUp
-                ),
-                verticalSpaceMedium,
-                BusyButton(
-                      title: 'Enter as a Gest',
-                      onPressed:model.nonUserEnter ,
-                    )
-              ],
+
+                 Container(
+                  child: new RawMaterialButton(
+                    onPressed: model.loginWithFacebook,
+                    child: Text('f',
+                      style: TextStyle(color: Colors.white,
+                          fontSize: 45,fontWeight: FontWeight.bold),),
+                    shape: new CircleBorder(),
+                    elevation: 2.0,
+                    fillColor: Colors.blue[900],
+                    padding: const EdgeInsets.all(5.5),
+                  ),
+                ),            
+                ],),               
+                ],),
+                ],
+              ),
             ),
           )),
     );
   }
 }
+
+

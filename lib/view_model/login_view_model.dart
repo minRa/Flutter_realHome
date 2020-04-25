@@ -20,7 +20,7 @@ class LoginViewModel extends BaseModel {
     @required String password,
   }) async {
     setBusy(true);
-
+    await _authenticationService.logOut();
     var result = await _authenticationService.loginWithEmail(
       email: email,
       password: password,
@@ -28,6 +28,27 @@ class LoginViewModel extends BaseModel {
 
     setBusy(false);
     print(result);
+    loginlogg(result);
+    
+  }
+
+    Future loginWithGoogle () async {
+          setBusy(true);
+          var result =  await _authenticationService.googleSignUp();
+          setBusy(false);
+          loginlogg(result);
+
+    }
+
+    Future loginWithFacebook () async {
+        setBusy(true);
+        var result =   await _authenticationService.signUpWithFacebook();
+        setBusy(false);
+        loginlogg(result);
+
+  }
+
+  Future<void> loginlogg (var result) async {
     if (result is bool) {
       if (result) {
        // await _analyticsService.logLogin();
@@ -45,6 +66,9 @@ class LoginViewModel extends BaseModel {
       );
     }
   }
+
+
+
 
   Future<void> nonUserEnter () async {
 

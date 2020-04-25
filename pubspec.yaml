@@ -14,7 +14,7 @@ description: A new Flutter project.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -32,6 +32,17 @@ dependencies:
   get_it:
   image_picker: 
   firebase_admob: ^0.9.0+1
+  flutter_facebook_login: ^3.0.0
+  google_sign_in: ^4.4.2
+  firebase_messaging: ^6.0.13
+  http: ^0.12.0+4
+  animated_text_kit: ^2.0.0
+  image_cropper: ^1.2.1
+  shared_preferences: ^0.5.6+3
+  uuid: ^2.0.4
+  google_maps_flutter: ^0.5.26+4
+  location: ^3.0.2
+  geocoder: ^0.2.1
   
 
 dev_dependencies:
@@ -49,11 +60,12 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/title.png
-    - assets/images/icon_large.png
+     - assets/images/
+    # - assets/images/google_logo.png
+    # - assets/images/logo.png
+    # - assets/images/title.jpg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

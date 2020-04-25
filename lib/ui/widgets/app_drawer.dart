@@ -1,61 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:realhome/models/user.dart';
 
 class AppDrawer extends StatelessWidget {
+
+  final Function home;
+  final Function mebership;
+  final Function property;
+  final Function logout;
+  final User currentUser;
+
+  AppDrawer({
+  this.home, 
+  this.mebership, 
+  this.property, 
+  this.logout,
+  this.currentUser
+  });
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
+      child: currentUser !=null ?
+       Column(
         children: <Widget>[
           AppBar(
-            title: Text('Hello Friend!'),
+            title: Text('User Service'),
             automaticallyImplyLeading: false,
           ),
           Divider(),
           ListTile(
-            leading: Icon(Icons.shop),
-            title: Text('Shop'),
-            onTap: () {
-              //Navigator.of(context).pushReplacementNamed('/');
-            },
+            leading: Icon(Icons.view_list),
+            title: Text('Rent House List'),
+            onTap: home
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.payment),
-            title: Text('Orders'),
-            onTap: () {
-              // Navigator.of(context)
-              //     .pushReplacementNamed(OrdersScreen.routeName);
-              // Navigator.of(context).pushReplacement(
-              //   CustomRoute(
-              //     builder: (ctx) => OrdersScreen(),
-              //   ),
-              // );
-            },
+            title: Text('Membership'),
+            onTap: mebership
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.edit),
-            title: Text('Manage Products'),
-            onTap: () {
-              // Navigator.of(context)
-              //     .pushReplacementNamed(UserProductsScreen.routeName);
-            },
+            title: Text('Manage My Property'),
+            onTap: property
           ),
           Divider(),
           ListTile(
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
-            onTap: () {
-              // Navigator.of(context).pop();
-              // Navigator.of(context).pushReplacementNamed('/');
-
-              // // Navigator.of(context)
-              // //     .pushReplacementNamed(UserProductsScreen.routeName);
-              // Provider.of<Auth>(context, listen: false).logout();
-            },
+            onTap: logout
           ),
         ],
-      ),
-    );
-  }
+      ) :
+       Column(
+       children: <Widget>[
+        AppBar(
+        title: Text('User Service'),
+        automaticallyImplyLeading: false,
+        ),
+        Divider(),
+        ListTile(
+            leading: Icon(Icons.view_list),
+            title: Text('Rent House List'),
+            onTap: home
+          ),
+        Divider(),
+        Container(
+         margin: EdgeInsets.symmetric(vertical: 150),
+         child: Center(
+         child: Text('Login required to use User service !'),
+         )
+        )
+      ]
+    )  
+  );
+ }
 }

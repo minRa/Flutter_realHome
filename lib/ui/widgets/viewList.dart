@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:realhome/models/postProperty.dart';
 
 List<dynamic> items =[
  Colors.red,
@@ -8,41 +9,26 @@ List<dynamic> items =[
  Colors.orange,
 ];
 
-class VerticalList extends StatelessWidget {
-
-   final Function onTap;
-   VerticalList({this.onTap});
-   @override
-    Widget build(BuildContext context) {
-    return ListView.builder(
-      itemBuilder: (ctx, i) => HorizontalList(onTap: onTap,),
-      itemCount: 5,
-   );
-  }
-}
-
-
 class HorizontalList extends StatelessWidget {
   
-  final Function onTap;
-  HorizontalList ({this.onTap});
-
+  final PostProperty post;
+  HorizontalList (this.post);
+   
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: onTap,
-        child: Container(
+    
+    return  Container(
         margin: EdgeInsets.symmetric(vertical: 10.0),
         height: 200.0,
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: items.length,
+          itemCount: post.imageUrl.length,
           itemBuilder: (ctx, i) => Container (
           width: 200,
-          color: items[i],
-          )    
-        ),
-      ),
+          child: 
+           Image.network(post.imageUrl[i], fit: BoxFit.cover)    
+        ),    
+      )  
     );
   }
 }

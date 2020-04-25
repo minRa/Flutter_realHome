@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "431278317520-dcu6lvqnmkj49007hp9r34blgesj7q65.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.realhome",
+            "certificate_hash": "2828b235376dca92be222201940428a4c127052f"
+          }
+        },
+        {
           "client_id": "431278317520-s4vepdr18rhr0qfcjbsnocs53d34npsc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -33,7 +41,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-7333672372977808~8123239007"
     }
   ],
   "configuration_version": "1"

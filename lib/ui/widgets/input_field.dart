@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:realhome/ui/shared/shared_styles.dart';
 import 'package:realhome/ui/shared/ui_helpers.dart';
 
-import 'note_text.dart';
 
 class InputField extends StatefulWidget {
   final TextEditingController controller;
@@ -20,6 +19,8 @@ class InputField extends StatefulWidget {
   final String additionalNote;
   final Function(String) onChanged;
   final TextInputFormatter formatter;
+  final int maxLines;
+  final bool bigVersion;
 
   InputField(
       {@required this.controller,
@@ -31,8 +32,10 @@ class InputField extends StatefulWidget {
       this.onChanged,
       this.formatter,
       this.validationMessage,
+      this.maxLines = 1,
       this.textInputAction = TextInputAction.next,
       this.textInputType = TextInputType.text,
+      this.bigVersion = false,
       this.password = false,
       this.isReadOnly = false,
       this.smallVersion = false});
@@ -57,7 +60,7 @@ class _InputFieldState extends State<InputField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
-          height: widget.smallVersion ? 40 : fieldHeight,
+          height: widget.smallVersion ? 40 : widget.bigVersion ? 150 : fieldHeight,
           alignment: Alignment.centerLeft,
           padding: fieldPadding,
           decoration:
@@ -71,6 +74,7 @@ class _InputFieldState extends State<InputField> {
                   focusNode: widget.fieldFocusNode,
                   textInputAction: widget.textInputAction,
                   onChanged: widget.onChanged,
+                  maxLines: widget.maxLines,
                   inputFormatters:
                       widget.formatter != null ? [widget.formatter] : null,
                   onEditingComplete: () {
@@ -89,7 +93,7 @@ class _InputFieldState extends State<InputField> {
                   decoration: InputDecoration.collapsed(
                       hintText: widget.placeholder,
                       hintStyle:
-                          TextStyle(fontSize: widget.smallVersion ? 12 : 15)),
+                          TextStyle(fontSize: widget.smallVersion ? 14 : 16)),
                 ),
               ),
               GestureDetector(
@@ -109,13 +113,13 @@ class _InputFieldState extends State<InputField> {
             ],
           ),
         ),
-        if (widget.validationMessage != null)
-          NoteText(
-            widget.validationMessage,
-            color: Colors.red,
-          ),
-        if (widget.additionalNote != null) verticalSpace(5),
-        if (widget.additionalNote != null) NoteText(widget.additionalNote),
+        // if (widget.validationMessage != null)
+        //   NoteText(
+        //     widget.validationMessage,
+        //     color: Colors.red,
+        //   ),
+        // if (widget.additionalNote != null) verticalSpace(5),
+        // if (widget.additionalNote != null) NoteText(widget.additionalNote),
         verticalSpaceSmall
       ],
     );

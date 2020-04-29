@@ -1,24 +1,27 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart' as Path;
 import 'package:realhome/models/postProperty.dart';
+import 'package:uuid/uuid.dart';
+
 
 class CloudStorageService {
 
   // Save imageList from library
-  List<File> _imageList;
+  List<dynamic> _imageList;
   //image URL String list from Firebase storage.
-  List<String> _imageStringList;
+  List<dynamic> _imageStringList;
 
     Future<void> arrayImageFiles (Map<String,dynamic> imageData) async{
-    List<File> _userImageList = List<File>();
-    for (var i = 0; i <imageData.length ; i++) {
+    List<dynamic> _userImageList = List<dynamic>();
+    for (var i = 0; i <8 ; i++) {
       print('image file is ${ imageData['image$i']}');
       if (imageData['image$i'] != null) {
         _userImageList.add(imageData['image$i']);
       }
     }
      _imageList = _userImageList;
-     _imageStringList =List<String>.generate(_userImageList.length,(i) => '');
+     _imageStringList =List<dynamic>.generate(_userImageList.length,(i) => '');
   }
     var message=[];
     int _uploadImagePosition = 0;
@@ -35,11 +38,15 @@ class CloudStorageService {
   }
 
   //bool isFinishedUpload = false;
-  Future<void> _uploadUserImages(File imageFile,String imageCount, int position, PostProperty po) async {
-    try {  
-
-      String userID = po.id;
-      String fileName = 'images/$userID/${po.uuid}/$imageCount';//userID+imageCount;
+  Future<void> _uploadUserImages(dynamic imageFile,String imageCount, int position, PostProperty po) async {
+    try {
+      
+      if(imageFile is String) {
+      _imageStringList[position] = imageFile;
+      _uploadImagePosition++;    
+      } else if(imageFile is File) {
+      String uuid = Uuid().v1();
+      String fileName = 'images/${po.id}/${po.createdAt}/$imageCount - $uuid';//userID+imageCount;
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
       StorageUploadTask uploadTask = reference.putFile(imageFile);
 
@@ -47,6 +54,7 @@ class CloudStorageService {
       var downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
       _imageStringList[position] = downloadUrl;
       _uploadImagePosition++;
+      }
 
       if(_uploadImagePosition < _imageList.length)
          await _uploadUserImages(_imageList[_uploadImagePosition], 'image$_uploadImagePosition', _uploadImagePosition, po);
@@ -60,7 +68,60 @@ class CloudStorageService {
    }
       return po;
   }
+
+  Future<String> uploadUserProfileImage(String userId, File image ) async {
+    try {
+
+      String fileName = 'profile/$userId/userProfile';
+      StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+      StorageUploadTask uploadTask = reference.putFile(image);
+
+      StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+      String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+       return downloadUrl;
+
+    } catch (e) {
+       return e.toString();
+    }         
+  }  
+
+//  Future<String> uploadPostPropertyImage(User user, int index, File image ) async {
+//     try {
+
+//       String fileName = 'images/${user.id}/${user.uploadCount}/${user.uploadCount} - $index/';
+//       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
+//       StorageUploadTask uploadTask = reference.putFile(image);
+//       StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+//       String downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
+//        return downloadUrl;
+
+//     } catch (e) {
+//        return e.toString();
+//     }         
+//   }  
+
+
+  Future deleteImageFileToFireStroage(List<dynamic> imageFileUrls) async {  
+  try{ 
+      for(var i=0; i<imageFileUrls.length; i++) {
+         await imageDatadelete(imageFileUrls[i]);
+    }
+   
+  } catch (e) {
+     return e.toString();
+  }
 }
+
+ Future imageDatadelete(String imageFileUrl) async {
+    var fileUrl = Uri.decodeFull(Path.basename(imageFileUrl)).replaceAll(new RegExp(r'(\?alt).*'), ''); 
+    final StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(fileUrl);
+    await firebaseStorageRef.delete();
+ }  
+}
+
+
+
+
 
 
 

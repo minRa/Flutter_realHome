@@ -1,4 +1,5 @@
 
+
 import 'package:realhome/constants/route_names.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/postProperty.dart';
@@ -22,7 +23,7 @@ class HouseOverviewModel extends BaseModel {
   List<PostProperty> get postProperty => _postProperty;
 
 
-    Future<void> listenToPosts() async {
+     Future<void> listenToPosts() async {
        setBusy(true);
           //await initialGoogleAds ();
         _firestoreService.listenToPostPropertyRealTime().listen((postsData) {
@@ -32,13 +33,14 @@ class HouseOverviewModel extends BaseModel {
           _postProperty = updatedPosts;
           notifyListeners();
         } 
-        setBusy(false);
+      
       });
        if(data == false) {
           _postProperty = _firestoreService.allPropertyPagedResults[0];
             notifyListeners();
        }
        data = false;
+        setBusy(false);
     }
 
       navigateToDetailView(int index) {

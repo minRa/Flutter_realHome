@@ -42,7 +42,9 @@ dependencies:
   uuid: ^2.0.4
   google_maps_flutter: ^0.5.26+4
   location: ^3.0.2
-  geocoder: ^0.2.1
+  carousel_slider: ^2.0.0
+  fluttertoast: ^4.0.1
+
   
 
 dev_dependencies:

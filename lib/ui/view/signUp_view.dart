@@ -81,3 +81,10 @@ class SignUpView extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+            

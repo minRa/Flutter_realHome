@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:realhome/locator.dart';
@@ -18,6 +19,9 @@ class FirestoreService {
   final CollectionReference _postPropertyCollectionReference =
   Firestore.instance.collection('PostProperties');
 
+    final CollectionReference _commentsCollectionReference =
+  Firestore.instance.collection('comments');
+  
   
   // final StreamController<List<Post>> _postsController =
   //     StreamController<List<Post>>.broadcast();
@@ -26,8 +30,9 @@ class FirestoreService {
       StreamController<List<PostProperty>>.broadcast();
 
   List<List<PostProperty>> _allPropertyPagedResults = List<List<PostProperty>>();
- List<List<PostProperty>> get allPropertyPagedResults => _allPropertyPagedResults;
+  List<List<PostProperty>> get allPropertyPagedResults => _allPropertyPagedResults;
   static const int PostPropertyLimit = 5;
+
 
   // #6: Create a list that will keep the paged results
   //List<List<Post>> _allPagedResults = List<List<Post>>();
@@ -65,52 +70,112 @@ class FirestoreService {
   } 
 
   var message =[];
-  Future postHouseIntoFirebase(PostProperty po) async {   
-
+  Future postHouseIntoFirebase(PostProperty po) async { 
         final QuerySnapshot result =
-        await _postPropertyCollectionReference.where('id', isEqualTo: po.id).getDocuments();
-       if(result.documents.length >= 2) {
-           return message =[' Post Failed !', 'Sorry, you can\'t post more than 3 at this time'];           
-        }  
-       var post = await _cloudStorageService.uploadPropertyImageToFirebaseStorage(po);   
-         return await _insertDataToFirebaseDB(post);
+      await _postPropertyCollectionReference.where('id', isEqualTo: po.id).getDocuments();
+      if(result.documents.length >= 2 && po.documentId == null) {
+          return message =[' Post Failed !', 'Sorry, you can\'t post more than 3 at this time'];           
+      }  
+      var post = await _cloudStorageService.uploadPropertyImageToFirebaseStorage(po); 
+
+       if(po.documentId != null){
+          return await _updateDataToFirebaseDB(post);
+     } else {
+           return await _insertDataToFirebaseDB(post);
+    }   
   }
+
+ Future commentDelete(String docId, String date) async {
+   await _commentsCollectionReference.document(docId)
+          .collection('userComments')
+          .document(date).delete();
+   }
+ 
+  // Future uploadImageData(File image, int index, User user) async {
+  //     String imageStringUrl = await _cloudStorageService.uploadPostPropertyImage(user, index, image);
+  //     if(imageStringUrl != null) {
+  //       return imageStringUrl;
+  //     }else {
+  //       print('error ocurred !');
+  //       return null;
+  //     }     
+  // }
+
+  Future imageDataDelete(String imageUrl, String documentId) async {  
+         await _postPropertyCollectionReference.document(documentId)
+          .updateData({
+             'imageUrl':FieldValue.arrayRemove([imageUrl]) 
+          });       
+  }
+
+
+  
+  Future<void> _updateDataToFirebaseDB(PostProperty post) async {
+    try {     
+     // SharedPreferences prefs = await SharedPreferences.getInstance(); 
+      if (post.id != null) {
+          // Update data to server if new user
+          await _postPropertyCollectionReference.document(post.documentId)
+          .updateData(post.toMap());   
+         }
+       }catch (e) {
+         return message=['Error', e.toString()] ;
+     }
+      return message=['Update completed successfully', 'Your rent house updated in List :)'];
+  }
+   
+
 
 
   Future<void> _insertDataToFirebaseDB(PostProperty post) async {
     try {     
-
+           print('i am doing Insert !!!!!!!!!!!!!!!!!!!!!!!!!');
      // SharedPreferences prefs = await SharedPreferences.getInstance(); 
       if (post.id != null) {
           // Update data to server if new user
-          await _postPropertyCollectionReference.add(post.toMap());         
+          await _postPropertyCollectionReference.add(post.toMap());
+          await _usersCollectionReference.document(post.id).updateData({
+          });        
          }
        }catch (e) {
          return message=['Error', e.toString()] ;
      }
       return message=['Post completed successfully', 'Your rent house posted in List :)'];
   }
+
+
+  Future updateUserImage(User user, File image) async{      
+   QuerySnapshot userResult =  await _usersCollectionReference.where('id',isEqualTo: user.id).getDocuments();
+     if(userResult.documents.length > 0) {
+        String imageUrl = await _cloudStorageService.uploadUserProfileImage(user.id, image);
+      if(imageUrl != null) {
+            await _usersCollectionReference.document(user.id).updateData({
+             'profileUrl': imageUrl
+        });
+      }     
+     } else {
+       return null;
+     }
+  }
+  
+  Future deleteUserPostPropertyToFirebaseDB(User user, PostProperty property) async {    
+       QuerySnapshot userPostProperty = await _postPropertyCollectionReference.where('id',isEqualTo: user.id).getDocuments();
+       if(userPostProperty.documents.length != 0) {
+             await _postPropertyCollectionReference.document(property.documentId).delete()
+             .catchError((err) =>{
+     
+             });
+              _cloudStorageService.deleteImageFileToFireStroage(property.imageUrl)
+             .catchError((err) => {
+        });
+       } else {
+          return message=['Warning', 'your rent house is already deleted!']; 
+       }
+       return message=['Deleted successfully', 'Your rent house deleted in Rent House List :)'];
+}
   
 
-Future getPropertyListFromFirebase() async {
-try {
-   var postPropertyDocumentSnapshot =
-          await _postPropertyCollectionReference.limit(PostPropertyLimit).getDocuments();
-      if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
-        return postPropertyDocumentSnapshot.documents
-            .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
-            .where((mappedItem) => mappedItem.title != null)
-            .toList();
-      }
-    } catch (e) {
-      // Find or create a way to repeat error handling without so much repeated code
-      if (e is PlatformException) {
-        return e.message;
-      }
 
-      return e.toString();
-    }
-}
 
   Stream listenToPostPropertyRealTime() {
     // Register the handler for when the posts data changes
@@ -173,7 +238,32 @@ try {
       }
     });
   }
- 
+
+
+
+Future getUserPropertyListFromFirebase(User user) async {
+  try {
+    var postPropertyDocumentSnapshot =
+            await _postPropertyCollectionReference
+        //   .where('id', isEqualTo: user.id)
+            .orderBy('createdAt')
+            .getDocuments();        
+        if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
+
+          return postPropertyDocumentSnapshot.documents
+              .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
+              .where((mappedItem) => mappedItem.id == user.id)
+              .toList();
+        }
+      } catch (e) {
+        // Find or create a way to repeat error handling without so much repeated code
+        if (e is PlatformException) {
+          return e.message;
+        }
+        return e.toString();
+      }
+}
+
    void requestMoreData() => _requestPostProperty();
 }
 

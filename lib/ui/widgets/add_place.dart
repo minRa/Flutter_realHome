@@ -42,7 +42,6 @@ class _AddPlaceState extends State<AddPlace> {
   Future<void> _getCurrentUserLocation() async {
     try {
       final locData = await Location().getLocation();
-       print(locData.latitude);
       _showPreview(locData.latitude, locData.longitude);
       _onSelectPlace(locData.latitude, locData.longitude);
     } catch (error) {
@@ -51,6 +50,7 @@ class _AddPlaceState extends State<AddPlace> {
   }
 
   Future<void> _selectOnMap() async {
+
     final selectedLocation = await Navigator.of(context).push<LatLng>(
       MaterialPageRoute(
         fullscreenDialog: true,

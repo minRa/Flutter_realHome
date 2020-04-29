@@ -3,25 +3,27 @@ class PostProperty {
   final String id;
   final String email;
   final String fullName;
-  final String title;
-  final String message;
-  final String phone;
-  final String price;
-  final String address;
-  final String city;
-  final String messenger;
-  final String uuid;
   final String documentId;
-  final double latitude;
-  final double longitude;
-   List<dynamic> imageUrl;
   final String createdAt;
   final String chattingWith;
-
+   String rentType;
+   String date;
+   String title;
+   String message;
+   String phone;
+   String price;
+   String address;
+   String city;
+   String messenger;
+   double latitude;
+   double longitude;
+   List<dynamic> imageUrl;
   PostProperty({
     this.id,
     this.email,
+    this.rentType,
     this.fullName,
+    this.date,
     this.title,
     this.message,
     this.phone,
@@ -29,7 +31,6 @@ class PostProperty {
     this.address,
     this.city,
     this.messenger,
-    this.uuid,
     this.imageUrl,
     this.latitude,
     this.longitude,
@@ -44,17 +45,18 @@ Map<String, dynamic> toMap() {
       'email':email,
       'fullName':fullName,
       'title':title,
+       'date':date,
       'message':message,
       'price':price,
+      'rentType':rentType,
       'messenger':messenger,
       'city':city,
       'phone':phone,
-      'uuid':uuid,
       'latitude':latitude,
       'longitude':longitude,
       'address':address,
       'images' :imageUrl,
-      'createdAt': DateTime.now().millisecondsSinceEpoch.toString(),
+      'createdAt': createdAt,
       'chattingWith': null,
     };
   }
@@ -65,7 +67,9 @@ Map<String, dynamic> toMap() {
     return PostProperty(
       id: map['id'],
       email: map['email'],
+      rentType: map['rentType'],
       fullName: map['fullName'],
+      date: map['date'],
       imageUrl: map['images'],
       title: map['title'],
       phone: map['phone'],
@@ -74,9 +78,8 @@ Map<String, dynamic> toMap() {
       message: map['message'],
       messenger: map['messenger'],
       latitude: map['latitude'],
-      longitude: map['longtitude'],
+      longitude: map['longitude'],
       price: map['price'],
-      uuid: map['uuid'],
       createdAt: map['createdAt'],
       chattingWith:map['chattingWith'],
       documentId: documentId,

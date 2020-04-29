@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-const GOOGLE_API_KEY = 'AIzaSyBP3mHwdd-4PfYdM_IRTPwu9GsnKPY50A8';
+const GOOGLE_API_KEY = 'AIzaSyBzFB6IUpjElHSF8PVBSbtNFV0FsbMqeR0';
 
 class GoogleMapService {
 

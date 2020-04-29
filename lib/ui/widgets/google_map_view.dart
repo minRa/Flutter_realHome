@@ -64,7 +64,7 @@ class _GoogleMapViewState extends State<GoogleMapView> {
                         widget.initialLocation.longitude,
                       ),
                 ),
-              },
+          },
       ),
     );
   }

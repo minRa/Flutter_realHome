@@ -39,7 +39,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       case PostHouseViewRoute:
       return _getPageRoute(
         routeName: settings.name,
-        viewToShow: PostHouseView(),
+        viewToShow: PostHouseView(settings.arguments),
       );
 
        case PropertyManageViewRoute:

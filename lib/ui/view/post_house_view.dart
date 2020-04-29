@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/ui/widgets/Introduce.dart';
 import 'package:realhome/ui/widgets/add_place.dart';
 import 'package:realhome/ui/widgets/app_drawer.dart';
@@ -10,6 +11,9 @@ import 'package:realhome/view_model/post_hose_view_model.dart';
 
 
 class PostHouseView extends StatefulWidget {
+   
+   final PostProperty _postProperty;
+  PostHouseView(this._postProperty);
   @override
   _PostHouseViewState createState() => _PostHouseViewState();
 }
@@ -28,22 +32,26 @@ class _PostHouseViewState extends State<PostHouseView> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // save user data except textfield data like gender, images, birthday
+  // // save user data except textfield data like gender, images, birthday
   Map<String, dynamic> _userDataMap = Map<String, dynamic>();
 
-    _updateUserData(List<dynamic> data) {
-        if(data[0] == 'remove') {
-          _userDataMap.remove(data[1]);
-        } else {
+    _updateUserData(List<dynamic> data) {    
          _userDataMap[data[0]] = data[1];
-        }   
     }
 
 
   void initState() {
     // init values
-    _userDataMap['RentType'] = 'Single';
-    _userDataMap['term'] = false;
+    if(widget._postProperty != null) {
+      _textAreaController.text = widget._postProperty.message;
+      _messengerController.text = widget._postProperty.messenger;
+      _titleController.text = widget._postProperty.title;
+      _priceController.text = widget._postProperty.price;
+      _phoneController.text = widget._postProperty.phone;
+      _adressDetailController.text = widget._postProperty.address;
+    }
+     _userDataMap['RentType'] = 'Single';
+     _userDataMap['term'] = false;
     // set data from SNS
     super.initState();
   }
@@ -52,15 +60,15 @@ class _PostHouseViewState extends State<PostHouseView> {
   // Editable values
   String _nextText = 'Next';
   Color _nextColor = Colors.green[800];
-
-  bool isWithSNS = false;
   bool isLoading = false;
 
 
   @override
   Widget build(BuildContext context) {
     return ViewModelProvider<PostHouseViewModel>.withConsumer(
-      viewModel: PostHouseViewModel(),    
+      viewModel: PostHouseViewModel(), 
+      onModelReady: widget._postProperty != null? 
+      (model) => model.getPostProperty(widget._postProperty) : null,
       builder: (context, model, child) => Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -129,6 +137,8 @@ class _PostHouseViewState extends State<PostHouseView> {
                           controller: _pageController,
                           children: <Widget>[
                            InputInformationForm(
+                                 model.updateRentType,
+                                 model.updateDate,
                                 _messengerController,
                                 _phoneController,
                                 _priceController,
@@ -136,7 +146,12 @@ class _PostHouseViewState extends State<PostHouseView> {
                                  _updateUserData
                             ),
                             Introduce(_textAreaController,),
-                            PickedImages(_updateUserData,),
+                            PickedImages(
+                              cropImage: model.cropImage,
+                              imageUpload: model.uploadImage,
+                              imageUrl: model.images,
+                              remove: model.remove,
+                              ),
                             AddPlace(
                               addressController: _adressDetailController,
                               addLocation: model.addPlace,
@@ -175,7 +190,6 @@ class _PostHouseViewState extends State<PostHouseView> {
                                   } else {
                                     Navigator.pop(context);
                                   }
-
                                 },
                               ),
                             ),
@@ -200,13 +214,15 @@ class _PostHouseViewState extends State<PostHouseView> {
                                 textColor: Colors.white,
                                 color: _nextColor,
                                 padding: EdgeInsets.all(10),
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_pageController.page.toInt() == 0) {
+                                           print('page1 or 2');
                                     if (_validateUserData()) {
                                       _moveToNextPage(); // check user data validation and move next page
                                     }
                                   }else if (_pageController.page.toInt() == 1
                                  || _pageController.page.toInt() == 2) {
+                                     print('page1 or 2');
                                     _moveToNextPage();
                                   }else if (_pageController.page.toInt() == 3) {
                                     if (_validateUserData()) {
@@ -214,15 +230,17 @@ class _PostHouseViewState extends State<PostHouseView> {
                                       setState(() {
                                         isLoading = true;
                                       });                                    
-                                      model.setData(_userDataMap);
-                                      model.postingHouse(
-                                        address: _adressDetailController.text,
+                                       await model.postingHouse(
+                                       // address: _adressDetailController.text,
                                         message: _textAreaController.text,
                                         messenger: _messengerController.text,
                                         phone: _phoneController.text,
                                         price: _priceController.text,
                                         title: _titleController.text
                                       );
+                                          setState(() {
+                                        isLoading = false;
+                                      });
                                     }
                                   }
                                 },

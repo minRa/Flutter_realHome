@@ -2,23 +2,21 @@ import 'package:flutter/material.dart';
 
 class InputInformationForm extends StatefulWidget {
   InputInformationForm(
-     // this.textAreaController,
+      this.rentType,
+      this.date,
       this.messengerController,
       this.phoneController,
       this.priceController,
       this.titleController,
       this.parentAction);
+    final ValueChanged<String> date;
+    final ValueChanged<String> rentType;
+    final TextEditingController messengerController;
+    final TextEditingController phoneController;
+    final TextEditingController priceController;
+    final TextEditingController titleController; 
+    final ValueChanged<List<dynamic>> parentAction;
 
-   //final TextEditingController textAreaController;
-   final TextEditingController messengerController;
-   final TextEditingController phoneController;
-  // final TextEditingController adressDetailController;
-   final TextEditingController priceController;
-   final TextEditingController titleController; 
-   
-   final ValueChanged<List<dynamic>> parentAction;
-
-  bool isWithSNS = false;
 
   @override
   State<StatefulWidget> createState() => _InputInformationForm();
@@ -42,11 +40,14 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
     if (picked != null && picked != DateTime.now())
       setState(() {
         _selectDateString = "${picked.toLocal()}".split(' ')[0];
-        _passDataToParent('move_year',picked.year);
-        _passDataToParent('move_month',picked.month);
-        _passDataToParent('move_day',picked.day);
+        // _passDataToParent('move_year',picked.year.toString());
+        // _passDataToParent('move_month',picked.month.toString());
+        // _passDataToParent('move_day',picked.day.toString());
+          widget.date (picked.toString().split(' ')[0]);
+          print(widget.date);
+        
       });
-
+   
     FocusScope.of(context).requestFocus(FocusNode());
   }
 
@@ -59,6 +60,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
 
   @override
   Widget build(BuildContext context) {
+    print(widget.rentType);
     super.build(context);
     return SingleChildScrollView(
           child: Container(
@@ -88,7 +90,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       return null;
                     }
                   },
-                  style: TextStyle(color: !widget.isWithSNS ? Colors.black : Colors.blueGrey),
+                  style: TextStyle(color:Colors.blueGrey),
                   controller: widget.titleController,
                 ),
               ),
@@ -163,16 +165,19 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                     groupValue: _rentType,
                     onChanged: (RentTypeEnum value) {
                       setState(() {
-                        _passDataToParent('RentType','Single',);
+                  
+                      //  _passDataToParent('rentType','Single',);
                         _rentType = value;
+                          widget.rentType('Single');
                       });
                     },
                   ),
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        _passDataToParent('RentType','Single');
+                      //  _passDataToParent('rentType','Single');
                         _rentType = RentTypeEnum.single;
+                          widget.rentType('Single');
                       });
                     },
                     child: Text('Single'),
@@ -183,16 +188,18 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                     groupValue: _rentType,
                     onChanged: (RentTypeEnum value) {
                       setState(() {
-                        _passDataToParent('RentType','Double');
+                      //  _passDataToParent('rentType','Double');
                         _rentType = value;
+                          widget.rentType('Double');
                       });
                     },
                   ),
                    GestureDetector(
                     onTap: () {
                       setState(() {
-                        _passDataToParent('RentType','Double');
+                       // _passDataToParent('rentType','Double');
                         _rentType = RentTypeEnum.ddouble;
+                          widget.rentType('Double');
                       });
                     },
                     child: Text('Double'),
@@ -203,16 +210,18 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                     groupValue: _rentType,
                     onChanged: (RentTypeEnum value) {
                       setState(() {
-                        _passDataToParent('RentType','Fmaily');
+                        //_passDataToParent('rentType','Fmaily');
                         _rentType = value;
+                        widget.rentType('Fmaily');
                       });
                     },
                   ),
                    GestureDetector(
                     onTap: () {
                       setState(() {
-                        _passDataToParent('RentType','Fmaily');
+                       // _passDataToParent('rentType','Fmaily');
                         _rentType = RentTypeEnum.family;
+                        widget.rentType('Fmaily');
                       });
                     },
                     child: Text('Fmaily'),

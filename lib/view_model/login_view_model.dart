@@ -4,6 +4,7 @@ import 'package:realhome/services/authentication_service.dart';
 import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../locator.dart';
 import 'base_model.dart';
@@ -18,8 +19,27 @@ class LoginViewModel extends BaseModel {
   Future login({
     @required String email,
     @required String password,
+    @required bool rememberMe
   }) async {
+     SharedPreferences prefs = await  SharedPreferences.getInstance();
     setBusy(true);
+    if(rememberMe) {
+      
+        prefs.setString('email',email );
+        prefs.setString('password', password);
+        prefs.setBool('rememberMe', rememberMe );
+     
+        print(prefs.getString('email'));
+        print(prefs.getString('password'));
+        print(prefs.getBool('rememberMe'));
+      
+    } else {
+      prefs.setBool('rememberMe', rememberMe );
+      // prefs.remove('rememberMe');
+       prefs.remove('email');
+       prefs.remove('password');  
+    }
+    
     await _authenticationService.logOut();
     var result = await _authenticationService.loginWithEmail(
       email: email,
@@ -52,7 +72,7 @@ class LoginViewModel extends BaseModel {
     if (result is bool) {
       if (result) {
        // await _analyticsService.logLogin();
-        _navigationService.navigateTo(HouseOverviewRoute);
+        _navigationService.navigateTo(StartPageRoute);
       } else {
         await _dialogService.showDialog(
           title: 'Login Failure',
@@ -82,7 +102,7 @@ class LoginViewModel extends BaseModel {
      if(dialogResponse.confirmed) {
         await _authenticationService.logOut();
             notifyListeners();
-            navigateToHouseOverView();                   
+            navigateToStartPageView();                   
        }     
     } 
 }

@@ -23,18 +23,24 @@ class _PickedImages extends State<PickedImages>
 
   List<File> fileImages = List<File>.generate(8,(file) => File(''));
   List<dynamic> imageUrl = List<String>.generate(8,(i) => '');
+  List<bool> visual = List<bool>.generate(7, (i) =>  false );
 
-  bool addPicture1 = false;
+ 
 
   @override
   void initState() {
      if(widget.imageUrl != null) {
+
         setState(() {
           imageUrl = widget.imageUrl;
-        });
+           for(var i =0; i < imageUrl.length - 1; i++){
+              if(imageUrl[i]=='') continue;
+                visual[i] = true;
+         } });  
      }
     super.initState();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +51,37 @@ class _PickedImages extends State<PickedImages>
                   child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                  Align(
-                  alignment: Alignment.topCenter,
-                  child: Text('Select your photos',
-                  style: TextStyle(fontSize: 26),),
+                  // Container(
+                  //   width: 300,
+                  //   height: 50,
+                  //   alignment: Alignment.center,
+                  //   child: ClipRRect(
+                  //   borderRadius: BorderRadius.circular(10.0),
+                  //   child: Card(
+                  //    margin: EdgeInsets.only(top:10),
+                  //    child: ListTile(
+                  //      leading: Icon(Icons.add_photo_alternate),
+                  //      title: Text('Add Photo',
+                  //      textAlign: TextAlign.center,
+                  //      ),
+                  //    ),
+                  //   )
+                  // )),
+                  Container(
+                    margin: EdgeInsets.only(top:20, bottom: 10),
+                    child: Align(
+                    child: ListTile(
+                      title: Text('-- Add Photo --',
+                      style: TextStyle(fontSize: 26),
+                      textAlign: TextAlign.center,
+                      ),
+                      subtitle: Text('Max : 8',
+                      textAlign: TextAlign.center,
+                      ),
+                    ),
                 ),
+                  ),
+
                 Container(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -61,7 +93,8 @@ class _PickedImages extends State<PickedImages>
                                 File fileImage = await widget.cropImage();
                                 widget.imageUpload(fileImage, 0);                       
                                setState(() {   
-                               fileImages[0] = fileImage;        
+                               fileImages[0] = fileImage;
+                               visual[0] = true;        
                             });
                           },
                           onLongPress: () async {
@@ -71,6 +104,7 @@ class _PickedImages extends State<PickedImages>
                                   setState((){
                                   fileImages[0]= File('');
                                   imageUrl[0] = '';
+                                  visual[0] = false;
                                 }); 
                               } 
                             }
@@ -88,38 +122,44 @@ class _PickedImages extends State<PickedImages>
                           ),),
                         ),
                       ),
-                      Padding(
+
+                      Visibility(
+                      visible:visual[0],
+                        child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: new GestureDetector(
-                          onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 1);                       
-                               setState(() {   
-                               fileImages[1] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[1].path != '' || imageUrl[1] !=''){
-                                 bool ok =  await widget.remove(1);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[1]= File('');
-                                  imageUrl[1] = '';
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 2 && fileImages[1].path !=''?
-                              Image.file(fileImages[1],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[1] !=''?
-                                    Image.network(imageUrl[1],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
+                            onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 1);                       
+                                 setState(() {   
+                                 fileImages[1] = fileImage;
+                                 visual[1] = true;        
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[1].path != '' || imageUrl[1] !=''){
+                                   bool ok =  await widget.remove(1);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[1]= File('');
+                                    imageUrl[1] = '';
+                                    visual[1] = false;
+                                  }); 
+                                } 
+                              }
+                            },
+                          child: Container(
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 2 && fileImages[1].path !=''?
+                                Image.file(fileImages[1],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[1] !=''?
+                                      Image.network(imageUrl[1],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                          ),
                         ),
                       ),
                     ],
@@ -129,244 +169,302 @@ class _PickedImages extends State<PickedImages>
                 Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Padding(
+
+                    Visibility(
+                     visible:visual[1],
+                      child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: new GestureDetector(
-                          onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 2);                       
-                               setState(() {   
-                               fileImages[2] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[2].path != '' || imageUrl[2] !=''){
-                                 bool ok =  await widget.remove(2);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[2]= File('');
-                                  imageUrl[2] = '';
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 3 && fileImages[2].path !=''?
-                              Image.file(fileImages[2],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[2] !=''?
-                                    Image.network(imageUrl[2],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
+                            onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 2);                       
+                                 setState(() {   
+                                 fileImages[2] = fileImage; 
+                                 visual[2] = true;       
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[2].path != '' || imageUrl[2] !=''){
+                                   bool ok =  await widget.remove(2);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[2]= File('');
+                                    imageUrl[2] = '';
+                                    visual[0] = false;
+                                  }); 
+                                } 
+                              }
+                            },
+                          child: Container(
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 3 && fileImages[2].path !=''?
+                                Image.file(fileImages[2],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[2] !=''?
+                                      Image.network(imageUrl[2],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                        ),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+
+                    Visibility(
+                     visible:visual[2],
+                     child: Padding(
+                     padding: const EdgeInsets.all(8.0),
                       child: new GestureDetector(
-                        onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 3);                       
-                               setState(() {   
-                               fileImages[3] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[3].path != '' || imageUrl[3] !=''){
-                                 bool ok =  await widget.remove(3);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[3]= File('');
-                                  imageUrl[3] = '';
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 4 && fileImages[3].path !=''?
-                              Image.file(fileImages[3],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[3] !=''?
-                                    Image.network(imageUrl[3],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
+                          onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 3);                       
+                                 setState(() {   
+                                 fileImages[3] = fileImage;
+                                 visual[3] = true;        
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[3].path != '' || imageUrl[3] !=''){
+                                   bool ok =  await widget.remove(3);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[3]= File('');
+                                    imageUrl[3] = '';
+                                    visual[3] = false;
+                                  }); 
+                                } 
+                              }
+                            },
+                          child: Container(
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 4 && fileImages[3].path !=''?
+                                Image.file(fileImages[3],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[3] !=''?
+                                      Image.network(imageUrl[3],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                        ),
                       ),
                     ),
                   ],
                 ),
 
-                Container(
-                padding: EdgeInsets.only(right: 300),
-                child: IconButton(
-                  icon: addPicture1? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),                 
-                  onPressed: () {
-                    setState(() {
-                      addPicture1 = !addPicture1;
-                        //if(addePicture2) addPicture2 = !addPicture2;
-                      });
-                    },
-                  ),
-                ),
+                // Container(
+                // padding: EdgeInsets.only(right: 300),
+                // child: IconButton(
+                //   icon: addPicture1? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),                 
+                //   onPressed: () {
+                //     setState(() {
+                //       addPicture1 = !addPicture1;
+                //         //if(addePicture2) addPicture2 = !addPicture2;
+                //       });
+                //     },
+                //   ),
+                // ),
 
-                Visibility(
-                visible: addPicture1 ,
-                  child: Column(
+                // Visibility(
+                // visible: addPicture1 ,
+                //   child:
+                   Column(
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: new GestureDetector(
-                                onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 4);                       
-                               setState(() {   
-                               fileImages[4] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[4].path != '' || imageUrl[4] !=''){
-                                 bool ok =  await widget.remove(4);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[4]= File('');
-                                  imageUrl[4] = '';
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 5 && fileImages[4].path !=''?
-                              Image.file(fileImages[4],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[4] !=''?
-                                    Image.network(imageUrl[4],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: new GestureDetector(
-                               onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 5);                       
-                               setState(() {   
-                               fileImages[5] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[5].path != '' || imageUrl[5] !=''){
-                                 bool ok =  await widget.remove(5);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[5]= File('');
-                                  imageUrl[5] = '';
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 6 && fileImages[5].path !=''?
-                              Image.file(fileImages[5],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[5] !=''?
-                                    Image.network(imageUrl[5],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
-                            ),
-                          ),
-                        ],
-                      ),
 
+                         Visibility(
+                          visible:visual[3],
+                            child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: new GestureDetector(
+                                  onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 4);                       
+                                 setState(() {   
+                                 fileImages[4] = fileImage;
+                                 visual[4] = true;        
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[4].path != '' || imageUrl[4] !=''){
+                                   bool ok =  await widget.remove(4);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[4]= File('');
+                                    imageUrl[4] = '';
+                                    visual[0] = false;
+                                  }); 
+                                } 
+                              }
+                            },
+                        child: Container(
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 5 && fileImages[4].path !=''?
+                                Image.file(fileImages[4],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[4] !=''?
+                                      Image.network(imageUrl[4],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                              ),
+                            ),
+                          ),
+
+                          Visibility(
+                            visible:visual[4],
+                            child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                              child: new GestureDetector(
+                                 onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 5);                       
+                                 setState(() {   
+                                 fileImages[5] = fileImage;
+                                 visual[5] = true;      
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[5].path != '' || imageUrl[5] !=''){
+                                   bool ok =  await widget.remove(5);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[5]= File('');
+                                    imageUrl[5] = '';
+                                    visual[5] = false;
+                                  }); 
+                                } 
+                              }
+                            },
+                        child: Container(
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 6 && fileImages[5].path !=''?
+                                Image.file(fileImages[5],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[5] !=''?
+                                      Image.network(imageUrl[5],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                              ),
+                            ),
+                          ),
+                       ],
+                      ),
                        Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Padding(
+
+                          Visibility(
+                          visible:visual[5],
+                            child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: new GestureDetector(
-                             onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 6);                       
-                               setState(() {   
-                               fileImages[6] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[6].path != '' || imageUrl[6] !=''){
-                                 bool ok =  await widget.remove(6);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[6]= File('');
-                                  imageUrl[6] = '';
-                                }); 
-                              } 
-                            }
-                          },
+                              child: new GestureDetector(
+                               onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 6);                       
+                                 setState(() {   
+                                 fileImages[6] = fileImage; 
+                                 visual[6] = true;       
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[6].path != '' || imageUrl[6] !=''){
+                                   bool ok =  await widget.remove(6);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[6]= File('');
+                                    imageUrl[6] = '';
+                                    visual[6] = false;
+                                  }); 
+                                } 
+                              }
+                            },
                         child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 7 && fileImages[6].path !=''?
-                              Image.file(fileImages[6],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[6] !=''?
-                                    Image.network(imageUrl[6],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 7 && fileImages[6].path !=''?
+                                Image.file(fileImages[6],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[6] !=''?
+                                      Image.network(imageUrl[6],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                              ),
                             ),
                           ),
-                          Padding(
+
+                         Visibility(
+                            visible:visual[6],
+                            child: Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: new GestureDetector(
-                            onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 7);                       
-                               setState(() {   
-                               fileImages[7] = fileImage;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[7].path != '' || imageUrl[7] !=''){
-                                 bool ok =  await widget.remove(7);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[7]= File('');
-                                  imageUrl[7] = '';
-                                }); 
-                              } 
-                            }
-                          },
+                              child: new GestureDetector(
+                              onTap: () async{
+                                  File fileImage = await widget.cropImage();
+                                  widget.imageUpload(fileImage, 7);                       
+                                 setState(() {   
+                                 fileImages[7] = fileImage;        
+                              });
+                            },
+                            onLongPress: () async {
+                              if(fileImages[7].path != '' || imageUrl[7] !=''){
+                                   bool ok =  await widget.remove(7);
+                                   if(ok) {
+                                    setState((){
+                                    fileImages[7]= File('');
+                                    imageUrl[7] = '';
+                                  }); 
+                                } 
+                              }
+                            },
                         child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 8 && fileImages[7].path !=''?
-                              Image.file(fileImages[7],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[7] !=''?
-                                    Image.network(imageUrl[7],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
+                              width: 160,
+                              height: 160,
+                              child: Card(
+                                child:fileImages != null && fileImages.length >= 8 && fileImages[7].path !=''?
+                                Image.file(fileImages[7],fit: BoxFit.fill,) :
+                                imageUrl != null && imageUrl.length >= 1 && imageUrl[7] !=''?
+                                      Image.network(imageUrl[7],fit: BoxFit.fill)
+                                    : Icon(Icons.add_photo_alternate,
+                                size: 130,color: Colors.grey[700])
+                            ),),
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),               
+                  //),
+                ),   
+                //  Card(
+                //   margin: EdgeInsets.only(top:10, bottom:10, left:20, right:20),
+                //   color: Colors.white,
+                //   child: Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: <Widget>[
+                //   Container(
+                //     margin: EdgeInsets.only(right: 10),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(30.0),
+                //        child: SizedBox(
+                //         width: 300 ,
+                //         height: 50 ,
+                //         child: Text('Add Property Image',
+                //         textAlign: TextAlign.center,
+                //         style: TextStyle(
+                //           fontSize: 20
+                //         ),
+                //         )
+                //        ),
+                //       ))
+                //     ],
+                //   ),
+                // )            
             ],
           ),
         ),

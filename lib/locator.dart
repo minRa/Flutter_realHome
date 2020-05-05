@@ -6,6 +6,7 @@ import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/services/googleMap_service.dart';
+//import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/utils/image_selector.dart';
 
@@ -20,5 +21,5 @@ Future setupLocator() async {
   locator.registerLazySingleton(() => CloudStorageService());
   locator.registerLazySingleton(() => ImageSelector());
   locator.registerLazySingleton(() => GoogleAdsService());
-  locator.registerLazySingleton(() => GoogleMapService());
+  locator.registerLazySingleton(() => GoogleMapServices());
 }

@@ -5,9 +5,11 @@ import 'package:realhome/ui/view/house_overview.dart';
 import 'package:realhome/ui/view/login_view.dart';
 import 'package:realhome/ui/view/membership_view.dart';
 import 'package:realhome/ui/view/post_house_view.dart';
+import 'package:realhome/ui/view/post_owner_info_view.dart';
 import 'package:realhome/ui/view/property_manage_view.dart';
 import 'package:realhome/ui/view/signUp_view.dart';
 import 'package:realhome/ui/view/bigImage.dart';
+import 'package:realhome/ui/view/start_page_view.dart';
 
 Route<dynamic> generateRoute(RouteSettings settings) {
 
@@ -41,6 +43,11 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         routeName: settings.name,
         viewToShow: PostHouseView(settings.arguments),
       );
+      case StartPageRoute:
+      return _getPageRoute(
+        routeName: settings.name,
+        viewToShow: StartPageView(),
+      );
 
        case PropertyManageViewRoute:
       return _getPageRoute(
@@ -59,6 +66,12 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return _getPageRoute(
         routeName: settings.name,
         viewToShow: MembershipView(),
+      );
+
+      case PostOwnerInfoViewRoute:
+      return _getPageRoute(
+        routeName: settings.name,
+        viewToShow: PostOwnerInfoView(settings.arguments),
       );
 
 

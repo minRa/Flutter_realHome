@@ -2,61 +2,56 @@
 //import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
-
-//import 'package:realhome/ui/widgets/app_drawer.dart';
+import 'package:realhome/models/user.dart';
 import 'package:realhome/ui/widgets/list_view_card.dart';
 import 'package:realhome/ui/widgets/user_profile.dart';
-import 'package:realhome/view_model/property_manage_view_model.dart';
-//const adUnitId= 'ca-app-pub-7333672372977808/7997010253';
+import 'package:realhome/view_model/post_owner_info_view_model.dart';
+//const adUnitId = 'ca-app-pub-7333672372977808/2929937282';
 
 
-class PropertyManageView extends StatefulWidget {
+class PostOwnerInfoView extends StatefulWidget {
+  final User owner;
+  PostOwnerInfoView(this.owner);
 
   @override
-  _PropertyManageViewState createState() => _PropertyManageViewState();
+  _PostOwnerInfoViewState createState() => _PostOwnerInfoViewState();
 }
 
-class _PropertyManageViewState extends State<PropertyManageView> {
- 
+class _PostOwnerInfoViewState extends State<PostOwnerInfoView> {
+
+  
 
   @override
   Widget build(BuildContext context) {
-    return ViewModelProvider<PropertyManageViewModel>.withConsumer(
-      viewModel: PropertyManageViewModel(),    
-      onModelReady: (model) => model.currentUserPostPropertyList(), 
+    return ViewModelProvider<PostOwnerInfoViewModel>.withConsumer(
+      viewModel: PostOwnerInfoViewModel(),    
+      onModelReady: (model) => model.currentOwnerPostPropertyList(widget.owner), 
       builder: (context, model, child) =>
-       SafeArea(
-          child: Scaffold(
+        SafeArea(
+         child: Scaffold(
           body:
-          model.currentUser != null ?
-          model.finish ?
-          model.userPostProperty.length > 0 ?
+          model.posts != null?
           Column(
           children: <Widget>[  
               Expanded(
                 flex: 7,
                child: 
                UserProfilePage(
-                 onAuth:model.currentUser.id != model.userPostProperty[0].id ? false : true ,
                  navigate: model.navigateToStartPageView,
-                 user: model.currentUser,
-                 editImage:()=> model.userProfileImageChange('profile'),
-                 editBackground:()=> model.userProfileImageChange('abc'),
+                 user: widget.owner,
+                 onAuth: false,
                  )),
                 Expanded(
                 flex: 6,
-                child: model.userPostProperty != null?
+                child: model.posts != null?
                  ListView.builder(
-                  itemCount: model.userPostProperty.length,
+                  itemCount: model.posts.length,
                   itemBuilder: (context, index) =>
                      GestureDetector(
                       onTap: ()=> model.navigateToDetailView(index),
                       child:ListViewCard (
-                        id: model.userPostProperty[index].id,
-                        onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
-                        userProperty: model.userPostProperty[index], 
-                        edit:()=> model.navigateToPostHouseView2(index),  
-                        delete: () => model.deleteUserPostProperty(index),                 
+                        onAuth: false,
+                        userProperty: model.posts[index],                 
                          ),
                        ),
                       ) :
@@ -65,93 +60,16 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                      Expanded(
                     flex: 3,
                     child: Container(),),               
-                ],) 
-                : UserProfilePage(
-                  onAuth: true,
-                  navigate: model.navigateToStartPageView,
-                  user: model.currentUser,
-                  editImage:()=> model.userProfileImageChange('profile'),
-                  editBackground:()=> model.userProfileImageChange('abc'),
-                  )
-                : Center(
+                ],
+                ) : Center(
                     child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation(
                     Theme.of(context).primaryColor),
-                          ),)
-                 : Container(
-                   child: Column(
-                     children: <Widget>[
-                       Stack(
-                         //mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                        //  height:,
-                          width: double.infinity,
-                         child: Image.asset('assets/images/cover.jpg',
-                          fit: BoxFit.cover,
-                          scale: 1.5,
-                          ),
-                       ),
-                      // SizedBox(height: screenSize.height / 3.0),
-                       Positioned(
-                          top: 120,
-                          left: 70,
-                          child: 
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                              height: 200,
-                              width: 200,
-                              decoration: BoxDecoration(
-                              image:DecorationImage(
-                              image:AssetImage('assets/images/avata.png') ,
-                              fit: BoxFit.cover,),
-                                borderRadius: BorderRadius.circular(100.0),
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 10.0,
-                                    ),
-                                  ),
-                              ),
-                             SizedBox(height: 5,),
-                              Text('GUEST',
-                              style: TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.black
-                            ),
-                            textAlign: TextAlign.center,
-                           ),
-                            SizedBox(height: 20,),
-                            Text('Post Property Management page',
-                            style: TextStyle(
-                              fontSize: 18
-                            ),),
-                            Text('This service rquired to login',
-                             style: TextStyle(
-                              fontSize: 18
-                            ),),
-                            ],
-                          ),
-                       ),],
-                       ),
-                     ],
-                   ),
-                ), 
-              floatingActionButton: 
-               model.currentUser != null ?
-               Container(
-                padding: EdgeInsets.symmetric(vertical: 100),
-                child: FloatingActionButton(
-                        child: Icon(Icons.border_color),
-                            onPressed: () => model.navigateToPostHouseView()
-                            )
-                        ) : Container() , 
-                  ),
+                ),)
+             ),
         )    
-            );  
-        }
+       );  
+    }
 }
 
 //   Widget _mainBody(BuildContext context) {

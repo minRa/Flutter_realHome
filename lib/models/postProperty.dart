@@ -6,6 +6,9 @@ class PostProperty {
   final String documentId;
   final String createdAt;
   final String chattingWith;
+   int room;
+   int carpark;
+   int toilet;
    String rentType;
    String date;
    String title;
@@ -23,6 +26,9 @@ class PostProperty {
     this.email,
     this.rentType,
     this.fullName,
+    this.room,
+    this.carpark,
+    this.toilet,
     this.date,
     this.title,
     this.message,
@@ -45,7 +51,10 @@ Map<String, dynamic> toMap() {
       'email':email,
       'fullName':fullName,
       'title':title,
-       'date':date,
+      'date':date,
+      'room':room,
+      'carpark':carpark,
+      'toilet':toilet,
       'message':message,
       'price':price,
       'rentType':rentType,
@@ -58,6 +67,7 @@ Map<String, dynamic> toMap() {
       'images' :imageUrl,
       'createdAt': createdAt,
       'chattingWith': null,
+      //'documentId' :documentId
     };
   }
 
@@ -69,6 +79,9 @@ Map<String, dynamic> toMap() {
       email: map['email'],
       rentType: map['rentType'],
       fullName: map['fullName'],
+      room:map['room'],
+      carpark: map['carpark'],
+      toilet: map['toilet'],
       date: map['date'],
       imageUrl: map['images'],
       title: map['title'],

@@ -3,49 +3,108 @@ import 'package:realhome/models/user.dart';
 
 class UserProfilePage extends StatelessWidget {
   final bool onAuth;
+  final Function navigate;
   final User user;
   final Function editImage;
+  final Function editBackground;
 
   UserProfilePage({
+    this.navigate,
     this.user,
     this.onAuth,
     this.editImage,
+    this.editBackground
   });
 
-  Widget _buildCoverImage(Size screenSize) {
+  Widget _buildCoverImage(BuildContext context, Size screenSize) {
     return Container(
-    height: screenSize.height / 2.6,
+    height: screenSize.height / 1.6,
     decoration: BoxDecoration(
       image: DecorationImage(
-        image: AssetImage('assets/images/cover.jpg'),
+        image: //user!= null?
+         user.backgroundUrl !=null?
+         NetworkImage(user.backgroundUrl)
+         //:AssetImage('assets/images/cover.jpg')
+         :AssetImage('assets/images/cover.jpg') ,
         fit: BoxFit.cover,
       ),
     ),
-      );
-  }
+  );
+ }
 
-  Widget _buildProfileImage() {
-    return GestureDetector(
-        onTap: onAuth ? editImage : null,
-        child: Center(
-        child: Container(
-          width: 130.0,
-          height: 130.0,
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: user.profileUrl == null ? 
-              AssetImage('assets/images/EditAvata.png')
-              : NetworkImage(user.profileUrl),
-              fit: BoxFit.cover,
+  Widget _buildProfileImage(BuildContext context, User user) {
+    return Stack(
+      children: <Widget>[
+        GestureDetector(
+          onTap:() {
+            if(user.profileUrl != null) {
+              showDialog(
+              context: context,
+              builder: (context) => detailDialog(context, user));
+            }               
+          },
+          child: Hero (
+            tag: 'profile',
+            child: Center(
+            child: Container(
+              width: 130.0,
+              height: 130.0,
+              // child: user.profileUrl != null?
+              //     Image.network(user.profileUrl,
+              //     fit: BoxFit.cover,
+              //      loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+              //       if (loadingProgress == null) return child;
+              //         return Center(
+              //           child: CircularProgressIndicator(
+              //           value: loadingProgress.expectedTotalBytes != null ? 
+              //                 loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+              //                 : null,
+              //           ),
+              //         );
+              //       },
+              //     ): Image.asset('assets/images/EditAvata.png', fit: BoxFit.cover,),
+              decoration: BoxDecoration(
+               image:DecorationImage(
+                  image:// user != null?
+                  user.profileUrl != null?
+                  NetworkImage(user.profileUrl)
+                 //: AssetImage('assets/images/EditAvata.png')
+                  : AssetImage('assets/images/avata.png') ,
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(80.0),
+                border: Border.all(
+                  color: Colors.white,
+                  width: 10.0,
+                    ),
+                  ),
+                ),
+               ),
+              ),
             ),
-            borderRadius: BorderRadius.circular(80.0),
-            border: Border.all(
-              color: Colors.white,
-              width: 10.0,
-            ),
-          ),
-        ),
-      ),
+            onAuth ?
+              Positioned(
+              top: 70,
+              left: 200,
+              child: Container(
+                  height: 50,
+                  width: 50,
+                  //color: Colors.white.withOpacity(0.1),
+                  child: IconButton(
+                  icon: Icon(Icons.edit,size: 30,),
+                  color: Colors.white,
+                  onPressed: () {
+                  showDialog(
+                  context: context,
+                  builder: (context) => editDialog(context, editImage, editBackground));
+                  //.then((_) => Navigator.of(context).pop());
+                 }               
+                ),
+              )
+        ) : Positioned(
+           child: Container(),
+        )
+      ],
     );
   }
 
@@ -79,39 +138,149 @@ class UserProfilePage extends StatelessWidget {
     );
   }
 
+ 
 
   @override
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size/ 2;
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          _buildCoverImage(screenSize),
-          SafeArea(
-            child: SingleChildScrollView(
+    return SafeArea(
+        child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            _buildCoverImage(context, screenSize),
+            SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  SizedBox(height: screenSize.height / 6.4),
-                  _buildProfileImage(),
+                  SizedBox(height: screenSize.height / 3.0),
+                  _buildProfileImage(context, user),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
+                      IconButton(
+                      tooltip: 'Home',
+                      icon: Icon(Icons.home,
+                      color: Colors.blueGrey,),
+                      onPressed:navigate,
+                    ),
                     _buildFullName(),
                      SizedBox(width: 10.0),
                   _buildGetInTouch(context),
-                  ],),
-                  SizedBox(height: 8.0),
-                 // _buildButtons(),
+                  ],), 
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
+
+Widget editDialog(BuildContext context, 
+Function profile, Function background) {
+  //ThemeData localTheme = Theme.of(context);
+  return SimpleDialog(
+      contentPadding: EdgeInsets.zero,
+      children: [
+        Container(
+       // margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
+       // padding: const EdgeInsets.fromLTRB(5,5,5,5),
+        decoration: BoxDecoration(
+         // border: Border.all(color: Colors.grey[400]),
+          borderRadius: BorderRadius.all(
+              Radius.circular(25.0)
+          ),
+        ),
+          child:Column(
+            children: <Widget>[
+              GestureDetector(
+                onTap:() async{
+                   await profile();
+                   Navigator.of(context).pop();
+                } ,
+                  child: Container(
+                  margin:EdgeInsets.only(top:15, bottom: 10) ,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.person),
+                      SizedBox(width: 10,),
+                      Text('Edit profile')
+                    ],
+                  ),
+                ),
+              ),
+               GestureDetector(
+                 onTap: () async{
+
+                   await background();
+                   Navigator.of(context).pop();
+                } ,
+                  child: Container(
+                  margin:EdgeInsets.only(top:5, bottom: 10) ,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(Icons.photo),
+                      SizedBox(width: 10,),
+                      Text('Edit Background')
+                    ],
+                  ),
+              ),
+               ),
+              // Container(
+              // child:IconButton(
+              //   icon: Icon(Icons.close),
+              //   onPressed:() {
+              //     Navigator.of(context).pop();
+              //   },
+              //  ) )
+            ],),)
+       ]
+     );
+}
+
+
+
+
+Widget detailDialog(BuildContext context, User user) {
+  //ThemeData localTheme = Theme.of(context);
+  return SimpleDialog(
+      contentPadding: EdgeInsets.zero,
+      children: [
+        Hero(
+        tag: 'profile',
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).pop();
+          },
+          child: Container(
+          //margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
+          padding: const EdgeInsets.fromLTRB(5,5,5,5),
+          decoration: BoxDecoration(
+          //  border: Border.all(color: Colors.grey[400]),
+            borderRadius: BorderRadius.all(
+                Radius.circular(25.0)
+            ),
+          ),
+            child: Image.network(
+            user.profileUrl,
+            height: 400,
+            fit: BoxFit.fill),
+          ),
+        ),
+        ),
+        // Container(
+        //   height: 100,
+        //   child:IconButton(
+        //     icon: Icon(Icons.close),
+        //     onPressed:null,
+        //   )
+        // )
+      ]
+  );
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////

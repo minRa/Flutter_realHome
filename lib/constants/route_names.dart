@@ -6,3 +6,5 @@ const String PostHouseViewRoute = "PostHouseView";
 const String PropertyManageViewRoute = "PropertyManageView";
 const String MembershipViewRoute = "MembershipView";
 const String BigImageViewRoute ="BigImageView";
+const String StartPageRoute ="StartPage";
+const String PostOwnerInfoViewRoute ="PostOwnerInfoView";

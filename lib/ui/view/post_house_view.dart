@@ -1,13 +1,13 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/ui/widgets/Introduce.dart';
 import 'package:realhome/ui/widgets/add_place.dart';
-import 'package:realhome/ui/widgets/app_drawer.dart';
 import 'package:realhome/ui/widgets/images.dart';
 import 'package:realhome/ui/widgets/post_info_form.dart';
 import 'package:realhome/view_model/post_hose_view_model.dart';
-
+const adUnitId = 'ca-app-pub-7333672372977808/3709801953';
 
 
 class PostHouseView extends StatefulWidget {
@@ -42,6 +42,7 @@ class _PostHouseViewState extends State<PostHouseView> {
 
   void initState() {
     // init values
+
     if(widget._postProperty != null) {
       _textAreaController.text = widget._postProperty.message;
       _messengerController.text = widget._postProperty.messenger;
@@ -53,49 +54,66 @@ class _PostHouseViewState extends State<PostHouseView> {
      _userDataMap['RentType'] = 'Single';
      _userDataMap['term'] = false;
     // set data from SNS
+
     super.initState();
   }
 
 
+
   // Editable values
   String _nextText = 'Next';
-  Color _nextColor = Colors.green[800];
+  Color _nextColor = Colors.greenAccent;
   bool isLoading = false;
 
+  @override
+  void dispose() async {
+    _textAreaController.dispose();
+    _adressDetailController.dispose();
+    _messengerController.dispose();
+    _pageController.dispose();
+    _phoneController.dispose();
+    _priceController.dispose();
+    _textAreaController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return ViewModelProvider<PostHouseViewModel>.withConsumer(
       viewModel: PostHouseViewModel(), 
       onModelReady: widget._postProperty != null? 
-      (model) => model.getPostProperty(widget._postProperty) : null,
-      builder: (context, model, child) => Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Post Rent House'),
-        actions: <Widget>[
-          Container(
-            child: model.currentUser != null?            
-            IconButton(
-              icon:Icon(Icons.exit_to_app),
-              onPressed:model.logout)
-              : IconButton(
-              icon:Icon(Icons.person_add),
-              onPressed: model.navigateToLogin
-              ) 
-         )
-        ],
-      ),
-      drawer:
-      AppDrawer(
-        currentUser: model.currentUser,
-        home:model.navigateToHouseOverView,
-        mebership: model.navigateToMembershipView,
-        property: model.navigateToPropertyManageView,
-        logout: model.logout
-      ),
-      body:Stack(
+      (model) => model.getPostProperty(widget._postProperty) :
+      (model) => model.getGoogleAdService(),
+      builder: (context, model, child) => 
+       Scaffold(
+      // backgroundColor: Colors.white,
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text('Post Rent House'),
+      //   actions: <Widget>[
+      //     Container(
+      //       child: model.currentUser != null?            
+      //       IconButton(
+      //         icon:Icon(Icons.exit_to_app),
+      //         onPressed:model.logout)
+      //         : IconButton(
+      //         icon:Icon(Icons.person_add),
+      //         onPressed: model.navigateToLogin
+      //         ) 
+      //    )
+      //   ],
+      // ),
+      // drawer:
+      // AppDrawer(
+      //   currentUser: model.currentUser,
+      //   home:model.navigateToHouseOverView,
+      //   mebership: model.navigateToMembershipView,
+      //   property: model.navigateToPropertyManageView,
+      //   logout: model.logout
+      // ),
+       body:
+      Stack(
         children: <Widget>[
           WillPopScope( // blocking if the user cancel button, close the view.
             child: SingleChildScrollView(
@@ -105,11 +123,11 @@ class _PostHouseViewState extends State<PostHouseView> {
                   Column(
                     children: <Widget>[
                       Container(
-                        padding: const EdgeInsets.only(top: 30, bottom: 10),
+                        padding: const EdgeInsets.only(top: 50),
                         child: Align(
                           alignment: Alignment.topCenter,
                           child: Text(
-                            'Information Form',
+                            'Post Rent House',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold),
                           ),
@@ -124,13 +142,13 @@ class _PostHouseViewState extends State<PostHouseView> {
                             });
                             if (page == 3) { // if last page, change text and color
                               setState(() {
-                                _nextText = 'Submit';
-                                _nextColor = Colors.blue[900];
+                                _nextText = 'Post';
+                                _nextColor = Colors.blueAccent;
                               });
                             } else {
                               setState(() {
                                 _nextText = 'Next';
-                                _nextColor = Colors.green[800];
+                                _nextColor = Colors.greenAccent;
                               });
                             }
                           },
@@ -145,7 +163,13 @@ class _PostHouseViewState extends State<PostHouseView> {
                                 _titleController,
                                  _updateUserData
                             ),
-                            Introduce(_textAreaController,),
+                            Introduce(
+                               carpark: model.updateCarpark,
+                               room: model.updateRoom,
+                               toilet: model.updateToilet,
+                               introduceTextController: _textAreaController,
+                              
+                              ),
                             PickedImages(
                               cropImage: model.cropImage,
                               imageUpload: model.uploadImage,
@@ -153,8 +177,9 @@ class _PostHouseViewState extends State<PostHouseView> {
                               remove: model.remove,
                               ),
                             AddPlace(
-                              addressController: _adressDetailController,
-                              addLocation: model.addPlace,
+                              address: _adressDetailController,
+                              save: model.updatePlaceDetail,
+                              addLocation: model.addPlace,           
                               )                   
                           ],
                         ),
@@ -289,6 +314,13 @@ bool _validateUserData() {
         alertString = alertString+ '\n\n';
       }
       alertString = alertString+ 'Please type rent price';
+    }
+
+      if (_currentPage == 3 &&_adressDetailController.text.trim() == ''){
+      if (alertString.trim() != '') {
+        alertString = alertString+ '\n\n';
+      }
+      alertString = alertString+ 'Please check your address';
     }
     
      if (_messengerController.text.trim() == ''){

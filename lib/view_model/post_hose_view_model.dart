@@ -11,6 +11,8 @@ import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
+import 'package:realhome/services/googleAds_service.dart';
+const adUnitId = 'ca-app-pub-7333672372977808/3709801953';
 
 
 
@@ -22,7 +24,9 @@ class PostHouseViewModel extends BaseModel {
   final AuthenticationService _authenticationService = locator<AuthenticationService>();
   final FirestoreService _firestoreService = locator<FirestoreService>();
   final CloudStorageService _cloudStorageService = locator<CloudStorageService>();
-  final GoogleMapService _googleMapService = locator<GoogleMapService>();
+  final GoogleMapServices _googleMapServices = locator<GoogleMapServices>();
+     final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+  
     
     String _date;
      updateDate(String date) {
@@ -33,7 +37,27 @@ class PostHouseViewModel extends BaseModel {
      updateRentType(String rentType) {
        _rentType = rentType;
     }
+
+    int _room = 1;
+    updateRoom(int room) {
+      _room = room;
+     print(_room);
+    }
    
+      int _carpark = 0;
+    updateCarpark(int carpark) {
+      _carpark = carpark;
+          print(_carpark);
+     
+    }
+
+       int _toilet = 1;
+    updateToilet(int toilet) {
+      _toilet = toilet;
+          print(_toilet);
+    }
+
+
     PostProperty _postProperty;
     Map<String, dynamic> _userDataMap = Map<String, dynamic>();
     
@@ -57,22 +81,27 @@ class PostHouseViewModel extends BaseModel {
           id: _authenticationService.currentUser.id,
           email:_authenticationService.currentUser.email,
           fullName: _authenticationService.currentUser.fullName,
+          toilet: _toilet,
+          room: _room,
+          carpark: _carpark,
           phone: phone,  
           title:title,
           price: price,
           message: message,
           messenger: messenger,
-          latitude: _place.latitude, 
-          longitude:_place.longitude,
+         latitude: _placeDetail.lat, 
+         longitude:_placeDetail.lng,
           rentType:_rentType,
           date:_date,              
-          address:_place.address,        
-          city:_place.city,
+         address:_placeDetail.formattedAddress,        
+         city:_placeDetail.city,
           createdAt:DateTime.now().millisecondsSinceEpoch.toString(),
           );
           _postProperty = property;
         } else {
-             print(' i am editting !!!!!!!!!!!!!!!!!!!!!!11');
+            if(_toilet!=1) _postProperty.toilet = _toilet;
+            if(_room != 1) _postProperty.room = _room;
+            if(_carpark!=0) _postProperty.carpark=_carpark;
             if(title!= null) _postProperty.title = title;
             if(phone!= null) _postProperty.phone = phone;
             if(price!= null) _postProperty.price = price;
@@ -81,11 +110,11 @@ class PostHouseViewModel extends BaseModel {
             if(_rentType!= 'Single') _postProperty.rentType = _rentType;
             if(_date!= null) _postProperty.date = _date;
               
-            if(_place != null) {
-              _postProperty.latitude  = _place.latitude;
-              _postProperty.longitude = _place.longitude;
-              _postProperty.city = _place.city;
-              _postProperty.address = _place.address;
+            if(_placeDetail != null) {
+              _postProperty.latitude  = _placeDetail.lat;
+              _postProperty.longitude = _placeDetail.lng;
+              _postProperty.city = _placeDetail.city;
+             _postProperty.address = _placeDetail.formattedAddress;
             }
         }
 
@@ -115,41 +144,43 @@ class PostHouseViewModel extends BaseModel {
         _navigationService.navigateTo(PropertyManageViewRoute);      
   }
   
-  Place _place;
-  // List<Place> _items = [];
-  // List<Place> get items {
-  //   return [..._items];
-  // }
+  PlaceDetail _placeDetail;
+ // PlaceDetail get placeDetail => _placeDetail;
+   updatePlaceDetail(PlaceDetail place) {
+     _placeDetail = place;
+     //notifyListeners();
+     print(_placeDetail);
+   }
+
 
   // Place findById(String id) {
   //   return _items.firstWhere((place) => place.id == id);
   // }
 
-  Future<void> addPlace(
-    Place pickedLocation,
-  ) async {
 
-    final address = await _googleMapService.getPlaceAddress(
-        pickedLocation.latitude, pickedLocation.longitude);   
-      final updatedLocation = Place(
-        latitude: pickedLocation.latitude,
-        longitude: pickedLocation.longitude,
-        address: address,
+  Future<void> addPlace(double lat, double lng) async {
+    final address = await _googleMapServices.getPlaceAddress(lat, lng);   
+      final updatedLocation = PlaceDetail(
+        lat: lat,
+        lng: lng,
+        formattedAddress: address,
         city: address.split(', ')[1]);
-      _place = updatedLocation;
-    //  print(_place.latitude);
-    //   print(_place.longitude);
-    //  print(_place.address);
-    //   print(_place.city);
-    //_items.add(updatedLocation); 
-    notifyListeners();
+     _placeDetail = updatedLocation;
+    print(_placeDetail);
     return address;
   }
   
 
-  //PostProperty get getPostPropertyData => _postProperty;
+  PostProperty get getPostPropertyData => _postProperty;
 
-  void getPostProperty(PostProperty postProperty) {
+    void getGoogleAdService() async {
+      await _googleAdsService.bottomBanner(adUnitId);
+    }
+
+  void getPostProperty(PostProperty postProperty) async {
+      
+        await _googleAdsService.bottomBanner(adUnitId);
+
          _postProperty = postProperty;
          for(var i =0; i < postProperty.imageUrl.length; i++ ) {
            _userDataMap['image$i'] = postProperty.imageUrl[i];
@@ -169,7 +200,9 @@ class PostHouseViewModel extends BaseModel {
   Future uploadImage(File image, int index) async {
     setBusy(true);
     // String imageUrl;
+    if(_images[index] != "") {
      _cloudStorageService.imageDatadelete(_images[index]);
+    }
      if(image != null) {
       _userDataMap['image$index'] =image;
     
@@ -184,7 +217,6 @@ class PostHouseViewModel extends BaseModel {
 
    Future<File> cropImage () async {
      File image = await getImage();
-
      return image;
    }
       

@@ -40,7 +40,7 @@ class SignUpViewModel extends BaseModel {
     if (result is bool) {
       if (result) {
         //await _analyticsService.logSignUp();
-        _navigationService.navigateTo(HouseOverviewRoute);
+        _navigationService.navigateTo(StartPageRoute);
       } else {
         await _dialogService.showDialog(
           title: 'Sign Up Failure',

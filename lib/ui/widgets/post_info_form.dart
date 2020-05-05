@@ -64,14 +64,14 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
     super.build(context);
     return SingleChildScrollView(
           child: Container(
-          margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
-          padding: const EdgeInsets.fromLTRB(14.0,10,14,10),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[400]),
-            borderRadius: BorderRadius.all(
-                Radius.circular(25.0)
-            ),
-          ),
+           margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
+           padding: const EdgeInsets.fromLTRB(14.0,10,14,10),
+          // decoration: BoxDecoration(
+          //   border: Border.all(color: Colors.grey[400]),
+          //   // borderRadius: BorderRadius.all(
+          //   //     Radius.circular(25.0)
+          //   // ),
+          // ),
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -289,7 +289,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
   void _showTermPolicy() {
     showDialog(context: context, child:
        AlertDialog(
-       title: Text("SignInExample's Terms of Services, Privacy Policy"),
+       title: Text("Terms of Services, Privacy Policy"),
        shape: RoundedRectangleBorder(
            borderRadius: BorderRadius.all(Radius.circular(20.0))),
        content: Container(
@@ -300,7 +300,17 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
              crossAxisAlignment: CrossAxisAlignment.stretch,
              children: <Widget>[
                Text(
-                   'Terms of Services, Privacy Policy' * 100
+                   'RealHomWelcome to our Privacy Policy -- Your privacy is critically important to us.' 'RealHom is located at:'
+                   'It is RealHomw\'s policy to respect your privacy regarding any information we may collect while operating our app.'
+                   'This Privacy Policy applies to realHome. '
+                   'We have adopted this privacy policy ("Privacy Policy") to explain what information may be collected on our app, how we use this information, and under what circumstances we may disclose the information to third parties. '
+                   'This Privacy Policy applies only to information we collect through the app and does not apply to our collection of information from other sources.'
+                   'This Privacy Policy, together with the Terms and conditions posted on our app, set forth the general rules and policies governing your use of our app. Depending on your activities when visiting our app, you may be required to agree to additional terms and conditions.'
+                   'Gathering of Personally-Identifying Information'
+                    'Certain visitors to RealHom\'s app choose to interact with RealHom in ways that require RealHom to gather personally-identifying information.' 
+                    'The amount and type of information that RealHomw gathers depend on the nature of the interaction.'
+                    '- Security The security of your Personal Information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.'
+
                ),
              ],
            ),

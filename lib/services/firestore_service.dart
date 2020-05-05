@@ -31,7 +31,7 @@ class FirestoreService {
 
   List<List<PostProperty>> _allPropertyPagedResults = List<List<PostProperty>>();
   List<List<PostProperty>> get allPropertyPagedResults => _allPropertyPagedResults;
-  static const int PostPropertyLimit = 5;
+  static const int postPropertyLimit = 5;
 
 
   // #6: Create a list that will keep the paged results
@@ -44,7 +44,11 @@ class FirestoreService {
 
   Future createUser(User user) async {
     try {
-      await _usersCollectionReference.document(user.id).setData(user.toJson());
+
+      QuerySnapshot querySnapshot = await  _usersCollectionReference.where('email', isEqualTo: user.email).getDocuments();
+      if(querySnapshot.documents.length == 0) {
+            await _usersCollectionReference.document(user.id).setData(user.toJson());
+      }
     } catch (e) {
       // Find or create a way to repeat error handling without so much repeated code
       if (e is PlatformException) {
@@ -68,6 +72,29 @@ class FirestoreService {
       return e.toString();
     }
   } 
+
+  Future getUserList() async {
+    var result;
+    try { 
+    var usersDocumentSnapshot =
+            await _usersCollectionReference
+            .getDocuments();
+
+        if (usersDocumentSnapshot.documents.isNotEmpty) {
+          return result = usersDocumentSnapshot.documents
+              .map((snapshot) => User.fromData(snapshot.data))
+              //.where((mappedItem) => mappedItem.id == user.id)
+              .toList();
+        }
+      } catch (e) {
+        // Find or create a way to repeat error handling without so much repeated code
+        if (e is PlatformException) {
+          return e.message;
+        }
+        return e.toString();
+      }
+      return result;
+  }
 
   var message =[];
   Future postHouseIntoFirebase(PostProperty po) async { 
@@ -144,14 +171,20 @@ class FirestoreService {
   }
 
 
-  Future updateUserImage(User user, File image) async{      
+  Future updateUserImage(User user, File image, String type) async{      
    QuerySnapshot userResult =  await _usersCollectionReference.where('id',isEqualTo: user.id).getDocuments();
      if(userResult.documents.length > 0) {
         String imageUrl = await _cloudStorageService.uploadUserProfileImage(user.id, image);
       if(imageUrl != null) {
-            await _usersCollectionReference.document(user.id).updateData({
+           if(type == 'profile') {
+              await _usersCollectionReference.document(user.id).updateData({
              'profileUrl': imageUrl
-        });
+             });    
+           } else {
+             await _usersCollectionReference.document(user.id).updateData({
+             'backgroundUrl': imageUrl
+             });    
+           }      
       }     
      } else {
        return null;
@@ -160,6 +193,11 @@ class FirestoreService {
   
   Future deleteUserPostPropertyToFirebaseDB(User user, PostProperty property) async {    
        QuerySnapshot userPostProperty = await _postPropertyCollectionReference.where('id',isEqualTo: user.id).getDocuments();
+        await _commentsCollectionReference.document(property.documentId).collection('userComments')
+        .getDocuments().then((snapshot) {
+        for (DocumentSnapshot ds in snapshot.documents){
+          ds.reference.delete();}});
+        
        if(userPostProperty.documents.length != 0) {
              await _postPropertyCollectionReference.document(property.documentId).delete()
              .catchError((err) =>{
@@ -184,12 +222,12 @@ class FirestoreService {
   }
 
   // #1: Move the request posts into it's own function
-  void _requestPostProperty() {
+  void _requestPostProperty() async {
     // #2: split the query from the actual subscription
     var pagePostsQuery = _postPropertyCollectionReference
-        .orderBy('createdAt')
+         .orderBy('createdAt')
         // #3: Limit the amount of results
-        .limit(PostPropertyLimit);
+        .limit(postPropertyLimit);
 
 
     // #5: If we have a document start the query after it
@@ -202,8 +240,9 @@ class FirestoreService {
 
     var currentRequestIndex = _allPropertyPagedResults.length;
 
-  
+    //print(pagePostsQuery.snapshots().length);
     pagePostsQuery.snapshots().listen((postsSnapshot) {
+
       if (postsSnapshot.documents.isNotEmpty) {
         var posts = postsSnapshot.documents
             .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
@@ -234,7 +273,7 @@ class FirestoreService {
           _lastDocument = postsSnapshot.documents.last;
         }
         // #14: Determine if there's more posts to request
-        _hasMorePosts = posts.length == PostPropertyLimit;
+        _hasMorePosts = posts.length == postPropertyLimit;
       }
     });
   }
@@ -247,9 +286,9 @@ Future getUserPropertyListFromFirebase(User user) async {
             await _postPropertyCollectionReference
         //   .where('id', isEqualTo: user.id)
             .orderBy('createdAt')
-            .getDocuments();        
-        if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
+            .getDocuments();    
 
+        if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
           return postPropertyDocumentSnapshot.documents
               .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
               .where((mappedItem) => mappedItem.id == user.id)
@@ -263,6 +302,55 @@ Future getUserPropertyListFromFirebase(User user) async {
         return e.toString();
       }
 }
+
+
+Future getPropertyListFromFirebase(String city , String type) async {
+
+    print(' i am herer !!!!!!!!!!!!!!!!!! => $city.......$type');
+  try {
+    var postPropertyDocumentSnapshot =
+            await _postPropertyCollectionReference
+        //   .where('id', isEqualTo: user.id)
+            .orderBy('createdAt')
+            .getDocuments();    
+
+        if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
+          var post;
+          if(city !='All City' && type =='All Type'){
+             post= postPropertyDocumentSnapshot.documents
+              .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
+               .where((mappedItem) => mappedItem.city == city)
+              .toList();
+          } else if(city =='All City' && type !='All Type' ) {
+             print(' i am her e!!!');
+              post= postPropertyDocumentSnapshot.documents
+              .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
+               .where((mappedItem) => mappedItem.rentType == type)
+              .toList();
+              print(post);
+              
+          } else if(city !='All City' && type !='All Type' ){
+             post= postPropertyDocumentSnapshot.documents
+               .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
+              .where((mappedItem) => mappedItem.rentType == type && mappedItem.city == city)
+              .toList();
+          } else {
+             post= postPropertyDocumentSnapshot.documents
+               .map((snapshot) => PostProperty.fromMap(snapshot.data, snapshot.documentID))
+              //.where((mappedItem) => mappedItem.rentType == type && mappedItem.city == city)
+              .toList();   
+          }
+          return post;
+        }
+      } catch (e) {
+        // Find or create a way to repeat error handling without so much repeated code
+        if (e is PlatformException) {
+          return e.message;
+        }
+        return e.toString();
+      }
+}
+
 
    void requestMoreData() => _requestPostProperty();
 }

@@ -8,13 +8,13 @@ import 'package:realhome/locator.dart';
 //import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/authentication_service.dart';
-import 'package:realhome/services/dialog_service.dart';
+//import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 
 
 class BaseModel extends ChangeNotifier {
-   final DialogService _dialogService = locator<DialogService>();
+
 
    final NavigationService _navigationService = 
    locator<NavigationService>();
@@ -30,6 +30,9 @@ class BaseModel extends ChangeNotifier {
   InterstitialAd get interstitialAd => _googleAdsService.interstitialAd;
   User get currentUser => _authenticationService.currentUser;
 
+
+   
+
   // Since it'll most likely be used in almost every view we expose it here
   //bool get showMainBanner => _remoteConfigService.showMainBanner;
   bool _busy = false;
@@ -43,27 +46,14 @@ class BaseModel extends ChangeNotifier {
 
    Future initialGoogleAds () => _googleAdsService.initgoogleAds();
 
-  Future <void> logout () async {
-   var dialogResponse = await _dialogService.showConfirmationDialog(
-          title: 'Log-Out',
-          description: 'would you like to logout now ?',
-          confirmationTitle: 'OK',
-          cancelTitle: 'CANCEL'        
-        );
-    
-    if(dialogResponse.confirmed) {
-      await _authenticationService.logOut();
-      notifyListeners();
-      navigateToHouseOverView();
-    } 
-  } 
+ 
 
         void navigateToBigImageView(List<dynamic> items) {
    _navigationService.navigateTo(BigImageViewRoute, arguments: items);
   }
-      void navigateToHouseOverView() {
-   _navigationService.navigateTo(HouseOverviewRoute);
-  }
+  //     void navigateToHouseOverView() {
+  //  _navigationService.navigateTo(HouseOverviewRoute);
+  // }
       void navigateToLogin() {
     _navigationService.navigateTo(LoginViewRoute);
   }
@@ -71,6 +61,11 @@ class BaseModel extends ChangeNotifier {
       void  navigateToPostHouseView() {
     _navigationService.navigateTo(PostHouseViewRoute);
   }
+
+        void  navigateToStartPageView() {
+    _navigationService.navigateTo(StartPageRoute);
+  }
+
       void navigateToSignUp() {
     _navigationService.navigateTo(SignUpViewRoute);
   }

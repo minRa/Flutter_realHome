@@ -9,11 +9,15 @@ import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
+import 'package:realhome/services/googleAds_service.dart';
+const adUnitId ='ca-app-pub-7333672372977808/4810049066';
+
 
 class PropertyManageViewModel extends BaseModel {
 
-AuthenticationService _authenticationService = locator<AuthenticationService>();
-FirestoreService _firestoreService = locator<FirestoreService>();
+final AuthenticationService _authenticationService = locator<AuthenticationService>();
+final FirestoreService _firestoreService = locator<FirestoreService>();
+final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
 final NavigationService _navigationService = 
    locator<NavigationService>();
 
@@ -40,10 +44,13 @@ Future <void> nonUserAddPost() async {
   
   List<PostProperty> _userPostProperty;
   List<PostProperty> get userPostProperty => _userPostProperty;
-
+  bool finish;
 
      Future<void> currentUserPostPropertyList() async {
-       setBusy(true);       
+
+       await _googleAdsService.bottomBanner(adUnitId);
+      // setBusy(true); 
+       finish = false;      
        try {
            _userPostProperty =
             await _firestoreService.getUserPropertyListFromFirebase(
@@ -52,8 +59,9 @@ Future <void> nonUserAddPost() async {
 
        } catch(e) {
           print(e.toString());
-       }        
-       setBusy(false);  
+       } 
+       finish= true;       
+      // setBusy(false);  
   }
 
 
@@ -65,13 +73,13 @@ Future <void> nonUserAddPost() async {
     _navigationService.navigateTo(PostHouseViewRoute, arguments: _userPostProperty[index]);
   }
 
-
-    Future userProfileImageChange() async {
+    Future userProfileImageChange(String type) async {
+     print(type);
      setBusy(true);
      File image = await getImage();
      if(image != null) {
-       await _firestoreService.updateUserImage(currentUser, image);
-       await _firestoreService.getUser(currentUser.id);
+       await _firestoreService.updateUserImage(currentUser, image, type);
+       await _authenticationService.isUserLoggedIn();
        currentUser;
      }
      notifyListeners();
@@ -80,15 +88,15 @@ Future <void> nonUserAddPost() async {
     }
 
      Future deleteUserPostProperty(int index) async {
-      var dialogResponse = await _dialogService.showConfirmationDialog(
-                title: 'Delete Rent House',
-                description: 'would you like to delete this house  ?',
-                confirmationTitle: 'OK',
-                cancelTitle: 'CANCEL'        
-              );
+      // var dialogResponse = await _dialogService.showConfirmationDialog(
+      //           title: 'Delete Rent House',
+      //           description: 'would you like to delete this house  ?',
+      //           confirmationTitle: 'OK',
+      //           cancelTitle: 'CANCEL'        
+      //         );
         
-        if(dialogResponse.confirmed) {
-          setBusy(true);   
+      //   if(dialogResponse.confirmed) {
+        //  setBusy(true);   
             var result = await _firestoreService.deleteUserPostPropertyToFirebaseDB(currentUser, _userPostProperty[index]);
              await  currentUserPostPropertyList();
              //await currentUserPostPropertyList();
@@ -96,10 +104,10 @@ Future <void> nonUserAddPost() async {
               await _dialogService.showDialog(
               title: result[0],
               description: result[1],
-        );}
+            );}
           notifyListeners();
-          setBusy(false);  
-        } 
+      //    setBusy(false);  
+        //} 
     }
  
 }

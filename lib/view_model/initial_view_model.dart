@@ -30,7 +30,7 @@ class InitialViewModel extends BaseModel {
     var hasLoggedInUser = await _authenticationService.isUserLoggedIn();
      print(hasLoggedInUser);
     if (hasLoggedInUser) {
-      _navigationService.navigateTo(HouseOverviewRoute);
+      _navigationService.navigateTo(StartPageRoute);
     } else {
       _navigationService.navigateTo(LoginViewRoute);
     }

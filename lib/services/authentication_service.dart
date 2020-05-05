@@ -86,6 +86,7 @@ class AuthenticationService {
           );
 
       await _firestoreService.createUser(_currentUser);
+       await _populateCurrentUser(user);
 
       return user != null;
     }catch (e) {
@@ -115,6 +116,7 @@ class AuthenticationService {
           );
 
          await _firestoreService.createUser(_currentUser);
+        await _populateCurrentUser(user);
         return user != null;
       }
     }catch (e) {

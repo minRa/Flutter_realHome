@@ -30,49 +30,51 @@ class _PropertyManageViewState extends State<PropertyManageView> {
           body:
           model.currentUser != null ?
           model.finish ?
-          model.userPostProperty.length > 0 ?
-          Column(
-          children: <Widget>[  
-              Expanded(
-                flex: 7,
-               child: 
-               UserProfilePage(
-                 onAuth:model.currentUser.id != model.userPostProperty[0].id ? false : true ,
-                 navigate: model.navigateToStartPageView,
-                 user: model.currentUser,
-                 editImage:()=> model.userProfileImageChange('profile'),
-                 editBackground:()=> model.userProfileImageChange('abc'),
-                 )),
+          model.userPostProperty == null
+          || model.userPostProperty.length == 0  ?
+          UserProfilePage(
+              onAuth: true,
+              navigate:model.navigateToStartPageView,
+              user: model.currentUser,
+              editImage:()=> model.userProfileImageChange('profile'),
+              editBackground:()=> model.userProfileImageChange('abc'),
+              ) :
+            Column(
+            children: <Widget>[  
                 Expanded(
-                flex: 6,
-                child: model.userPostProperty != null?
-                 ListView.builder(
-                  itemCount: model.userPostProperty.length,
-                  itemBuilder: (context, index) =>
-                     GestureDetector(
-                      onTap: ()=> model.navigateToDetailView(index),
-                      child:ListViewCard (
-                        id: model.userPostProperty[index].id,
-                        onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
-                        userProperty: model.userPostProperty[index], 
-                        edit:()=> model.navigateToPostHouseView2(index),  
-                        delete: () => model.deleteUserPostProperty(index),                 
-                         ),
-                       ),
-                      ) :
-                      Container()
-                    ),
-                     Expanded(
-                    flex: 3,
-                    child: Container(),),               
-                ],) 
-                : UserProfilePage(
-                  onAuth: true,
-                  navigate: model.navigateToStartPageView,
-                  user: model.currentUser,
-                  editImage:()=> model.userProfileImageChange('profile'),
-                  editBackground:()=> model.userProfileImageChange('abc'),
-                  )
+                  flex: 7,
+                  child: 
+                  UserProfilePage(
+                    onAuth:model.currentUser.id != model.userPostProperty[0].id ? false : true ,
+                    navigate: model.navigateToStartPageView,
+                    user: model.currentUser,
+                    editImage:()=> model.userProfileImageChange('profile'),
+                    editBackground:()=> model.userProfileImageChange('abc'),
+                    )),
+                  Expanded(
+                  flex: 4,
+                  child: model.userPostProperty.length > 0?
+                    ListView.builder(
+                    itemCount: model.userPostProperty.length,
+                    itemBuilder: (context, index) =>
+                        GestureDetector(
+                        onTap: ()=> model.navigateToDetailView(index),
+                        child:ListViewCard (
+                          id: model.userPostProperty[index].id,
+                          onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
+                          userProperty: model.userPostProperty[index], 
+                          edit:()=> model.navigateToPostHouseView2(index),  
+                          delete: () => model.deleteUserPostProperty(index),                 
+                            ),
+                          ),
+                        ) :
+                        Container()
+                      ),
+                        Expanded(
+                      flex: 3,
+                      child: Container(),),               
+                  ],) 
+              
                 : Center(
                     child: CircularProgressIndicator(
                     valueColor: AlwaysStoppedAnimation(

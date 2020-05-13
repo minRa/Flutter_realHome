@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:google_fonts/google_fonts.dart';
 //import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:realhome/models/place.dart';
@@ -27,6 +28,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
   var uuid = Uuid();
   var sessionToken;
   var googleMapServices;
+  LatLng initLocation = LatLng(-36.848461, 174.763336,); //auckland city
   PlaceDetail placeDetail;
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> _markers = Set();
@@ -40,6 +42,8 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
     super.initState();
     _checkGPSAvailability();
   }
+ 
+
 
   void _checkGPSAvailability() async {
     GeolocationStatus geolocationStatus =
@@ -52,11 +56,17 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
         context: context,
         builder: (ctx) {
           return AlertDialog(
-            title: Text('Error ! '),
-            content: Text('GPS is unable to acess '),
+            title: Text('Error !',
+            style: GoogleFonts.mcLaren(),
+            ),
+            content: Text('GPS is unable to acess ',
+             style: GoogleFonts.mcLaren(),
+            ),
             actions: <Widget>[
               FlatButton(
-                child: Text('OK'),
+                child: Text('OK',
+                 style: GoogleFonts.mcLaren(),
+                ),
                 onPressed: () {
                   Navigator.pop(ctx);
                 },
@@ -131,20 +141,26 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
       builder: (BuildContext context) { 
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("would you like to save House address?"),
+          title: new Text("would you like to save House address?",
+          style: GoogleFonts.mcLaren(),
+          ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
-              child: new Text("No", style: TextStyle(color: Colors.grey),),
+              child: new Text("No",
+               style: GoogleFonts.mcLaren(color: Colors.grey),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             new FlatButton(
-              child: new Text("Yes"),
+              child: new Text("Yes",
+              style: GoogleFonts.mcLaren(),
+              ),
               onPressed:() {
                 Navigator.of(context).pop();    
                 ok = true;
+                FocusScope.of(context).unfocus();
  
               }
             ),
@@ -172,9 +188,13 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                 },
                 child: ListTile(
                 leading:Icon(Icons.home),
-                title: Text('${placeDetail.formattedAddress}'),
+                title: Text('${placeDetail.formattedAddress}',
+                 style: GoogleFonts.mcLaren(),
+                ),
                // title: Text('House location: $myAddr - ${placeDetail.name}'),
-                subtitle: Text('${distance.toStringAsFixed(2)} m'),
+                subtitle: Text('${distance.toStringAsFixed(2)} m',
+                 style: GoogleFonts.mcLaren(),
+                ),
               ),
             ),
           ),
@@ -226,6 +246,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
         backgroundColor: Colors.white,
         centerTitle: true,
         title: Text('Search Address',
+         style: GoogleFonts.mcLaren(),
         //textAlign: TextAlign.center,
         ),
       ),
@@ -245,7 +266,9 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                   autofocus: true,
                   decoration: InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: 'Search places...'),
+                      hintText: 'Search house address...',
+                      hintStyle: GoogleFonts.mcLaren(),
+                      ),
                 ),
                 suggestionsCallback: (pattern) async {
                   if (sessionToken == null) {
@@ -259,7 +282,9 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                 },
                 itemBuilder: (context, suggetion) {
                   return ListTile(
-                    title: Text(suggetion.description),
+                    title: Text(suggetion.description,
+                     style: GoogleFonts.mcLaren(),
+                    ),
                    // subtitle: Text('${suggetion.placeId}'),
                   );
                 },
@@ -275,7 +300,9 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                   widget.previewUrl(preview);
                   sessionToken = null;
                   _moveCamera();
+                
                 },
+                
               ),
               SizedBox(height: 20),
               Container(
@@ -284,10 +311,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                 child: GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
-                    target: LatLng(
-                      -36.848461,
-                      174.763336,
-                    ),
+                    target: initLocation,
                     zoom: 14,
                   ),
                   onMapCreated: (GoogleMapController controller) {

@@ -26,7 +26,8 @@ class AuthenticationService {
         password: password,
       );
       await _populateCurrentUser(authResult.user);
-      return authResult.user != null;
+      
+      return currentUser != null;
     } catch (e) {
       return e.message;
     }
@@ -52,7 +53,8 @@ class AuthenticationService {
         userRole: role,
       );
 
-      await _firestoreService.createUser(_currentUser);
+      await _firestoreService.createUser(_currentUser).catchError((e) 
+      => print(e.toString()));
 
       return authResult.user != null;
     } catch (e) {
@@ -127,12 +129,19 @@ class AuthenticationService {
   Future<bool> isUserLoggedIn() async {
     var user = await _firebaseAuth.currentUser();
     await _populateCurrentUser(user);
-    return user != null;
+      
+    return _currentUser != null;
   }
 
   Future _populateCurrentUser(FirebaseUser user) async {
-    if (user != null) {
-      _currentUser = await _firestoreService.getUser(user.uid);     
+    if (user != null) {    
+         var result  = await _firestoreService.getUser(user.uid);   
+         if(result is String) {
+            _currentUser = null; // errro
+             
+         } else {  
+           _currentUser = result;
+        }
     }
   }
  

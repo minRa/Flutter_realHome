@@ -6,6 +6,7 @@ class PostProperty {
   final String documentId;
   final String createdAt;
   final String chattingWith;
+   String update;
    int room;
    int carpark;
    int toilet;
@@ -42,6 +43,7 @@ class PostProperty {
     this.longitude,
     this.documentId,
     this.createdAt, 
+    this.update,
     this.chattingWith
 });
 
@@ -65,6 +67,7 @@ Map<String, dynamic> toMap() {
       'longitude':longitude,
       'address':address,
       'images' :imageUrl,
+      'update' : update,
       'createdAt': createdAt,
       'chattingWith': null,
       //'documentId' :documentId
@@ -94,6 +97,7 @@ Map<String, dynamic> toMap() {
       longitude: map['longitude'],
       price: map['price'],
       createdAt: map['createdAt'],
+      update: map['update'],
       chattingWith:map['chattingWith'],
       documentId: documentId,
     );

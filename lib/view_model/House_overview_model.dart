@@ -5,13 +5,11 @@ import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
-import 'package:realhome/services/googleAds_service.dart';
 const adUnitId = 'ca-app-pub-7333672372977808/8753848294';
 
 class HouseOverviewModel extends BaseModel {
   
   final FirestoreService _firestoreService = locator<FirestoreService>();
-   final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
    final NavigationService _navigationService = 
    locator<NavigationService>();
  
@@ -28,15 +26,12 @@ class HouseOverviewModel extends BaseModel {
   updateCity(String city) {
       var post =_postProperty.singleWhere((c) => c.city == city);
        print(post);
-
-
   }
    
-   
+   //bool _first = true;
 
   Future<void> listenToPosts() async {  
         
-        await _googleAdsService.bottomBanner(adUnitId);   
          data = false;
         await getCities();     
         _firestoreService.listenToPostPropertyRealTime().listen((postsData) {
@@ -55,11 +50,13 @@ class HouseOverviewModel extends BaseModel {
         // notifyListeners();
   }
   
+   int _total = 0;
+   int get total => _total;
 
    Future<void> getCities() async {
-          print('i am GOGING ====================>!!!!!!!!!!!!!!!');
-
+      //    print('i am GOGING ====================>!!!!!!!!!!!!!!!');
         List<PostProperty> posts = await  _firestoreService.getPropertyListFromFirebase('All City', 'All Type');
+        _total = posts.length;
         _cities = List<String>.generate(posts.length + 1, (i)=>'');
         if(posts.length > 0) {    
           _cities[0] ='All City';
@@ -71,7 +68,6 @@ class HouseOverviewModel extends BaseModel {
             if(_cities.contains(''))
              _cities.remove('');
         } 
-
         notifyListeners();   
       }
    }
@@ -79,6 +75,7 @@ class HouseOverviewModel extends BaseModel {
 
     Future<void> updatePostCodition(String city, String type) async{
        _postProperty = await _firestoreService.getPropertyListFromFirebase(city, type);
+        _total = _postProperty.length;
         notifyListeners();
     }
 

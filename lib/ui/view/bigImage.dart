@@ -2,7 +2,7 @@
  import 'package:realhome/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-const adUnitId = 'ca-app-pub-7333672372977808/2375457415';
+
 
 class BigImageView extends StatefulWidget {
   
@@ -30,8 +30,15 @@ class _BigImageViewState extends State<BigImageView> {
 
   @override
   void initState() {
-     _googleAdsService.bottomBanner(adUnitId);
+     _googleAdsService.bottomBanner();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+     imgList.clear();
+    _googleAdsService.disposeGoogleAds();
+    super.dispose();
   }
 
 

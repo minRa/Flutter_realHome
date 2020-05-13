@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/ui/widgets/Introduce.dart';
@@ -7,7 +8,6 @@ import 'package:realhome/ui/widgets/add_place.dart';
 import 'package:realhome/ui/widgets/images.dart';
 import 'package:realhome/ui/widgets/post_info_form.dart';
 import 'package:realhome/view_model/post_hose_view_model.dart';
-const adUnitId = 'ca-app-pub-7333672372977808/3709801953';
 
 
 class PostHouseView extends StatefulWidget {
@@ -74,7 +74,8 @@ class _PostHouseViewState extends State<PostHouseView> {
     _phoneController.dispose();
     _priceController.dispose();
     _textAreaController.dispose();
-
+    _userDataMap.clear();
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -128,8 +129,7 @@ class _PostHouseViewState extends State<PostHouseView> {
                           alignment: Alignment.topCenter,
                           child: Text(
                             'Post Rent House',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold),
+                            style: GoogleFonts.mcLaren(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -171,10 +171,11 @@ class _PostHouseViewState extends State<PostHouseView> {
                               
                               ),
                             PickedImages(
-                              cropImage: model.cropImage,
-                              imageUpload: model.uploadImage,
-                              imageUrl: model.images,
-                              remove: model.remove,
+                              multiImage: model.multiImageUpload,
+                             // cropImage: model.cropImage,
+                            //  imageUpload: model.uploadImage,
+                            //  imageUrl: model.images,
+                          //    remove: model.remove,
                               ),
                             AddPlace(
                               address: _adressDetailController,
@@ -199,7 +200,7 @@ class _PostHouseViewState extends State<PostHouseView> {
                                   children: <Widget>[
                                     Text(
                                       'Cancel',
-                                      style: TextStyle(fontSize: 15),
+                                      style: GoogleFonts.mcLaren(fontSize: 15),
                                     ),
                                   ],
                                 ),
@@ -232,7 +233,7 @@ class _PostHouseViewState extends State<PostHouseView> {
                                   children: <Widget>[
                                     Text(
                                       _nextText,
-                                      style: TextStyle(fontSize: 15),
+                                      style: GoogleFonts.mcLaren(fontSize: 15),
                                     ),
                                   ],
                                 ),
@@ -241,20 +242,23 @@ class _PostHouseViewState extends State<PostHouseView> {
                                 padding: EdgeInsets.all(10),
                                 onPressed: () async {
                                   if (_pageController.page.toInt() == 0) {
-                                           print('page1 or 2');
+                                     
+                                      print('page1 or 2');
                                     if (_validateUserData()) {
                                       _moveToNextPage(); // check user data validation and move next page
                                     }
                                   }else if (_pageController.page.toInt() == 1
                                  || _pageController.page.toInt() == 2) {
                                      print('page1 or 2');
+                                    
                                     _moveToNextPage();
                                   }else if (_pageController.page.toInt() == 3) {
                                     if (_validateUserData()) {
                                       print('last page');
                                       setState(() {
                                         isLoading = true;
-                                      });                                    
+                                      });
+                                                                          
                                        await model.postingHouse(
                                        // address: _adressDetailController.text,
                                         message: _textAreaController.text,
@@ -386,7 +390,9 @@ bool _validateUserData() {
         context: context,
         builder: (context) {
           return AlertDialog(
-            content: Text(textMessage),
+            content: Text(textMessage,
+            style: GoogleFonts.mcLaren(),
+            ),
           );
         }
     );

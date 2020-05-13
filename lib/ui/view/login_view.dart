@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/viewmodel_provider.dart';
 //import 'package:realhome/ui/shared/ui_helpers.dart';
 import 'package:realhome/ui/widgets/busy_button.dart';
@@ -68,17 +69,8 @@ class _LoginViewState extends State<LoginView> {
                 children: <Widget>[    
                       SizedBox(
                       height: 120,
-                      child: Row (
-                      children: <Widget>[
-                        Hero(
-                           tag: 'logo',
-                           child: Image.asset('assets/images/logo.png',
-                           scale: 2 ,),
-                        ),
-                        // Image.asset('assets/images/title.jpg',
-                        // scale: 1.4,),
-                      ],
-                      )
+                      child: Image.asset('assets/images/logo.png',
+                      scale: 2 ,)
                     ),
                   InputField(
                     placeholder: 'Email',
@@ -97,7 +89,9 @@ class _LoginViewState extends State<LoginView> {
                             onChanged: _onRememberMeChanged
                           ),
                           SizedBox(width: 10,),
-                          Text('Remember Me')
+                          Text('Remember Me',
+                          style: GoogleFonts.mcLaren(),
+                          )
                      ],
                    ),
                  // verticalSpaceMedium,
@@ -121,8 +115,9 @@ class _LoginViewState extends State<LoginView> {
                       ),
                   SizedBox(height: 15,), // verticalSpaceMedium,
                   TextLink(
-                    'Create an Account if you\'re new.',
-                    onPressed:model.navigateToSignUp
+                    'Create an Account with your emaill',
+                    onPressed:model.navigateToSignUp,
+
                   ),
                  SizedBox(height: 10,), // verticalSpaceMedium,
                    Row(
@@ -130,13 +125,16 @@ class _LoginViewState extends State<LoginView> {
                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                         Container(
-                        child: new RawMaterialButton(
+                          padding:  EdgeInsets.only(bottom:5),
+                          child: new RawMaterialButton(
                           onPressed: model.loginWithGoogle,
                           child: Image.asset('assets/images/google_logo.png',
                             fit: BoxFit.cover,
                             width: 40,
                             height: 40,),
-                          shape: new CircleBorder(),
+                          shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.white.withOpacity(0.5))),
                           elevation: 2.0,
                           fillColor: Colors.white,
                           padding: const EdgeInsets.all(18.0),
@@ -144,12 +142,15 @@ class _LoginViewState extends State<LoginView> {
                       ),
                 
                     Container(
+                       padding:  EdgeInsets.only(bottom:5),
                       child: new RawMaterialButton(
                         onPressed: model.loginWithFacebook,
                         child: Text('f',
                           style: TextStyle(color: Colors.white,
                               fontSize: 45,fontWeight: FontWeight.bold),),
-                        shape: new CircleBorder(),
+                        shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: BorderSide(color: Colors.blue[900])),
                         elevation: 2.0,
                         fillColor: Colors.blue[900],
                         padding: const EdgeInsets.all(5.5),

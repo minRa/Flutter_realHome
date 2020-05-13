@@ -1,18 +1,24 @@
-import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 
 class PickedImages extends StatefulWidget {
   PickedImages({
-    this.imageUrl,
-    this.imageUpload,
-    this.cropImage,
-    this.remove
+ //   this.imageUrl,
+ //   this.imageUpload,
+  //  this.cropImage,
+  //  this.remove,
+    this.multiImage,
+
   });
-  final Function imageUpload;
-  final Function remove;
-  final Function cropImage;
-  final List<dynamic> imageUrl;
+ // final Function imageUpload;
+ // final Function remove;
+ // final Function cropImage;
+  //final List<dynamic> imageUrl;
+   final Function multiImage;
+
 
   @override
   State<StatefulWidget> createState() => _PickedImages();
@@ -21,455 +27,640 @@ class PickedImages extends StatefulWidget {
 class _PickedImages extends State<PickedImages>
  with AutomaticKeepAliveClientMixin<PickedImages> {
 
-  List<File> fileImages = List<File>.generate(8,(file) => File(''));
-  List<dynamic> imageUrl = List<String>.generate(8,(i) => '');
-  List<bool> visual = List<bool>.generate(7, (i) =>  false );
-
- 
+  // List<File> fileImages = List<File>.generate(8,(file) => File(''));
+  // List<dynamic> imageUrl = List<String>.generate(8,(i) => '');
+  // List<bool> visual = List<bool>.generate(7, (i) =>  false );
+  
+  List<Asset> images = List<Asset>();
+  String _error = 'No Error Dectected';
+  
+  //List<File> files = await FilePicker.getMultiFile();
 
   @override
   void initState() {
-     if(widget.imageUrl != null) {
+    //  if(widget.imageUrl != null) {
+    //     setState(() {
+    //       imageUrl = widget.imageUrl;
+    //        for(var i =0; i < imageUrl.length - 1; i++){
+    //           if(imageUrl[i]=='') continue;
+    //             visual[i] = true;
+    //      } });  
+    //  }
 
-        setState(() {
-          imageUrl = widget.imageUrl;
-           for(var i =0; i < imageUrl.length - 1; i++){
-              if(imageUrl[i]=='') continue;
-                visual[i] = true;
-         } });  
-     }
     super.initState();
   }
 
+      Widget buildGridView() {
+        return GridView.count(
+          crossAxisCount: 3,
+          children: List.generate(images.length, (index) {
+            Asset asset = images[index];
+            return AssetThumb(
+              asset: asset,
+              width: 300,
+              height: 300,
+            );
+          }),
+        );
+      }
+
+    Future<void> loadAssets() async {
+    List<Asset> resultList = List<Asset>();
+    String error = 'No Error Dectected';
+
+    try {
+        resultList = await MultiImagePicker.pickImages(   
+        maxImages: 9,
+        enableCamera: true,
+        selectedAssets: images,
+        cupertinoOptions: CupertinoOptions(takePhotoIcon: "chat"),
+        materialOptions: MaterialOptions(
+          actionBarColor: "#abcdef",
+          actionBarTitle: "upload image",
+          allViewTitle: "All Photos",
+          useDetailsView: false,
+          selectCircleStrokeColor: "#000000",
+        ),  
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+      widget.multiImage(resultList);
+      _error = error;
+    });
+  }
 
   @override
+  void dispose() {
+    images.clear();
+    super.dispose();
+  }
+
+ @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Padding(
-        padding: const EdgeInsets.only(bottom:0.0),
-        child: SingleChildScrollView(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                  // Container(
-                  //   width: 300,
-                  //   height: 50,
-                  //   alignment: Alignment.center,
-                  //   child: ClipRRect(
-                  //   borderRadius: BorderRadius.circular(10.0),
-                  //   child: Card(
-                  //    margin: EdgeInsets.only(top:10),
-                  //    child: ListTile(
-                  //      leading: Icon(Icons.add_photo_alternate),
-                  //      title: Text('Add Photo',
-                  //      textAlign: TextAlign.center,
-                  //      ),
-                  //    ),
-                  //   )
-                  // )),
-                  Container(
-                    margin: EdgeInsets.only(top:20, bottom: 10),
-                    child: Align(
-                    child: ListTile(
-                      title: Text('-- Add Photo --',
-                      style: TextStyle(fontSize: 26),
-                      textAlign: TextAlign.center,
-                      ),
-                      subtitle: Text('Max : 8',
-                      textAlign: TextAlign.center,
-                      ),
-                    ),
+    return Column(
+          children: <Widget>[
+              GestureDetector(
+                onTap: loadAssets,
+                child: Card(
+                margin: EdgeInsets.only(top:20,left: 70, right: 70, bottom: 10),
+                child: ListTile(
+                leading: Icon(Icons.photo_library, size: 25,),
+                title: Text('Select Photo',
+                style: GoogleFonts.mcLaren(fontSize: 25), //TextStyle(fontSize: 26),
+                textAlign: TextAlign.center,
                 ),
+                subtitle: Text('Max : 9',
+                style: GoogleFonts.mcLaren(),
+                textAlign: TextAlign.center,
+                ),
+                ),),),
+                // Center(child: Text('Error: $_error')),
+                //   Row(
+                //     mainAxisAlignment: MainAxisAlignment.center,
+                //     children: <Widget>[
+                //       Icon(Icons.photo_library,
+                //       size: 25,
+                //       ),
+                //       SizedBox(width: 10,),
+                //       Text('select photo',
+                //       style: GoogleFonts.mcLaren(
+                //         fontSize: 25),)
+                //      ]),
+                      // Padding(
+                      //   padding: const EdgeInsets.all(8.0),
+                      //   child: new GestureDetector(
+                      //     onTap: () async{
+                      //           File fileImage = await widget.cropImage();
+                      //           if(fileImage != null) {
+                      //           widget.imageUpload(fileImage, 0);                       
+                      //          setState(() {   
+                      //          fileImages[0] = fileImage;
+                      //          visual[0] = true;        
+                      //       });
+                      //     }
+                      //     },
+                      //     onLongPress: () async {
+                      //       if(fileImages[0].path != '' || imageUrl[0] !=''){
+                      //            bool ok =  await widget.remove(0);
+                      //            if(ok) {
+                      //             setState((){
+                      //             fileImages[0]= File('');
+                      //             imageUrl[0] = '';
+                      //             visual[0] = false;
+                      //           }); 
+                      //         } 
+                      //       }
+                      //     },
+                      //   child: Container(
+                      //       width: 160,
+                      //       height: 160,
+                      //       child: Card(
+                      //         child:fileImages != null && fileImages.length >= 1 && fileImages[0].path !=''?
+                      //         Image.file(fileImages[0],fit: BoxFit.fill,) :
+                      //         imageUrl != null && imageUrl.length >= 1 && imageUrl[0] !=''?
+                      //               Image.network(imageUrl[0],fit: BoxFit.fill)
+                      //             : Icon(Icons.add_photo_alternate,
+                      //         size: 130,color: Colors.grey[700])
+                      //     ),),
+                      //   ),
+                      // ),
+                  Expanded(
+                    child: buildGridView(),
                   ),
 
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: new GestureDetector(
-                          onTap: () async{
-                                File fileImage = await widget.cropImage();
-                                widget.imageUpload(fileImage, 0);                       
-                               setState(() {   
-                               fileImages[0] = fileImage;
-                               visual[0] = true;        
-                            });
-                          },
-                          onLongPress: () async {
-                            if(fileImages[0].path != '' || imageUrl[0] !=''){
-                                 bool ok =  await widget.remove(0);
-                                 if(ok) {
-                                  setState((){
-                                  fileImages[0]= File('');
-                                  imageUrl[0] = '';
-                                  visual[0] = false;
-                                }); 
-                              } 
-                            }
-                          },
-                        child: Container(
-                            width: 160,
-                            height: 160,
-                            child: Card(
-                              child:fileImages != null && fileImages.length >= 1 && fileImages[0].path !=''?
-                              Image.file(fileImages[0],fit: BoxFit.fill,) :
-                              imageUrl != null && imageUrl.length >= 1 && imageUrl[0] !=''?
-                                    Image.network(imageUrl[0],fit: BoxFit.fill)
-                                  : Icon(Icons.add_photo_alternate,
-                              size: 130,color: Colors.grey[700])
-                          ),),
-                        ),
-                      ),
+                ],
+             );
+           }
+  @override
+  bool get wantKeepAlive => true;
+}
 
-                      Visibility(
-                      visible:visual[0],
-                        child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: new GestureDetector(
-                            onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 1);                       
-                                 setState(() {   
-                                 fileImages[1] = fileImage;
-                                 visual[1] = true;        
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[1].path != '' || imageUrl[1] !=''){
-                                   bool ok =  await widget.remove(1);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[1]= File('');
-                                    imageUrl[1] = '';
-                                    visual[1] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                          child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 2 && fileImages[1].path !=''?
-                                Image.file(fileImages[1],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[1] !=''?
-                                      Image.network(imageUrl[1],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
 
-                Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-
-                    Visibility(
-                     visible:visual[1],
-                      child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: new GestureDetector(
-                            onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 2);                       
-                                 setState(() {   
-                                 fileImages[2] = fileImage; 
-                                 visual[2] = true;       
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[2].path != '' || imageUrl[2] !=''){
-                                   bool ok =  await widget.remove(2);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[2]= File('');
-                                    imageUrl[2] = '';
-                                    visual[0] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                          child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 3 && fileImages[2].path !=''?
-                                Image.file(fileImages[2],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[2] !=''?
-                                      Image.network(imageUrl[2],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                        ),
-                      ),
-                    ),
-
-                    Visibility(
-                     visible:visual[2],
-                     child: Padding(
-                     padding: const EdgeInsets.all(8.0),
-                      child: new GestureDetector(
-                          onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 3);                       
-                                 setState(() {   
-                                 fileImages[3] = fileImage;
-                                 visual[3] = true;        
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[3].path != '' || imageUrl[3] !=''){
-                                   bool ok =  await widget.remove(3);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[3]= File('');
-                                    imageUrl[3] = '';
-                                    visual[3] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                          child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 4 && fileImages[3].path !=''?
-                                Image.file(fileImages[3],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[3] !=''?
-                                      Image.network(imageUrl[3],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Container(
-                // padding: EdgeInsets.only(right: 300),
-                // child: IconButton(
-                //   icon: addPicture1? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),                 
-                //   onPressed: () {
-                //     setState(() {
-                //       addPicture1 = !addPicture1;
-                //         //if(addePicture2) addPicture2 = !addPicture2;
-                //       });
-                //     },
-                //   ),
-                // ),
-
-                // Visibility(
-                // visible: addPicture1 ,
-                //   child:
-                   Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-
-                         Visibility(
-                          visible:visual[3],
-                            child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: new GestureDetector(
-                                  onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 4);                       
-                                 setState(() {   
-                                 fileImages[4] = fileImage;
-                                 visual[4] = true;        
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[4].path != '' || imageUrl[4] !=''){
-                                   bool ok =  await widget.remove(4);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[4]= File('');
-                                    imageUrl[4] = '';
-                                    visual[0] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                        child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 5 && fileImages[4].path !=''?
-                                Image.file(fileImages[4],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[4] !=''?
-                                      Image.network(imageUrl[4],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                              ),
-                            ),
-                          ),
-
-                          Visibility(
-                            visible:visual[4],
-                            child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                              child: new GestureDetector(
-                                 onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 5);                       
-                                 setState(() {   
-                                 fileImages[5] = fileImage;
-                                 visual[5] = true;      
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[5].path != '' || imageUrl[5] !=''){
-                                   bool ok =  await widget.remove(5);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[5]= File('');
-                                    imageUrl[5] = '';
-                                    visual[5] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                        child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 6 && fileImages[5].path !=''?
-                                Image.file(fileImages[5],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[5] !=''?
-                                      Image.network(imageUrl[5],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                              ),
-                            ),
-                          ),
-                       ],
-                      ),
-                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-
-                          Visibility(
-                          visible:visual[5],
-                            child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                              child: new GestureDetector(
-                               onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 6);                       
-                                 setState(() {   
-                                 fileImages[6] = fileImage; 
-                                 visual[6] = true;       
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[6].path != '' || imageUrl[6] !=''){
-                                   bool ok =  await widget.remove(6);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[6]= File('');
-                                    imageUrl[6] = '';
-                                    visual[6] = false;
-                                  }); 
-                                } 
-                              }
-                            },
-                        child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 7 && fileImages[6].path !=''?
-                                Image.file(fileImages[6],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[6] !=''?
-                                      Image.network(imageUrl[6],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                              ),
-                            ),
-                          ),
-
-                         Visibility(
-                            visible:visual[6],
-                            child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                              child: new GestureDetector(
-                              onTap: () async{
-                                  File fileImage = await widget.cropImage();
-                                  widget.imageUpload(fileImage, 7);                       
-                                 setState(() {   
-                                 fileImages[7] = fileImage;        
-                              });
-                            },
-                            onLongPress: () async {
-                              if(fileImages[7].path != '' || imageUrl[7] !=''){
-                                   bool ok =  await widget.remove(7);
-                                   if(ok) {
-                                    setState((){
-                                    fileImages[7]= File('');
-                                    imageUrl[7] = '';
-                                  }); 
-                                } 
-                              }
-                            },
-                        child: Container(
-                              width: 160,
-                              height: 160,
-                              child: Card(
-                                child:fileImages != null && fileImages.length >= 8 && fileImages[7].path !=''?
-                                Image.file(fileImages[7],fit: BoxFit.fill,) :
-                                imageUrl != null && imageUrl.length >= 1 && imageUrl[7] !=''?
-                                      Image.network(imageUrl[7],fit: BoxFit.fill)
-                                    : Icon(Icons.add_photo_alternate,
-                                size: 130,color: Colors.grey[700])
-                            ),),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  //),
-                ),   
-                //  Card(
-                //   margin: EdgeInsets.only(top:10, bottom:10, left:20, right:20),
-                //   color: Colors.white,
-                //   child: Row(
-                //   mainAxisSize: MainAxisSize.min,
-                //   children: <Widget>[
+  // @override
+  // Widget build(BuildContext context) {
+  //   super.build(context);
+  //   return Padding(
+  //       padding: const EdgeInsets.only(bottom:0.0),
+  //       child: SingleChildScrollView(
+  //           child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //             children: <Widget>[
+  //                 Container(
+  //                   width: 300,
+  //                   height: 50,
+  //                   alignment: Alignment.center,
+  //                   child: ClipRRect(
+  //                   borderRadius: BorderRadius.circular(10.0),
+  //                   child: Card(
+  //                    margin: EdgeInsets.only(top:10),
+  //                    child: ListTile(
+  //                      leading: Icon(Icons.add_photo_alternate),
+  //                      title: Text('Add Photo',
+  //                      textAlign: TextAlign.center,
+  //                      ),
+  //                    ),
+  //                   )
+  //                 )),
                 //   Container(
-                //     margin: EdgeInsets.only(right: 10),
-                //     child: ClipRRect(
-                //       borderRadius: BorderRadius.circular(30.0),
-                //        child: SizedBox(
-                //         width: 300 ,
-                //         height: 50 ,
-                //         child: Text('Add Property Image',
-                //         textAlign: TextAlign.center,
-                //         style: TextStyle(
-                //           fontSize: 20
-                //         ),
-                //         )
-                //        ),
-                //       ))
-                //     ],
+                //     margin: EdgeInsets.only(top:20, bottom: 10),
+                //     child: Align(
+                //     child: ListTile(
+                //       title: Text('-- Add Photo --',
+                //       style: GoogleFonts.mcLaren(fontSize: 26), //TextStyle(fontSize: 26),
+                //       textAlign: TextAlign.center,
+                //       ),
+                //       subtitle: Text('Max : 8',
+                //       style: GoogleFonts.mcLaren(),
+                //       textAlign: TextAlign.center,
+                //       ),
+                //     ),
                 //   ),
-                // )            
-            ],
-          ),
-        ),
-    );
-  }
+                //  ),
+                //  Container(
+                //     child: Column(
+                //      children: <Widget>[
+                //       Center(child: Text('Error: $_error')),
+                //        GestureDetector(
+                //           onTap: (){},
+                //           child: Card(
+                //            margin: EdgeInsets.only(left: 70, right: 70, bottom: 20),
+                //            child: Row(
+                //              mainAxisAlignment: MainAxisAlignment.center,
+                //              children: <Widget>[
+                //                Icon(Icons.photo_library,
+                //                size: 25,
+                //                ),
+                //                SizedBox(width: 10,),
+                //                Text('select photo',
+                //                style: GoogleFonts.mcLaren(
+                //                  fontSize: 25
+                //                 ),
+                //                )
+                //              ],
+                //            )
+                //          ),
+                //        ),
+                //       Container(
+                //         child: buildGridView(),
+                //       )
+                //      ],
+                //    ),
+                //  ),
+
+  //                Container(
+  //                 child: Row(
+  //                   mainAxisAlignment: MainAxisAlignment.center,
+  //                   children: <Widget>[
+  //                     Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: new GestureDetector(
+  //                         onTap: () async{
+  //                               File fileImage = await widget.cropImage();
+  //                               if(fileImage != null) {
+  //                               widget.imageUpload(fileImage, 0);                       
+  //                              setState(() {   
+  //                              fileImages[0] = fileImage;
+  //                              visual[0] = true;        
+  //                           });
+  //                         }
+  //                         },
+  //                         onLongPress: () async {
+  //                           if(fileImages[0].path != '' || imageUrl[0] !=''){
+  //                                bool ok =  await widget.remove(0);
+  //                                if(ok) {
+  //                                 setState((){
+  //                                 fileImages[0]= File('');
+  //                                 imageUrl[0] = '';
+  //                                 visual[0] = false;
+  //                               }); 
+  //                             } 
+  //                           }
+  //                         },
+  //                       child: Container(
+  //                           width: 160,
+  //                           height: 160,
+  //                           child: Card(
+  //                             child:fileImages != null && fileImages.length >= 1 && fileImages[0].path !=''?
+  //                             Image.file(fileImages[0],fit: BoxFit.fill,) :
+  //                             imageUrl != null && imageUrl.length >= 1 && imageUrl[0] !=''?
+  //                                   Image.network(imageUrl[0],fit: BoxFit.fill)
+  //                                 : Icon(Icons.add_photo_alternate,
+  //                             size: 130,color: Colors.grey[700])
+  //                         ),),
+  //                       ),
+  //                     ),
+
+  //                     Visibility(
+  //                     visible:visual[0],
+  //                       child: Padding(
+  //                       padding: const EdgeInsets.all(8.0),
+  //                       child: new GestureDetector(
+  //                           onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 1);                       
+  //                                setState(() {   
+  //                                fileImages[1] = fileImage;
+  //                                visual[1] = true;        
+  //                             });
+  //                           }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[1].path != '' || imageUrl[1] !=''){
+  //                                  bool ok =  await widget.remove(1);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[1]= File('');
+  //                                   imageUrl[1] = '';
+  //                                   visual[1] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                         child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 2 && fileImages[1].path !=''?
+  //                               Image.file(fileImages[1],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[1] !=''?
+  //                                     Image.network(imageUrl[1],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                         ),
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+
+  //               Row(
+  //               mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: <Widget>[
+
+  //                   Visibility(
+  //                    visible:visual[1],
+  //                     child: Padding(
+  //                     padding: const EdgeInsets.all(8.0),
+  //                     child: new GestureDetector(
+  //                           onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 2);                       
+  //                                setState(() {   
+  //                                fileImages[2] = fileImage; 
+  //                                visual[2] = true;       
+  //                             });
+  //                            }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[2].path != '' || imageUrl[2] !=''){
+  //                                  bool ok =  await widget.remove(2);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[2]= File('');
+  //                                   imageUrl[2] = '';
+  //                                   visual[0] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                         child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 3 && fileImages[2].path !=''?
+  //                               Image.file(fileImages[2],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[2] !=''?
+  //                                     Image.network(imageUrl[2],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                       ),
+  //                     ),
+  //                   ),
+
+  //                   Visibility(
+  //                    visible:visual[2],
+  //                    child: Padding(
+  //                    padding: const EdgeInsets.all(8.0),
+  //                     child: new GestureDetector(
+  //                         onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 3);                       
+  //                                setState(() {   
+  //                                fileImages[3] = fileImage;
+  //                                visual[3] = true;        
+  //                             });
+  //                          }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[3].path != '' || imageUrl[3] !=''){
+  //                                  bool ok =  await widget.remove(3);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[3]= File('');
+  //                                   imageUrl[3] = '';
+  //                                   visual[3] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                         child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 4 && fileImages[3].path !=''?
+  //                               Image.file(fileImages[3],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[3] !=''?
+  //                                     Image.network(imageUrl[3],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+
+  //               // Container(
+  //               // padding: EdgeInsets.only(right: 300),
+  //               // child: IconButton(
+  //               //   icon: addPicture1? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),                 
+  //               //   onPressed: () {
+  //               //     setState(() {
+  //               //       addPicture1 = !addPicture1;
+  //               //         //if(addePicture2) addPicture2 = !addPicture2;
+  //               //       });
+  //               //     },
+  //               //   ),
+  //               // ),
+
+  //               // Visibility(
+  //               // visible: addPicture1 ,
+  //               //   child:
+  //                  Column(
+  //                   children: <Widget>[
+  //                     Row(
+  //                       mainAxisAlignment: MainAxisAlignment.center,
+  //                       children: <Widget>[
+
+  //                        Visibility(
+  //                         visible:visual[3],
+  //                           child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                           child: new GestureDetector(
+  //                                 onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 4);                       
+  //                                setState(() {   
+  //                                fileImages[4] = fileImage;
+  //                                visual[4] = true;        
+  //                             });
+  //                                   }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[4].path != '' || imageUrl[4] !=''){
+  //                                  bool ok =  await widget.remove(4);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[4]= File('');
+  //                                   imageUrl[4] = '';
+  //                                   visual[0] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                       child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 5 && fileImages[4].path !=''?
+  //                               Image.file(fileImages[4],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[4] !=''?
+  //                                     Image.network(imageUrl[4],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                             ),
+  //                           ),
+  //                         ),
+
+  //                         Visibility(
+  //                           visible:visual[4],
+  //                           child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                             child: new GestureDetector(
+  //                                onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 5);                       
+  //                                setState(() {   
+  //                                fileImages[5] = fileImage;
+  //                                visual[5] = true;      
+  //                             });
+  //                                   }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[5].path != '' || imageUrl[5] !=''){
+  //                                  bool ok =  await widget.remove(5);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[5]= File('');
+  //                                   imageUrl[5] = '';
+  //                                   visual[5] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                       child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 6 && fileImages[5].path !=''?
+  //                               Image.file(fileImages[5],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[5] !=''?
+  //                                     Image.network(imageUrl[5],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                      ],
+  //                     ),
+  //                      Row(
+  //                       mainAxisAlignment: MainAxisAlignment.center,
+  //                       children: <Widget>[
+
+  //                         Visibility(
+  //                         visible:visual[5],
+  //                           child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                             child: new GestureDetector(
+  //                              onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 6);                       
+  //                                setState(() {   
+  //                                fileImages[6] = fileImage; 
+  //                                visual[6] = true;       
+  //                             });
+  //                                   }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[6].path != '' || imageUrl[6] !=''){
+  //                                  bool ok =  await widget.remove(6);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[6]= File('');
+  //                                   imageUrl[6] = '';
+  //                                   visual[6] = false;
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                       child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 7 && fileImages[6].path !=''?
+  //                               Image.file(fileImages[6],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[6] !=''?
+  //                                     Image.network(imageUrl[6],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                             ),
+  //                           ),
+  //                         ),
+
+  //                        Visibility(
+  //                           visible:visual[6],
+  //                           child: Padding(
+  //                           padding: const EdgeInsets.all(8.0),
+  //                             child: new GestureDetector(
+  //                             onTap: () async{
+  //                                 File fileImage = await widget.cropImage();
+  //                                   if(fileImage != null) {
+  //                                 widget.imageUpload(fileImage, 7);                       
+  //                                setState(() {   
+  //                                fileImages[7] = fileImage;        
+  //                             });
+  //                                   }
+  //                           },
+  //                           onLongPress: () async {
+  //                             if(fileImages[7].path != '' || imageUrl[7] !=''){
+  //                                  bool ok =  await widget.remove(7);
+  //                                  if(ok) {
+  //                                   setState((){
+  //                                   fileImages[7]= File('');
+  //                                   imageUrl[7] = '';
+  //                                 }); 
+  //                               } 
+  //                             }
+  //                           },
+  //                       child: Container(
+  //                             width: 160,
+  //                             height: 160,
+  //                             child: Card(
+  //                               child:fileImages != null && fileImages.length >= 8 && fileImages[7].path !=''?
+  //                               Image.file(fileImages[7],fit: BoxFit.fill,) :
+  //                               imageUrl != null && imageUrl.length >= 1 && imageUrl[7] !=''?
+  //                                     Image.network(imageUrl[7],fit: BoxFit.fill)
+  //                                   : Icon(Icons.add_photo_alternate,
+  //                               size: 130,color: Colors.grey[700])
+  //                           ),),
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ],
+  //                     ),
+  //                   ],
+  //              //   ),
+  //               ),   
+  //                Card(
+  //                 margin: EdgeInsets.only(top:10, bottom:10, left:20, right:20),
+  //                 color: Colors.white,
+  //                 child: Row(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: <Widget>[
+  //                 Container(
+  //                   margin: EdgeInsets.only(right: 10),
+  //                   child: ClipRRect(
+  //                     borderRadius: BorderRadius.circular(30.0),
+  //                      child: SizedBox(
+  //                       width: 300 ,
+  //                       height: 50 ,
+  //                       child: Text('Add Property Image',
+  //                       textAlign: TextAlign.center,
+  //                       style: TextStyle(
+  //                         fontSize: 20
+  //                       ),
+  //                       )
+  //                      ),
+  //                     ))
+  //                   ],
+  //                 ),
+  //               )            
+  //           ],
+  //         ),
+  //       ),
+  //   );
+  // }
 
   // void _saveDataAndPassToParent(String key, dynamic value) {
   //   List<dynamic> addData = List<dynamic>();
@@ -526,9 +717,9 @@ class _PickedImages extends State<PickedImages>
   //   }
   // }
 
-  @override
-  bool get wantKeepAlive => true;
-}
+//   @override
+//   bool get wantKeepAlive => true;
+// }
 
 
 

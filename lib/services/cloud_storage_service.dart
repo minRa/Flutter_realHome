@@ -14,7 +14,7 @@ class CloudStorageService {
 
     Future<void> arrayImageFiles (Map<String,dynamic> imageData) async{
     List<dynamic> _userImageList = List<dynamic>();
-    for (var i = 0; i <8 ; i++) {
+    for (var i = 0; i <9 ; i++) {
       print('image file is ${ imageData['image$i']}');
       if (imageData['image$i'] != null) {
         _userImageList.add(imageData['image$i']);
@@ -41,20 +41,19 @@ class CloudStorageService {
   Future<void> _uploadUserImages(dynamic imageFile,String imageCount, int position, PostProperty po) async {
     try {
       
-      if(imageFile is String) {
-      _imageStringList[position] = imageFile;
-      _uploadImagePosition++;    
-      } else if(imageFile is File) {
+      // if(imageFile is String) {
+      // _imageStringList[position] = imageFile;
+      // _uploadImagePosition++;    
+      // } else if(imageFile is File) {
       String uuid = Uuid().v1();
       String fileName = 'images/${po.id}/${po.createdAt}/$imageCount - $uuid';//userID+imageCount;
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
-      StorageUploadTask uploadTask = reference.putFile(imageFile);
-
+      StorageUploadTask uploadTask = reference.putData(imageFile);
       StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
       var downloadUrl = await storageTaskSnapshot.ref.getDownloadURL();
       _imageStringList[position] = downloadUrl;
       _uploadImagePosition++;
-      }
+   //   }
 
       if(_uploadImagePosition < _imageList.length)
          await _uploadUserImages(_imageList[_uploadImagePosition], 'image$_uploadImagePosition', _uploadImagePosition, po);
@@ -71,7 +70,7 @@ class CloudStorageService {
 
   Future<String> uploadUserProfileImage(String userId, File image ) async {
     try {
-
+    
       String fileName = 'profile/$userId/userProfile';
       StorageReference reference = FirebaseStorage.instance.ref().child(fileName);
       StorageUploadTask uploadTask = reference.putFile(image);

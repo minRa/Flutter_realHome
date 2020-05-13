@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 //import 'package:realhome/models/postProperty.dart';
 
 
@@ -59,7 +60,8 @@ class _DropDownBoxState extends State<DropDownBox> {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value,
-               style: TextStyle(fontSize: 15),
+               style: GoogleFonts.mcLaren(fontSize: 15),
+              // style: TextStyle(fontSize: 15),
                textAlign: TextAlign.center,),
             );
           }).toList(),
@@ -86,7 +88,8 @@ class _DropDownBoxState extends State<DropDownBox> {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value,
-              style: TextStyle(fontSize: 15),
+              style: GoogleFonts.mcLaren(fontSize: 15),
+              //style: TextStyle(fontSize: 15),
               textAlign: TextAlign.center,
               ),
             );

@@ -11,11 +11,13 @@ class SignUpView extends StatelessWidget {
   final passwordController = TextEditingController();
   final fullNameController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     return ViewModelProvider<SignUpViewModel>.withConsumer(
       viewModel: SignUpViewModel(),
       builder: (context, model, child) => Scaffold(
+        backgroundColor: Colors.white,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50.0),
           child: Column(
@@ -23,13 +25,18 @@ class SignUpView extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                'Sign Up',
-                style: TextStyle(
-                  fontSize: 38,
-                ),
-              ),
-              verticalSpaceLarge,
+               SizedBox(
+                      height: 120,
+                      child: Image.asset('assets/images/logo.png',
+                      scale: 2 ,)
+                    ),
+              // Text(
+              //   '-- Sign Up --',
+              //   style: TextStyle(
+              //     fontSize: 15,
+              //   ),
+              // ),
+            //  verticalSpaceLarge,
               InputField(
                 placeholder: 'Full Name',
                 controller: fullNameController,
@@ -58,21 +65,15 @@ class SignUpView extends StatelessWidget {
               //     title: model.selectedRole,
               //     onItemSelected: model.setSelectedRole),
               verticalSpaceMedium,
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  BusyButton(
-                    title: 'Sign Up',
-                    busy: model.busy,
-                    onPressed: () {
-                      model.signUp(
-                          email: emailController.text,
-                          password: passwordController.text,
-                          fullName: fullNameController.text);
-                    },
-                  )
-                ],
+              BusyButton(
+                title: 'Sign Up',
+                busy: model.busy,
+                onPressed: () {
+                  model.signUp(
+                      email: emailController.text,
+                      password: passwordController.text,
+                      fullName: fullNameController.text);
+                },
               )
             ],
           ),

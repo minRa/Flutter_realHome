@@ -28,6 +28,9 @@ class InitialViewModel extends BaseModel {
    // await _pushNotificationService.initialise();
 
     var hasLoggedInUser = await _authenticationService.isUserLoggedIn();
+
+     
+
      print(hasLoggedInUser);
     if (hasLoggedInUser) {
       _navigationService.navigateTo(StartPageRoute);

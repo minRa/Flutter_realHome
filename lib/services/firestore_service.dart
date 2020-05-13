@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:realhome/locator.dart';
+import 'package:realhome/models/message.dart';
 import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/cloud_storage_service.dart';
@@ -21,6 +22,9 @@ class FirestoreService {
 
     final CollectionReference _commentsCollectionReference =
   Firestore.instance.collection('comments');
+
+      final CollectionReference _messagetsCollectionReference =
+  Firestore.instance.collection('messages');
   
   
   // final StreamController<List<Post>> _postsController =
@@ -59,19 +63,26 @@ class FirestoreService {
     }
   }
 
+
+
   Future getUser(String uid) async {
     try {
       var userData = await _usersCollectionReference.document(uid).get();
-      return User.fromData(userData.data); // userData.data != null ? User.fromData(userData.data): null;
+      if(userData.exists) {
+         return User.fromData(userData.data);
+      }
+      // userData.data != null ? User.fromData(userData.data): null;
     } catch (e) {
       // Find or create a way to repeat error handling without so much repeated code
       if (e is PlatformException) {
         return e.message;
       }
-
+      
       return e.toString();
     }
   } 
+
+
 
   Future getUserList() async {
     var result;
@@ -94,6 +105,76 @@ class FirestoreService {
         return e.toString();
       }
       return result;
+  }
+
+  Future tryFindMessageRoom(User user) async {
+     try{  
+
+        List<List<Message>> messages = List<List<Message>>();
+        var messageId = user.chattings;
+        if(messageId != null || messageId.length > 0) {
+          await Future.forEach(messageId, (element) async {
+            var result =  await  _messagetsCollectionReference.document(element).collection(element).getDocuments();
+              if(result.documents.isNotEmpty) {
+                var message = 
+                result.documents
+                .map((e) => Message.fromData(e.data))
+                .toList();
+                messages.add(message);
+              }
+          });
+        }
+
+       // List<String> groupChatId = List<String>();
+        // var usersDocumentSnapshot =  await _usersCollectionReference.getDocuments();
+        // var result = usersDocumentSnapshot.documents
+        //       .map((snapshot) => User.fromData(snapshot.data))
+        //       //.where((mappedItem) => mappedItem.id == user.id)
+        //       .toList();
+        
+        // await  Future.forEach( result, (peer) {
+        //     if(user.id != peer.id) {
+        //     if (user.id.hashCode <= peer.id.hashCode) {
+        //         groupChatId.add('${user.id}-${peer.id}');
+        //       } else {
+        //         groupChatId.add('${peer.id}-${user.id}');
+        //      } 
+        //     }
+        //  });
+           
+           
+        //  await Future.forEach(groupChatId, (element) async {
+        //    if( user.delete == null || !user.delete.contains(groupChatId)) {
+        //     var result =  await  _messagetsCollectionReference.document(element).collection(element).getDocuments();
+        //     if(result.documents.isNotEmpty) {
+        //          var message = 
+        //          result.documents
+        //          .map((e) => Message.fromData(e.data))
+        //          .toList();
+        //          messages.add(message);
+        //       }
+        //     }
+        //  });
+
+         return messages;        
+
+     } catch (e) {
+         return e.toString();
+     }
+    
+  }
+
+
+  void chattingWithClear(String userId) {
+      _usersCollectionReference.document(userId).updateData({'chattingWith': null});
+  }
+
+
+
+
+  Future getPostProperty(String docId) async {
+       var result = await _postPropertyCollectionReference.document(docId).get();
+       if(result != null) return result;
   }
 
   var message =[];
@@ -156,13 +237,11 @@ class FirestoreService {
 
   Future<void> _insertDataToFirebaseDB(PostProperty post) async {
     try {     
-           print('i am doing Insert !!!!!!!!!!!!!!!!!!!!!!!!!');
+       //    print('i am doing Insert !!!!!!!!!!!!!!!!!!!!!!!!!');
      // SharedPreferences prefs = await SharedPreferences.getInstance(); 
       if (post.id != null) {
           // Update data to server if new user
           await _postPropertyCollectionReference.add(post.toMap());
-          await _usersCollectionReference.document(post.id).updateData({
-          });        
          }
        }catch (e) {
          return message=['Error', e.toString()] ;
@@ -225,7 +304,7 @@ class FirestoreService {
   void _requestPostProperty() async {
     // #2: split the query from the actual subscription
     var pagePostsQuery = _postPropertyCollectionReference
-         .orderBy('createdAt')
+         .orderBy('update', descending: true)
         // #3: Limit the amount of results
         .limit(postPropertyLimit);
 
@@ -285,7 +364,7 @@ Future getUserPropertyListFromFirebase(User user) async {
     var postPropertyDocumentSnapshot =
             await _postPropertyCollectionReference
         //   .where('id', isEqualTo: user.id)
-            .orderBy('createdAt')
+            .orderBy('update', descending: true)
             .getDocuments();    
 
         if (postPropertyDocumentSnapshot.documents.isNotEmpty) {
@@ -306,12 +385,12 @@ Future getUserPropertyListFromFirebase(User user) async {
 
 Future getPropertyListFromFirebase(String city , String type) async {
 
-    print(' i am herer !!!!!!!!!!!!!!!!!! => $city.......$type');
+   // print(' i am herer !!!!!!!!!!!!!!!!!! => $city.......$type');
   try {
     var postPropertyDocumentSnapshot =
             await _postPropertyCollectionReference
         //   .where('id', isEqualTo: user.id)
-            .orderBy('createdAt')
+            .orderBy('update', descending: true)
             .getDocuments();    
 
         if (postPropertyDocumentSnapshot.documents.isNotEmpty) {

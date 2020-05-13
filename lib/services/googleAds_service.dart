@@ -12,13 +12,20 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   );
 
   bool _onBanner = false;
+  bool get onBanner => _onBanner;
   
   BannerAd _bannerAd;
   BannerAd get bannserAd => _bannerAd;
 
   InterstitialAd  _interstitialAd;
   InterstitialAd get interstitialAd =>  _interstitialAd;
+  
+  bool _googleAdOnOff = true;
+  bool get googleAdOnOff => _googleAdOnOff;
 
+   updateGoogleAdOnOff(bool onOff) {
+       _googleAdOnOff = onOff;
+   }
 
   BannerAd myBanner = BannerAd(
     adUnitId: 'ca-app-pub-7333672372977808/8753848294',
@@ -37,31 +44,32 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     },
   );
 
-
+  bool _ban = false;
+  bool get ban =>_ban;
   //const nativeAdUnitID = "ca-app-pub-7333672372977808/9632212477";
 
-  
 
 
-  Future<void> bottomBanner(String adUnitId) async {
-       
+  Future<void> bottomBanner() async {
+      // return;
+      if(!_googleAdOnOff) return;
       if(_onBanner) return; 
       await FirebaseAdMob.instance.initialize(
       appId: appId);
 
        _bannerAd = BannerAd(
-         adUnitId: adUnitId,
+         adUnitId: 'ca-app-pub-7333672372977808/8753848294',
          size: AdSize.smartBanner,
         // targetingInfo: targetingInfo,
         listener: (MobileAdEvent event) {
         print("BannerAd event is $event");
-        },
-     ); //..load()..show();
+        },); //..load()..show();
 
-      _bannerAd..load()..show();
-      
-      _onBanner = true;
-
+        _bannerAd..load().then((loaded) {
+         if(loaded && _googleAdOnOff && !_onBanner)
+           _bannerAd.show();
+           _onBanner = true;
+       });  
  }
 
 
@@ -84,12 +92,13 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
 
 
     Future<void> disposeGoogleAds() async {
-     await _bannerAd?.dispose();
-      _bannerAd =null;
-      _onBanner = false;
-     //myInterstitialAd.dispose();
+    if(_onBanner) {
+      await _bannerAd?.dispose();
+        _bannerAd =null;
+        _onBanner = false;
+      //myInterstitialAd.dispose();
+    }
   }
-
  }
 
 

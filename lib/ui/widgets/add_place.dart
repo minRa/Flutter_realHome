@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:realhome/models/place.dart';
 import 'package:realhome/services/googleMap_service.dart';
@@ -31,6 +32,7 @@ class _AddPlaceState extends State<AddPlace> {
    String _addressDisplay;
  @override
   void initState() {
+ 
      if(widget.address.text !=''){
        _addressDisplay = widget.address.text;
      }
@@ -108,6 +110,7 @@ class _AddPlaceState extends State<AddPlace> {
                                child: _previewImageUrl == null
                               ? Text(
                                   'No Location Chosen',
+                                  style: GoogleFonts.mcLaren(),
                                   textAlign: TextAlign.center,
                                 )
                               : Image.network(
@@ -123,7 +126,8 @@ class _AddPlaceState extends State<AddPlace> {
                                       icon: Icon(
                                         Icons.location_on,
                                       ),
-                                      label: Text('Current Location'),
+                                      label: Text('Current Location',
+                                      style: GoogleFonts.mcLaren(),),
                                       textColor: Theme.of(context).primaryColor,
                                       onPressed: _getCurrentUserLocation,
                                     ),
@@ -131,7 +135,9 @@ class _AddPlaceState extends State<AddPlace> {
                                       icon: Icon(
                                         Icons.map,
                                       ),
-                                      label: Text('Select on Map'),
+                                      label: Text('Select on Map',
+                                      style: GoogleFonts.mcLaren(),
+                                      ),
                                       textColor: Theme.of(context).primaryColor,
                                       onPressed: () {
                                            Navigator.of(context).push(
@@ -150,25 +156,22 @@ class _AddPlaceState extends State<AddPlace> {
                                     // child: 
                                     ListTile(
                                     leading: Text('Address : ',
-                                    style: TextStyle(
-                                      fontSize: 20
-                                    ),
+                                    style: GoogleFonts.mcLaren(fontSize: 20),
                                     ),
                                     title:_addressDisplay != null ? 
                                     Text(
                                       _addressDisplay,
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontSize: 18.0
-                                      ),) :
+                                      style: GoogleFonts.mcLaren(
+                                      fontSize: 18, 
+                                      color: Colors.black54)
+                                      ) :
                                        Text(
                                       'Please select your address in google map',
                                       textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontSize: 18.0
-                                      ),),
+                                      style: GoogleFonts.mcLaren(color: Colors.black54,
+                                        fontSize: 18.0),
+                                      ),
                                    ),
                                  // ),              
                                  ],

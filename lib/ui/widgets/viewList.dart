@@ -1,5 +1,6 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:realhome/models/postProperty.dart';
 
 
@@ -40,30 +41,40 @@ class HorizontalList extends StatelessWidget {
                 //    fit: BoxFit.cover,
                 //    width: 60
                 //   ),),
-                   title: Text(post.title,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                   title: Text(post.title,
+                   style: GoogleFonts.mcLaren(fontSize: 20,fontWeight: FontWeight.bold ),),
+                   //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
                      onTap: () {},
                      subtitle: 
                           Row(
                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                            children: <Widget>[
                              Text(post.city,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-                             Text('\$${post.price}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
+                             Text('\$${post.price}',
+                              style: GoogleFonts.mcLaren(fontSize: 14,fontWeight: FontWeight.bold ),),
+                             //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
                              Row(
                                children: <Widget>[
                                    Icon(Icons.hotel),
-                                   Text('  ${post.room}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
+                                   Text('  ${post.room}',
+                                   style: GoogleFonts.mcLaren(fontSize: 14,fontWeight: FontWeight.bold ),),
+                                   //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
                                ],
                              ),
                               Row(
                                children: <Widget>[
                                    Icon(Icons.airline_seat_recline_extra),
-                                   Text('  ${post.toilet}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
+                                   Text('  ${post.toilet}',
+                                   style: GoogleFonts.mcLaren(fontSize: 14,fontWeight: FontWeight.bold ),),
+                                   //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
                                ],
                              ),
                               Row(
                                children: <Widget>[
                                    Icon(Icons.time_to_leave),
-                                   Text('  ${post.carpark}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
+                                   Text('  ${post.carpark}',
+                                   style: GoogleFonts.mcLaren(fontSize: 14,fontWeight: FontWeight.bold ),),
+                                   //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),
                                    ],
                                   )
                               ],),

@@ -1,14 +1,15 @@
 //import 'package:firebase_admob/firebase_admob.dart';
+import 'package:custom_switch/custom_switch.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/viewmodel_provider.dart';
 import 'package:realhome/view_model/setting_view_model.dart';
 //const adUnitId = 'ca-app-pub-7333672372977808/7613866872';
 // import 'package:datingappmain/commons/constData.dart';
 // import 'package:datingappmain/commons/userProfile.dart';
-// import 'package:flutter_range_slider/flutter_range_slider.dart' as frs;
 import 'package:realhome/locator.dart';
 import 'package:realhome/services/googleAds_service.dart';
-const adUnitId ='ca-app-pub-7333672372977808/4933886732';
+
 
 class Settings extends StatefulWidget {
   @override
@@ -18,16 +19,21 @@ class Settings extends StatefulWidget {
 class _Settings extends State<Settings> {
   double _animatedHeight = 0;
   final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
-  // bool _manValue = false;
-  // bool _womanValue = true;
-
-  // double _lowerValue = 18.0;
-  // double _upperValue = 30.0;
+ //bool status = true;
  @override
   void initState() {
-      _googleAdsService.bottomBanner(adUnitId);
+      if(!_googleAdsService.onBanner) {
+        _googleAdsService.bottomBanner();
+      }
     super.initState();
   }
+
+
+   void googleAdOff(bool onOff) {
+    if(!onOff) {
+     _googleAdsService.disposeGoogleAds();
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +44,7 @@ class _Settings extends State<Settings> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          SizedBox(height: 40,),
           Padding(
             padding: const EdgeInsets.fromLTRB(0,10,0,0),
             child: ListTile(
@@ -67,7 +74,7 @@ class _Settings extends State<Settings> {
               ),
               title: Text('${model.currentUser.fullName } (${model.currentUser.email})',
               textAlign: TextAlign.center,
-              style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              style: GoogleFonts.mcLaren(fontSize: 20),) //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
               
               // onTap: () {
               //   Navigator.push(
@@ -88,113 +95,99 @@ class _Settings extends State<Settings> {
             child: ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Icon(Icons.settings_input_composite, size: 34,color: Colors.greenAccent[900],),
+                child: Icon(Icons.settings, size: 34,color: Colors.greenAccent[900],),
               ),
-              title: Text('Setting',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              title: Text('Setting',
+              style: GoogleFonts.mcLaren(fontSize: 20),),    //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
               onTap: () {
                 setState(() {
-                  _animatedHeight!=0.0?_animatedHeight=0.0:_animatedHeight=140.0;
+                  _animatedHeight!=0.0?_animatedHeight=0.0:_animatedHeight=100.0;
                 });
               },
             ),
           ),
-          // new AnimatedContainer(duration: const Duration(milliseconds: 120),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: <Widget>[
-          //       Padding(
-          //         padding: const EdgeInsets.fromLTRB(28.0,10,10,10),
-          //         child: Row(
-          //           children: <Widget>[
-          //             Icon(Icons.wc,size: 26,),
-          //             Text("Gender",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-          //             Checkbox(
-          //             value: _manValue,
-          //             onChanged: (bool newValue) {
-          //                 setState(() {
-          //                   _manValue = newValue;
-          //                 });
-          //               },
-          //             ),
-          //             GestureDetector(
-          //                 child: Text("Man",style: TextStyle(fontSize: 18)),
-          //                 onTap: () {
-          //                   setState(() {
-          //                     _manValue = !_manValue;
-          //                   });
-          //                 },),
-          //             Padding(
-          //               padding: const EdgeInsets.only(left:12.0),
-          //               child: Checkbox(
-          //                 value: _womanValue,
-          //                 onChanged: (bool newValue) {
-          //                   setState(() {
-          //                     _womanValue = newValue;
-          //                   });
-          //                 },
-          //               ),
-          //             ),
-          //             GestureDetector(child: Text("Woman",style: TextStyle(fontSize: 18)),
-          //               onTap: () {
-          //                 setState(() {
-          //                   _womanValue = !_womanValue;
-          //                 });
-          //               },),
-          //           ],
-          //         ),
-          //       ),
-          //       Padding(
-          //         padding: const EdgeInsets.fromLTRB(28.0,10,10,10),
-          //         child: Row(
-          //           children: <Widget>[
-          //             Icon(Icons.exposure,size: 26),
-          //             Padding(
-          //               padding: const EdgeInsets.only(left:4.0,right:16),
-          //               child: Text("Age",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-          //             ),
-          //             Text("${_lowerValue.toInt()} ",style: TextStyle(fontSize: 16)),
-          //             Expanded(
-          //               child: frs.RangeSlider(
-          //                 min: 18.0,
-          //                 max: 60.0,
-          //                 lowerValue: _lowerValue,
-          //                 upperValue: _upperValue,
-          //                 divisions: 42,
-          //                 showValueIndicator: true,
-          //                 valueIndicatorMaxDecimals: 1,
-          //                 onChanged: (double newLowerValue, double newUpperValue) {
-          //                   setState(() {
-          //                     _lowerValue = newLowerValue;
-          //                     _upperValue = newUpperValue;
-          //                   });
-          //                 },
-          //                 onChangeEnd: (double newLowerValue, double newUpperValue) {
-          //                   print(
-          //                       'Ended with values: $newLowerValue and $newUpperValue');
-          //                 },
-          //               ),
-          //             ),
-          //             Padding(
-          //               padding: const EdgeInsets.only(right:8.0),
-          //               child: Text(" ${_upperValue.toInt()}",style: TextStyle(fontSize: 16)),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          //   height: _animatedHeight,
-          //   width: 100.0,
-          // ),
+          new AnimatedContainer(duration: const Duration(milliseconds: 120),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(28.0,10,10,10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: <Widget>[
+                  //Icon(Icons.wc,size: 26,),
+                  Text("Google AD",
+                  style:GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 18),), 
+                   CustomSwitch(
+                    activeColor: Colors.blueGrey,
+                    value: _googleAdsService.googleAdOnOff,
+                    onChanged: (value)
+                     {
+                       print("VALUE : $value");
+                       setState(() {
+                         _googleAdsService.updateGoogleAdOnOff(value);
+                         googleAdOff(value);
+                       // status = value;
+                      });
+                      // _googleAdsService.updateGoogleAdOnOff(value);
+                      // googleAdOff(value);
+                      // setState(() {
+                      //   status = value;
+                      //   googleAdOff(value);
+                      // });
+                    },
+                  ),
+                  // SizedBox(height: 12.0,),
+                  // Text('Value : $status', style: TextStyle(
+                  //   color: Colors.black,
+                  //   fontSize: 20.0
+                  // ),)
+                      // TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
+                  // Checkbox(
+                  // value: _manValue,
+                  // onChanged: (bool newValue) {
+                  //     setState(() {
+                  //       _manValue = newValue;
+                  //     });
+                  //   },
+                  // ),
+                  // GestureDetector(
+                  //     child: Text("Man",style: TextStyle(fontSize: 18)),
+                  //     onTap: () {
+                  //       setState(() {
+                  //         _manValue = !_manValue;
+                  //       });
+                  //     },),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left:12.0),
+                  //   child: Checkbox(
+                  //     value: _womanValue,
+                  //     onChanged: (bool newValue) {
+                  //       setState(() {
+                  //         _womanValue = newValue;
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+                  // GestureDetector(child: Text("Woman",style: TextStyle(fontSize: 18)),
+                  //   onTap: () {
+                  //     setState(() {
+                  //       _womanValue = !_womanValue;
+                  //     });
+                  //   },),
+                ],
+              ),
+            ),
+            height: _animatedHeight,
+            width: 100.0,
+          ),
           Divider(),
           Padding(
             padding: const EdgeInsets.fromLTRB(0,10,0,0),
             child: ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: Icon(Icons.lock_open, size: 40,color: Colors.blue[900]),
+                child: Icon(Icons.lock_open, size: 40,color: Colors.greenAccent[900]),
               ),
-              title: Text('Sign Out',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              title: Text('Sign Out',
+              style: GoogleFonts.mcLaren(fontSize: 20),), //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
               onTap: () {
                 _showDialog(model.logout);
               },

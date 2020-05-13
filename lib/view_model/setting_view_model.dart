@@ -3,6 +3,7 @@
 import 'package:realhome/locator.dart';
 //import 'package:realhome/models/user.dart';
 import 'package:realhome/services/authentication_service.dart';
+//import 'package:realhome/services/googleAds_service.dart';
 //import 'package:realhome/services/firestore_service.dart';
 //import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/view_model/base_model.dart';
@@ -12,10 +13,8 @@ class SettingsViewModel extends BaseModel {
 
    //final DialogService _dialogService = locator<DialogService>();
   final AuthenticationService _authenticationService = locator<AuthenticationService>();
-  //final FirestoreService _firestoreService = locator<FirestoreService>();
+  //final GoogleAdsService _googleAdsService= locator<GoogleAdsService>();
 
-  
-  
 
    
   //  User _user;
@@ -45,6 +44,6 @@ class SettingsViewModel extends BaseModel {
     //  navigateToStartPageView();
          navigateToLogin();
     } 
-   
+
 
 }

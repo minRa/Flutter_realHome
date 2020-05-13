@@ -40,9 +40,10 @@ class _PostOwnerInfoViewState extends State<PostOwnerInfoView> {
                  navigate: model.navigateToStartPageView,
                  user: widget.owner,
                  onAuth: false,
+                 goToChatRoom: model.navigateToChatView,
                  )),
                 Expanded(
-                flex: 6,
+                flex: 4,
                 child: model.posts != null?
                  ListView.builder(
                   itemCount: model.posts.length,
@@ -59,7 +60,27 @@ class _PostOwnerInfoViewState extends State<PostOwnerInfoView> {
                     ),
                      Expanded(
                     flex: 3,
-                    child: Container(),),               
+                    child: Container()
+                    //  widget.owner.fullName != null ?
+                    //  Row(
+                    //    mainAxisAlignment: MainAxisAlignment.start,
+                    //    crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: <Widget>[
+                    //    Container(
+                    //      height: 120,
+                    //      width: 100,
+                    //      child: Card(
+                    //        margin: EdgeInsets.all(10),
+                    //       child: ListTile(
+                    //         leading: Icon(Icons.message),
+                    //         title: Text('Chat with ${widget.owner.fullName}',
+                    //         ),
+                    //           ),
+                    //        ),
+                    //    )
+                    //    ],
+                    //   ) : Container()
+                    ,),               
                 ],
                 ) : Center(
                     child: CircularProgressIndicator(

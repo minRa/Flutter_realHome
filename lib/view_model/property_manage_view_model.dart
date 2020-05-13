@@ -10,7 +10,7 @@ import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
 import 'package:realhome/services/googleAds_service.dart';
-const adUnitId ='ca-app-pub-7333672372977808/4810049066';
+
 
 
 class PropertyManageViewModel extends BaseModel {
@@ -48,9 +48,10 @@ Future <void> nonUserAddPost() async {
 
      Future<void> currentUserPostPropertyList() async {
 
-       await _googleAdsService.bottomBanner(adUnitId);
+        _googleAdsService.bottomBanner();
       // setBusy(true); 
        finish = false;      
+        notifyListeners();
        try {
            _userPostProperty =
             await _firestoreService.getUserPropertyListFromFirebase(
@@ -60,7 +61,9 @@ Future <void> nonUserAddPost() async {
        } catch(e) {
           print(e.toString());
        } 
-       finish= true;       
+
+       finish= true;     
+      notifyListeners();  
       // setBusy(false);  
   }
 
@@ -86,8 +89,12 @@ Future <void> nonUserAddPost() async {
      setBusy(false);  
 
     }
+     
+
 
      Future deleteUserPostProperty(int index) async {
+       finish = false;
+       notifyListeners();
       // var dialogResponse = await _dialogService.showConfirmationDialog(
       //           title: 'Delete Rent House',
       //           description: 'would you like to delete this house  ?',
@@ -97,6 +104,7 @@ Future <void> nonUserAddPost() async {
         
       //   if(dialogResponse.confirmed) {
         //  setBusy(true);   
+        
             var result = await _firestoreService.deleteUserPostPropertyToFirebaseDB(currentUser, _userPostProperty[index]);
              await  currentUserPostPropertyList();
              //await currentUserPostPropertyList();
@@ -105,7 +113,9 @@ Future <void> nonUserAddPost() async {
               title: result[0],
               description: result[1],
             );}
+          finish = true;
           notifyListeners();
+
       //    setBusy(false);  
         //} 
     }

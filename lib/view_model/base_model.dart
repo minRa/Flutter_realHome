@@ -62,8 +62,8 @@ class BaseModel extends ChangeNotifier {
     _navigationService.navigateTo(PostHouseViewRoute);
   }
 
-        void  navigateToStartPageView() {
-    _navigationService.navigateTo(StartPageRoute);
+        void  navigateToStartPageView(int index) {
+    _navigationService.navigateTo(StartPageRoute, arguments: index);
   }
 
       void navigateToSignUp() {
@@ -72,14 +72,24 @@ class BaseModel extends ChangeNotifier {
         void navigateToPropertyManageView() {
     _navigationService.navigateTo(PropertyManageViewRoute);
   }
-        void navigateToMembershipView() {
-    _navigationService.navigateTo(MembershipViewRoute);
+        void navigateToChatListView() {
+    _navigationService.navigateTo(ChatRoomListViewRoute);
   }
+
 
     Future getImage() async {
     // Get image from gallery.
-     File image = await ImagePicker.pickImage(source: ImageSource.gallery);
-     return _cropImage(image);
+     File image = await ImagePicker.pickImage(
+       source: ImageSource.gallery,
+      // imageQuality: 90 ,
+      // maxHeight: 450,
+       //maxWidth: 500
+       );
+
+      if(image != null) {
+         return _cropImage(image);
+      }
+      return;    
   }
 
   Future<File> _cropImage(File image) async {

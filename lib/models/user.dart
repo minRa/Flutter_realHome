@@ -4,8 +4,10 @@ class User {
   final String email;
   final String profileUrl;
   final String backgroundUrl;
-  final int uploadCount;
+  final String chattingWith;
   final String userRole;
+   List<dynamic> chattings;
+
 
   User({
     this.id, 
@@ -13,17 +15,19 @@ class User {
      this.email, 
      this.userRole,
      this.profileUrl, 
-     this.uploadCount,
-     this.backgroundUrl
+     this.chattingWith,
+     this.backgroundUrl,
+     this.chattings,
      });
 
   User.fromData(Map<String, dynamic> data)
       : id = data['id'],
         fullName = data['fullName'],
         email = data['email'],
-        uploadCount = 1, //data['uploadCount'],
         profileUrl = data['profileUrl'],
         backgroundUrl = data['backgroundUrl'],
+        chattingWith = data['chattingWith'],
+        chattings = data['chattings'],
         userRole = data['userRole'];
 
   Map<String, dynamic> toJson() {
@@ -34,7 +38,8 @@ class User {
       'userRole': userRole,
       'profileUrl':profileUrl,
       'backgroundUrl':backgroundUrl,
-      'uploadCount':uploadCount
+      'chattingWith':chattingWith,
+      'chattings':chattings,
     };
   }
 }

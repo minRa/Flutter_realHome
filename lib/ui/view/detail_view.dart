@@ -1,4 +1,7 @@
 //import 'dart:math';
+//import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -20,14 +23,14 @@ class DetailView extends StatefulWidget {
 }
 
 class _DetailViewState extends State<DetailView> {
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final TextEditingController _textController = new TextEditingController();
   
-  
-
     Future<void>  _handleSubmitted(String text, User user) async {
+      FocusScope.of(context).unfocus();
       _textController.text = '';
       //int randomNumber = Random().nextInt(10000);
       //var randomID = 'ID${randomNumber}';
@@ -39,11 +42,14 @@ class _DetailViewState extends State<DetailView> {
         .collection('userComments')
         .document('$nowString')
         .setData({
+          'idTo':widget.postProperty.id,
+          'docId':widget.postProperty.documentId,
           'content':text ,
           'userId':user.id, 
           'date':nowString,
           'fullName':user.fullName,
-          'profileImage':user.profileUrl
+          'profileImage':user.profileUrl,
+          'createdAt':DateTime.now().millisecondsSinceEpoch.toString(),
           });
       }catch(e){
         print(e.message);
@@ -84,7 +90,7 @@ class _DetailViewState extends State<DetailView> {
               controller: _textController,
               //onSubmitted: _handleSubmitted,
               decoration: new InputDecoration.collapsed(
-                  hintText: "Add a your comment.."),
+                  hintText: " Type your comment..."),
             ),
           ),
           new Container(
@@ -105,7 +111,8 @@ class _DetailViewState extends State<DetailView> {
       onModelReady: (model) => model.getStartCurrentDetail(widget.postProperty) , 
       builder: (context, model, child) => Scaffold(
         body: StreamBuilder<QuerySnapshot>(
-            stream: Firestore.instance.collection('comments').document('${widget.postProperty.documentId}').collection('userComments').snapshots(),
+            stream: Firestore.instance.collection('comments/${widget.postProperty.documentId}/userComments')
+            .orderBy('createdAt', descending: true).snapshots(),
             builder: (context,snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
               return SafeArea(
@@ -164,11 +171,17 @@ class _DetailViewState extends State<DetailView> {
                                             child: Column(
                                               children: <Widget>[
                                                 GestureDetector(
-                                                     onTap:() => model.navigateToPostOwnerInfoView(model.owner),                                         child: ClipOval(
+                                                     onTap: widget.postProperty.id == model.currentUser.id ?
+                                                     () => model.navigateToPropertyManageView() :
+                                                     () => model.navigateToPostOwnerInfoView(model.owner),                                         child: ClipOval(
                                                      child: SizedBox(
                                                       height: 80,
                                                       width: 80,
-                                                      child: model.owner != null?   
+                                                      child: model.owner.profileUrl == null? 
+                                                       Icon(Icons.person,
+                                                      color: Colors.white,
+                                                      size: 80,
+                                                      ):  
                                                       Image.network(model.owner.profileUrl,
                                                       fit: BoxFit.cover,
                                                       loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
@@ -181,10 +194,7 @@ class _DetailViewState extends State<DetailView> {
                                                           ),
                                                         );
                                                       },
-                                                      ): Icon(Icons.person,
-                                                      color: Colors.white,
-                                                      size: 80,
-                                                      ),
+                                                      )
                                                     ),
                                                   ),
                                                 ),
@@ -219,16 +229,25 @@ class _DetailViewState extends State<DetailView> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Text("  ${widget.postProperty.title}", style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w600
-                                  ),),
+                                  Text("  ${widget.postProperty.title}", 
+                                  style: 
+                                  GoogleFonts.mcLaren(fontSize: 20,
+                                   fontWeight: FontWeight.w600,
+                                   color: Colors.black
+                                   ),
+                                  // TextStyle(
+                                  //   color: Colors.black,
+                                  //   fontSize: 20,
+                                  //   fontWeight: FontWeight.w600
+                                  //  ),
+                                  ),
                                    FlatButton.icon(
                                     icon: Icon(
                                       Icons.location_on,
                                     ),
-                                    label: Text('Google map'),
+                                    label: Text('Google map',
+                                    style: GoogleFonts.mcLaren(),
+                                    ),
                                     textColor: Theme.of(context).primaryColor,
                                     onPressed: ()=> openMap(
                                       widget.postProperty.address
@@ -242,16 +261,27 @@ class _DetailViewState extends State<DetailView> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                   Text("  ${widget.postProperty.city}", style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600
-                              ),),
-                              Text("\$${widget.postProperty.price} /\ week  ", style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600
-                              ),),
+                                   Text("  ${widget.postProperty.city}", 
+                                   style: GoogleFonts.mcLaren(fontSize: 15,
+                                   fontWeight: FontWeight.w600,
+                                   color: Colors.grey
+                                   ),
+                                  //  TextStyle(
+                                  // color: Colors.grey,
+                                  // fontSize: 15,
+                                  // fontWeight: FontWeight.w600),
+                               ),
+                              Text("\$${widget.postProperty.price} /\ week  ",
+                               style: GoogleFonts.mcLaren(fontSize: 15,
+                                   fontWeight: FontWeight.w600,
+                                   color: Colors.grey
+                                   ),
+                                // TextStyle(
+                                //   color: Colors.grey,
+                                //   fontSize: 15,
+                                //   fontWeight: FontWeight.w600
+                                // ),
+                              ),
 
                                 ],
                               ),
@@ -287,7 +317,9 @@ class _DetailViewState extends State<DetailView> {
                                     Icon(Icons.person), 
                                     FlatButton(
                                       textColor: Colors.black,
-                                      child: Text('Login rquired to comments'),
+                                      child: Text('Login rquired to comments',
+                                      style: GoogleFonts.mcLaren()
+                                      ),
                                       onPressed:() => model.navigateToLogin(),
                                     )
                                  ],),);
@@ -305,30 +337,49 @@ class _DetailViewState extends State<DetailView> {
                                     snapshot.data.documents[index-1].data['date'],),
                                       child: ListTile(
                                       leading: snapshot.data.documents[index-1].data['profileImage'] != null?
-                                      ClipOval(
-                                        child:SizedBox(
-                                        height: 40,
-                                        width: 40,
-                                        child: Image.network(snapshot.data.documents[index-1].data['profileImage'],
-                                          fit: BoxFit.cover,),
-                                        ),
+                                      Column(
+                                        children: <Widget>[
+                                          ClipOval(
+                                            child:SizedBox(
+                                            height: 40,
+                                            width: 40,
+                                            child: Image.network(snapshot.data.documents[index-1].data['profileImage'],
+                                              fit: BoxFit.cover,),
+                                            ),
+                                          ),
+                                           Text(snapshot.data.documents[index-1].data['fullName'],
+                                            style: GoogleFonts.mcLaren(fontSize:10),
+                                            ),
+                                        ],
                                       ) :
-                                      Icon(Icons.account_circle,
-                                        size: 40,),
-
+                                      Column(
+                                        children: <Widget>[
+                                          Icon(Icons.account_circle,
+                                            size: 40,),
+                                             Text(snapshot.data.documents[index-1].data['fullName'],
+                                            style: GoogleFonts.mcLaren(fontSize:10),
+                                            ),
+                                        ],
+                                      ),
                                         title: Column(
                                           children: <Widget>[
-                                            Text(snapshot.data.documents[index-1].data['fullName']),
                                             Padding(
                                               padding: const EdgeInsets.only(top: 8.0),
-                                              child: Text(snapshot.data.documents[index-1].data['content']),
+                                              child: Text(snapshot.data.documents[index-1].data['content'],
+                                              style: GoogleFonts.mcLaren()
+                                              ),
                                             ),
                                           ],
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                         ),
                                           subtitle: Padding(
                                           padding: const EdgeInsets.only(top: 10),
-                                          child:Text(snapshot.data.documents[index-1].data['date']),
+                                          child:Text(
+                                          DateFormat('dd MMM kk:mm')
+                                              .format(DateTime.fromMillisecondsSinceEpoch(int.parse(snapshot.data.documents[index-1].data['createdAt']))),
+                                          style: TextStyle(color:Colors.grey, fontSize: 12, fontStyle: FontStyle.italic),
+                                          ),
+                                         // Text(snapshot.data.documents[index-1].data['date']),
                                          )
                                     ),
                                ),

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:realhome/constants/route_names.dart';
+import 'package:realhome/ui/view/chat_room_list_view.dart';
+import 'package:realhome/ui/view/chat_view.dart';
 import 'package:realhome/ui/view/detail_view.dart';
 import 'package:realhome/ui/view/house_overview.dart';
+import 'package:realhome/ui/view/initial_view.dart';
 import 'package:realhome/ui/view/login_view.dart';
-import 'package:realhome/ui/view/membership_view.dart';
 import 'package:realhome/ui/view/post_house_view.dart';
 import 'package:realhome/ui/view/post_owner_info_view.dart';
 import 'package:realhome/ui/view/property_manage_view.dart';
@@ -46,7 +48,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       case StartPageRoute:
       return _getPageRoute(
         routeName: settings.name,
-        viewToShow: StartPageView(),
+        viewToShow: StartPageView(settings.arguments),
       );
 
        case PropertyManageViewRoute:
@@ -62,16 +64,28 @@ Route<dynamic> generateRoute(RouteSettings settings) {
           data: settings.arguments)
       );
 
-       case MembershipViewRoute:
+       case ChatRoomListViewRoute:
       return _getPageRoute(
         routeName: settings.name,
-        viewToShow: MembershipView(),
+        viewToShow: ChatRoomListView(),
       );
 
       case PostOwnerInfoViewRoute:
       return _getPageRoute(
         routeName: settings.name,
         viewToShow: PostOwnerInfoView(settings.arguments),
+      );
+
+      case ChatViewRoute:
+      return _getPageRoute(
+        routeName: settings.name,
+        viewToShow: ChatView(settings.arguments),
+      );
+
+      case InitialViewRoute:
+      return _getPageRoute(
+        routeName: settings.name,
+        viewToShow: InitialView(),
       );
 
 

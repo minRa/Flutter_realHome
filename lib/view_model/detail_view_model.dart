@@ -27,9 +27,12 @@ final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
   User get owner =>_owner;
 
  Future<void> getStartCurrentDetail(PostProperty postProperty) async {
+      
+
+      //_owner.profileUrl ='string';
 
       var users =    await _firestoreService.getUserList();
-      await _googleAdsService.disposeGoogleAds();
+       _googleAdsService.disposeGoogleAds();
 
     //   await  _firestoreService.getUserList().then((data) {
     //     _owner = data.singleWhere((id) => id.id == postProperty.id);

@@ -12,7 +12,7 @@ import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
 import 'package:realhome/services/googleAds_service.dart';
-const adUnitId = 'ca-app-pub-7333672372977808/3709801953';
+import 'package:path_provider/path_provider.dart';
 
 
 
@@ -71,11 +71,21 @@ class PostHouseViewModel extends BaseModel {
      // String address,
       String phone
     }) async {
-       try {
+       if (_userDataMap == null || _userDataMap.length == 0) {
+         
+          await _dialogService.showDialog(
+          title:'warning',
+          description:'sorry, you need to upload photo at least one ...',
+        );
 
+        return;    
+       }
+       try {
+        
         print('what is happen ========================================================================');
          setBusy(true);
           await _cloudStorageService.arrayImageFiles(_userDataMap);
+
           if(_postProperty == null) {
           PostProperty property = PostProperty(
           id: _authenticationService.currentUser.id,
@@ -93,8 +103,9 @@ class PostHouseViewModel extends BaseModel {
          longitude:_placeDetail.lng,
           rentType:_rentType,
           date:_date,              
-         address:_placeDetail.formattedAddress,        
-         city:_placeDetail.city,
+           address:_placeDetail.formattedAddress,        
+           city:_placeDetail.city,
+          update:DateTime.now().millisecondsSinceEpoch.toString(),
           createdAt:DateTime.now().millisecondsSinceEpoch.toString(),
           );
           _postProperty = property;
@@ -116,6 +127,8 @@ class PostHouseViewModel extends BaseModel {
               _postProperty.city = _placeDetail.city;
              _postProperty.address = _placeDetail.formattedAddress;
             }
+             _postProperty.update = DateTime.now().millisecondsSinceEpoch.toString();
+           
         }
 
         var result = await _firestoreService.postHouseIntoFirebase(_postProperty);
@@ -174,18 +187,24 @@ class PostHouseViewModel extends BaseModel {
   PostProperty get getPostPropertyData => _postProperty;
 
     void getGoogleAdService() async {
-      await _googleAdsService.bottomBanner(adUnitId);
+      await _googleAdsService.bottomBanner();
     }
 
   void getPostProperty(PostProperty postProperty) async {
       
-        await _googleAdsService.bottomBanner(adUnitId);
+        await _googleAdsService.bottomBanner();
 
-         _postProperty = postProperty;
-         for(var i =0; i < postProperty.imageUrl.length; i++ ) {
-           _userDataMap['image$i'] = postProperty.imageUrl[i];
-           _images[i] =postProperty.imageUrl[i];
-         }
+           //postProperty.imageUrl.clear();
+          _postProperty = postProperty;
+          _cloudStorageService.deleteImageFileToFireStroage(postProperty.imageUrl)
+             .catchError((err) => {
+        });
+          
+          
+        //  for(var i =0; i < postProperty.imageUrl.length; i++ ) {
+        //    _userDataMap['image$i'] = postProperty.imageUrl[i];
+        //    _images[i] =postProperty.imageUrl[i];
+        //  }
           notifyListeners();
          print(_userDataMap['image0']);
          print(_postProperty.latitude);
@@ -193,12 +212,38 @@ class PostHouseViewModel extends BaseModel {
         // _images = _postProperty.imageUrl;
   }
 
-  List<String> _images = List<String>.generate(8,(i) => '');
+  List<String> _images = List<String>.generate(9,(i) => '');
   List<String> get images =>_images;
+         
+         
+Future<File> getImageFileFromAssets(String name , var data) async {
+  //final byteData = await rootBundle.load('assets/$path');
+  final file = File('${(await getTemporaryDirectory()).path}/$name');
+  await file.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+  return file;
+}
+
+
+ Future multiImageUpload(List<dynamic> images) async {
+
+    if(images!= null) {
+      int i = 0;
+      await Future.forEach(images, (element)  async {
+          // var data = await element.getByteData();
+          // File image = await getImageFileFromAssets(element.name, data);    
+           var image = (await element.getByteData()).buffer.asUint8List();
+          _userDataMap['image$i'] = image;
+          i++;
+      });
+    }
+ }
+
+
 
   //String uuid = Uuid().v1(); 
   Future uploadImage(File image, int index) async {
     setBusy(true);
+
     // String imageUrl;
     if(_images[index] != "") {
      _cloudStorageService.imageDatadelete(_images[index]);
@@ -246,6 +291,6 @@ class PostHouseViewModel extends BaseModel {
     }   
      return ok;
   }
-  
+
 
 }

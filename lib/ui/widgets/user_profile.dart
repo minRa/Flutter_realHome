@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+//import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/models/user.dart';
 
 class UserProfilePage extends StatelessWidget {
@@ -7,13 +9,15 @@ class UserProfilePage extends StatelessWidget {
   final User user;
   final Function editImage;
   final Function editBackground;
+  final Function goToChatRoom;
 
   UserProfilePage({
     this.navigate,
     this.user,
     this.onAuth,
     this.editImage,
-    this.editBackground
+    this.editBackground,
+    this.goToChatRoom
   });
 
   Widget _buildCoverImage(BuildContext context, Size screenSize) {
@@ -49,20 +53,6 @@ class UserProfilePage extends StatelessWidget {
             child: Container(
               width: 130.0,
               height: 130.0,
-              // child: user.profileUrl != null?
-              //     Image.network(user.profileUrl,
-              //     fit: BoxFit.cover,
-              //      loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
-              //       if (loadingProgress == null) return child;
-              //         return Center(
-              //           child: CircularProgressIndicator(
-              //           value: loadingProgress.expectedTotalBytes != null ? 
-              //                 loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-              //                 : null,
-              //           ),
-              //         );
-              //       },
-              //     ): Image.asset('assets/images/EditAvata.png', fit: BoxFit.cover,),
               decoration: BoxDecoration(
                image:DecorationImage(
                   image:// user != null?
@@ -109,16 +99,19 @@ class UserProfilePage extends StatelessWidget {
   }
 
   Widget _buildFullName() {
-    TextStyle _nameTextStyle = TextStyle(
-      fontFamily: 'Roboto',
-      color: Colors.black,
-      fontSize: 20.0,
-      fontWeight: FontWeight.w700,
-    );
+
+    // TextStyle _nameTextStyle = TextStyle(
+    //   fontFamily: 'Roboto',
+    //   color: Colors.black,
+    //   fontSize: 20.0,
+    //   fontWeight: FontWeight.w700,
+    // );
 
     return Text(
       user.fullName,
-      style: _nameTextStyle,
+      textAlign: TextAlign.center,
+      style:GoogleFonts.mcLaren(fontSize: 20,fontWeight: FontWeight.w700,color: Colors.black  ),
+      //_nameTextStyle,
     );
   }
 
@@ -129,11 +122,13 @@ class UserProfilePage extends StatelessWidget {
       //padding: EdgeInsets.only(top: 8.0),
       child: Text(
         user.email,
-        style: TextStyle(
-          fontFamily: 'Roboto', 
-          fontSize: 16.0,
-          fontWeight: FontWeight.w700
-          ),
+        textAlign: TextAlign.center,
+        style: GoogleFonts.mcLaren(fontSize: 16,fontWeight: FontWeight.w700 ),
+        // TextStyle(
+        //   fontFamily: 'Roboto', 
+        //   fontSize: 16.0,
+        //   fontWeight: FontWeight.w700
+        //   ), 
       ),
     );
   }
@@ -151,21 +146,51 @@ class UserProfilePage extends StatelessWidget {
             SingleChildScrollView(
               child: Column(
                 children: <Widget>[
-                  SizedBox(height: screenSize.height / 3.0),
+                  SizedBox(height: screenSize.height / 2.6),
                   _buildProfileImage(context, user),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      IconButton(
+                  ListTile(
+                    //contentPadding: EdgeInsets.only(left:40),
+                    leading:  IconButton(
                       tooltip: 'Home',
                       icon: Icon(Icons.home,
-                      color: Colors.blueGrey,),
-                      onPressed:navigate,
+                      color: Colors.blueGrey,
+                      size: 28,
+                      ),
+                      onPressed: () =>navigate(0),
                     ),
-                    _buildFullName(),
-                     SizedBox(width: 10.0),
-                  _buildGetInTouch(context),
-                  ],), 
+                    title: _buildFullName(),
+                    subtitle: _buildGetInTouch(context),
+                    trailing:
+                     onAuth ?  SizedBox(
+                      width: 43,
+                    ) :
+                     Container(
+                      padding:EdgeInsets.only(bottom: 20),
+                      child: IconButton(
+                          tooltip: 'Chat',
+                          icon: Icon(Icons.chat,
+                          color: Colors.blueGrey,),
+                          onPressed:() {
+                             showDialog(
+                             context: context,
+                             builder: (context) => chatDialog(context, user, goToChatRoom));
+                          } 
+                        ),
+                    ), 
+                  )
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: <Widget>[
+                  //     IconButton(
+                  //     tooltip: 'Home',
+                  //     icon: Icon(Icons.home,
+                  //     color: Colors.blueGrey,),
+                  //     onPressed:navigate,
+                  //   ), 
+                  //   _buildFullName(),
+                  //    SizedBox(width: 10.0),
+                  // _buildGetInTouch(context),
+                  // ],), 
                 ],
               ),
             ),
@@ -240,6 +265,44 @@ Function profile, Function background) {
        ]
      );
 }
+
+
+Widget chatDialog(BuildContext context, User owner, Function goToChatRoom,) {
+  //ThemeData localTheme = Theme.of(context);
+  return SimpleDialog(
+      contentPadding: EdgeInsets.zero,
+      children: [
+        Container(
+       // margin: const EdgeInsets.fromLTRB(14.0,10,14,flutte10),
+       // padding: const EdgeInsets.fromLTRB(5,5,5,5),
+        decoration: BoxDecoration(
+         // border: Border.all(color: Colors.grey[400]),
+          borderRadius: BorderRadius.all(
+              Radius.circular(25.0)
+          ),
+        ),
+          child:GestureDetector(
+            onTap://() =>  goToChatRoom(owner)
+            () async{
+               Navigator.of(context).pop();
+               goToChatRoom(owner);},
+              child: Container(
+              margin:EdgeInsets.only(top:15, bottom: 10) ,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.person),
+                  SizedBox(width: 10,),
+                  Text('Chat with ${owner.fullName}',
+                  style: GoogleFonts.mcLaren(fontSize: 15),)
+                ],
+              ),
+            ),
+          ),)
+       ]
+     );
+}
+
 
 
 

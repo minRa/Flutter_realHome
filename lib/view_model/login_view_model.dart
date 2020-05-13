@@ -41,6 +41,7 @@ class LoginViewModel extends BaseModel {
     }
     
     await _authenticationService.logOut();
+    
     var result = await _authenticationService.loginWithEmail(
       email: email,
       password: password,
@@ -102,7 +103,7 @@ class LoginViewModel extends BaseModel {
      if(dialogResponse.confirmed) {
         await _authenticationService.logOut();
             notifyListeners();
-            navigateToStartPageView();                   
+            navigateToStartPageView(0);                   
        }     
     } 
 }

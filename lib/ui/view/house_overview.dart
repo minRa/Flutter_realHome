@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:flutter_native_admob/native_admob_controller.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/ui/widgets/creation_aware_list_item.dart';
 import 'package:realhome/ui/widgets/dropdown.dart';
+import 'package:realhome/ui/widgets/no_list.dart';
 import 'package:realhome/ui/widgets/viewList.dart';
 import 'package:realhome/view_model/House_overview_model.dart';
 const  _adUnitID = "ca-app-pub-7333672372977808/9632212477";
@@ -26,7 +28,7 @@ class _HouseOverviewState extends State<HouseOverview> {
 
   @override
   void initState() {
-    _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
+    //_subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
     super.initState();
   }
 
@@ -79,8 +81,12 @@ class _HouseOverviewState extends State<HouseOverview> {
                     Container(
                       child: Row(
                         children: <Widget>[
-                          Text('Total :'),
-                          Text(' ${model.postProperty.length}')
+                          Text('Total :',
+                          style: GoogleFonts.mcLaren(),
+                          ),
+                          Text(' ${model.total}',
+                           style: GoogleFonts.mcLaren()
+                          )
                         ],
                       ),
                     )
@@ -89,17 +95,19 @@ class _HouseOverviewState extends State<HouseOverview> {
                 SizedBox(height: 10,),
                Expanded(
                  flex: 11,
-                  child: ListView.builder(
+                  child: model.total ==0 ?
+                   NoList():
+                   ListView.builder(
                   itemCount:model.postProperty.length,
                   itemBuilder: (ctx, i) =>
                     CreationAwareListItem(
                   itemCreated: () {
-                    if (i % 5 == 0)
+                    if (i % 4 == 0)
                       model.requestMoreData();
                   },
                   child:Column(
                     children: <Widget>[
-                       i%3 == 0 && i != 0? 
+                       i%5 == 0 && i != 0? 
                        Container(
                         height: _height,
                         padding: EdgeInsets.all(10),

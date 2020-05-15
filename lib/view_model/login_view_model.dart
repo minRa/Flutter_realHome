@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:realhome/constants/route_names.dart';
+import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/authentication_service.dart';
 import 'package:realhome/services/dialog_service.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,13 +16,16 @@ class LoginViewModel extends BaseModel {
       locator<AuthenticationService>();
   final DialogService _dialogService = locator<DialogService>();
   final NavigationService _navigationService = locator<NavigationService>();
- // final AnalyticsService _analyticsService = locator<AnalyticsService>();
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+  final AnalyticsService _analyticsService = locator<AnalyticsService>();
 
   Future login({
     @required String email,
     @required String password,
     @required bool rememberMe
   }) async {
+      
+    _googleAdsService.disposeGoogleAds();
      SharedPreferences prefs = await  SharedPreferences.getInstance();
     setBusy(true);
     if(rememberMe) {
@@ -72,7 +77,7 @@ class LoginViewModel extends BaseModel {
   Future<void> loginlogg (var result) async {
     if (result is bool) {
       if (result) {
-       // await _analyticsService.logLogin();
+         await _analyticsService.logLogin();
         _navigationService.navigateTo(StartPageRoute);
       } else {
         await _dialogService.showDialog(
@@ -93,17 +98,16 @@ class LoginViewModel extends BaseModel {
 
   Future<void> nonUserEnter () async {
 
-    var dialogResponse = await _dialogService.showConfirmationDialog(
-          title: 'Gust',
-          description: 'Guest is only allowed to check rent house list',
-          confirmationTitle: 'OK',
-          cancelTitle: 'CANCEL'        
-        );
+    // var dialogResponse = await _dialogService.showConfirmationDialog(
+    //       title: 'Gust',
+    //       description: 'are you ok to enter as guest',
+    //       confirmationTitle: 'OK',
+    //       cancelTitle: 'CANCEL'        
+    //     );
 
-     if(dialogResponse.confirmed) {
+    //  if(dialogResponse.confirmed) {
         await _authenticationService.logOut();
-            notifyListeners();
             navigateToStartPageView(0);                   
-       }     
+   //    }     
     } 
 }

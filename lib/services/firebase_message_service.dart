@@ -9,10 +9,11 @@ import 'package:realhome/constants/route_names.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/authentication_service.dart';
-
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/models/postProperty.dart';
+
 
 
 
@@ -25,18 +26,26 @@ class FirebaseMessageService {
   final NavigationService _navigationService = 
    locator<NavigationService>();
   final FirestoreService _firestoreService = locator<FirestoreService>();
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
 
 
 
 
   // Or do other work.
 
+int counter = 0;
 
 void registerNotification(String userId) {
-  
+   
 
     void _navigate(Map<String, dynamic> message) async {
 
+      _googleAdsService.googleAdBan();
+      if(counter == 1) {
+           counter =0;
+           return;
+        } else {
+        counter++;
       if(message['data']['route'] == 'DetailViewRoute') {
         String docId = message['data']['docId'].toString();
        var post = await   _firestoreService. getPostProperty(docId);    
@@ -50,6 +59,8 @@ void registerNotification(String userId) {
          User _peer = await _firestoreService.getUser(message['data']['argument2']);
   
       _navigationService.navigateTo(ChatViewRoute, arguments:[_peer, _user]);
+
+     }   
    }
     message.clear();
  }
@@ -72,6 +83,7 @@ void registerNotification(String userId) {
     );
 
 
+
   _firebaseMessaging.configure(
     //onBackgroundMessage: myBackgroundMessageHandler,
     onMessage: (Map<String, dynamic> message) async {
@@ -80,7 +92,7 @@ void registerNotification(String userId) {
     Platform.isAndroid
         ? showNotification(message['notification'])
         : showNotification(message['aps']['alert']);
-         // _navigate(message);
+
   }, 
   onResume: (Map<String, dynamic> message) async {
     print('onResume: $message');
@@ -95,14 +107,13 @@ void registerNotification(String userId) {
 
   }, onLaunch: (Map<String, dynamic> message) async{
         print('onLaunch: $message');
-
+         
      if(_authenticationService.currentUser != null) {
        _navigate(message);
     } else {
       _navigationService.navigateTo(InitialViewRoute);
     }
- 
-  
+
   });
 
 
@@ -144,10 +155,10 @@ void registerNotification(String userId) {
   void showNotification(message) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
       Platform.isAndroid
-          ? 'com.dfa.flutterchatdemo'
-          : 'com.duytq.flutterchatdemo',
+          ? 'com.example.realhome'
+          : 'com.example.realhome',
       'Flutter chat demo',
-      'your channel description',
+      'channel description',
       playSound: true,
       enableVibration: true,
       importance: Importance.Max,

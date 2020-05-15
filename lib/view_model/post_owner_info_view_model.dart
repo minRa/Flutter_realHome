@@ -3,7 +3,6 @@ import 'package:realhome/locator.dart';
 import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/firestore_service.dart';
-import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
 
@@ -11,15 +10,13 @@ import 'package:realhome/view_model/base_model.dart';
 class PostOwnerInfoViewModel extends BaseModel {
   final NavigationService _navigationService = 
    locator<NavigationService>();
-
-final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
 final FirestoreService _firestoreService = locator<FirestoreService>();
 
  List <PostProperty> _posts;
  List<PostProperty> get posts => _posts;
 
  void currentOwnerPostPropertyList(owner) async {
-      await _googleAdsService.bottomBanner();
+     // await _googleAdsService.bottomBanner();
 
     _posts = await _firestoreService.getUserPropertyListFromFirebase(owner);
     notifyListeners();

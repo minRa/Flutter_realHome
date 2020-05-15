@@ -2,6 +2,8 @@
 //import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:realhome/locator.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -23,11 +25,25 @@ class DetailView extends StatefulWidget {
 }
 
 class _DetailViewState extends State<DetailView> {
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+
+  @override
+  void initState() {
+    _googleAdsService.disposeGoogleAds();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _googleAdsService.bottomBanner();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final TextEditingController _textController = new TextEditingController();
+    
   
     Future<void>  _handleSubmitted(String text, User user) async {
       FocusScope.of(context).unfocus();
@@ -90,7 +106,9 @@ class _DetailViewState extends State<DetailView> {
               controller: _textController,
               //onSubmitted: _handleSubmitted,
               decoration: new InputDecoration.collapsed(
-                  hintText: " Type your comment..."),
+                  hintText: " Type your comment...",
+                  hintStyle: GoogleFonts.mcLaren()
+                  ),
             ),
           ),
           new Container(
@@ -112,7 +130,7 @@ class _DetailViewState extends State<DetailView> {
       builder: (context, model, child) => Scaffold(
         body: StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance.collection('comments/${widget.postProperty.documentId}/userComments')
-            .orderBy('createdAt', descending: true).snapshots(),
+            .orderBy('createdAt').snapshots(),
             builder: (context,snapshot) {
               if (!snapshot.hasData) return LinearProgressIndicator();
               return SafeArea(
@@ -147,7 +165,7 @@ class _DetailViewState extends State<DetailView> {
                                         color: Colors.black.withOpacity(0.5),//Color(0xff0F0F0F),
                                         boxShadow: [
                                           BoxShadow(
-                                            color: Colors.greenAccent.withOpacity(0.2),
+                                            color: Colors.greenAccent.withOpacity(0.1),
                                           )
                                         ]
                                        ),
@@ -159,7 +177,7 @@ class _DetailViewState extends State<DetailView> {
                                         child: Center(
                                         child: Text( 'Rent Imformation',
                                           textAlign: TextAlign.start,
-                                          style: TextStyle(
+                                          style: GoogleFonts.mcLaren(
                                             color: Colors.white,
                                             textBaseline: TextBaseline.ideographic                                     
                                             ), ), ),),)),    
@@ -171,16 +189,17 @@ class _DetailViewState extends State<DetailView> {
                                             child: Column(
                                               children: <Widget>[
                                                 GestureDetector(
-                                                     onTap: widget.postProperty.id == model.currentUser.id ?
-                                                     () => model.navigateToPropertyManageView() :
-                                                     () => model.navigateToPostOwnerInfoView(model.owner),                                         child: ClipOval(
+                                                     onTap: model.currentUser == null || widget.postProperty.id != model.currentUser.id ?
+                                                     () => model.navigateToPostOwnerInfoView(model.owner) :
+                                                     () => model.navigateToPropertyManageView(),                                         child: ClipOval(
                                                      child: SizedBox(
                                                       height: 80,
                                                       width: 80,
-                                                      child: model.owner.profileUrl == null? 
-                                                       Icon(Icons.person,
-                                                      color: Colors.white,
-                                                      size: 80,
+                                                      child: model.onloading ?
+                                                      Center(child: CircularProgressIndicator(),):
+                                                      model.owner.profileUrl == null? 
+                                                       Image.asset('assets/images/avata2.png',
+                                                       fit: BoxFit.cover,
                                                       ):  
                                                       Image.network(model.owner.profileUrl,
                                                       fit: BoxFit.cover,
@@ -336,14 +355,18 @@ class _DetailViewState extends State<DetailView> {
                                     snapshot.data.documents[index-1].data['userId'],
                                     snapshot.data.documents[index-1].data['date'],),
                                       child: ListTile(
-                                      leading: snapshot.data.documents[index-1].data['profileImage'] != null?
+                                      leading: 
                                       Column(
                                         children: <Widget>[
                                           ClipOval(
                                             child:SizedBox(
                                             height: 40,
                                             width: 40,
-                                            child: Image.network(snapshot.data.documents[index-1].data['profileImage'],
+                                            child: snapshot.data.documents[index-1].data['profileImage'] is String?
+                                            Image.network(snapshot.data.documents[index-1].data['profileImage'],
+                                              fit: BoxFit.cover,
+                                            ):
+                                            Image.asset('assets/images/avata.png',
                                               fit: BoxFit.cover,),
                                             ),
                                           ),
@@ -351,16 +374,16 @@ class _DetailViewState extends State<DetailView> {
                                             style: GoogleFonts.mcLaren(fontSize:10),
                                             ),
                                         ],
-                                      ) :
-                                      Column(
-                                        children: <Widget>[
-                                          Icon(Icons.account_circle,
-                                            size: 40,),
-                                             Text(snapshot.data.documents[index-1].data['fullName'],
-                                            style: GoogleFonts.mcLaren(fontSize:10),
-                                            ),
-                                        ],
-                                      ),
+                                       //) 
+                                      // Column(
+                                      //   children: <Widget>[
+                                      //     Icon(Icons.account_circle,
+                                      //       size: 40,),
+                                      //        Text(snapshot.data.documents[index-1].data['fullName'],
+                                      //       style: GoogleFonts.mcLaren(fontSize:10),
+                                      //       ),
+                                      //   ],
+                                       ),
                                         title: Column(
                                           children: <Widget>[
                                             Padding(
@@ -453,10 +476,13 @@ Widget detailDialog(BuildContext context, PostProperty postProperty) {
       dataRowHeight: 35, 
       columns: [
         DataColumn(label: Text('Information', style: TextStyle(fontSize: 20),)),
-        DataColumn(label: Row(children: <Widget>[
+        DataColumn(label: Row(
+        //mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+        SizedBox(width: 30,),
         Icon(Icons.hotel, size: 20,),
         Text(' ${postProperty.room}  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),                                       
-        Icon(Icons.airline_seat_recline_extra, size: 20,),
+        Icon(Icons.airline_seat_legroom_reduced, size: 20,),
         Text(' ${postProperty.toilet}  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
         Icon(Icons.time_to_leave, size: 20,),
         Text(' ${postProperty.carpark}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),          

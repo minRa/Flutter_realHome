@@ -63,7 +63,7 @@ class HorizontalList extends StatelessWidget {
                              ),
                               Row(
                                children: <Widget>[
-                                   Icon(Icons.airline_seat_recline_extra),
+                                   Icon(Icons.airline_seat_legroom_reduced),
                                    Text('  ${post.toilet}',
                                    style: GoogleFonts.mcLaren(fontSize: 14,fontWeight: FontWeight.bold ),),
                                    //style: TextStyle(fontWeight: FontWeight.bold,fontSize: 14),),

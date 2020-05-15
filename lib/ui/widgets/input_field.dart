@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:realhome/ui/shared/shared_styles.dart';
 import 'package:realhome/ui/shared/ui_helpers.dart';
 
@@ -69,6 +70,7 @@ class _InputFieldState extends State<InputField> {
             children: <Widget>[
               Expanded(
                 child: TextFormField(
+                  style: GoogleFonts.mcLaren(),
                   controller: widget.controller,
                   keyboardType: widget.textInputType,
                   focusNode: widget.fieldFocusNode,
@@ -106,8 +108,8 @@ class _InputFieldState extends State<InputField> {
                         height: fieldHeight,
                         alignment: Alignment.center,
                         child: Icon(isPassword
-                            ? Icons.visibility
-                            : Icons.visibility_off))
+                            ? Icons.lock_outline
+                            : Icons.lock_open))
                     : Container(),
               ),
             ],

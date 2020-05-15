@@ -14,7 +14,8 @@ final FirebaseMessageService _firebaseMessageService =
    locator<FirebaseMessageService>();
      
     void init() {   
-       var user = _authenticationService.currentUser;         
+       var user = _authenticationService.currentUser;
+       if(user == null) return;         
      _firebaseMessageService.registerNotification(user.id);
      _firestoreService.chattingWithClear(user.id);
        

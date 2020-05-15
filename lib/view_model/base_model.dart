@@ -1,3 +1,4 @@
+import 'package:realhome/services/remote_config_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
@@ -25,11 +26,13 @@ class BaseModel extends ChangeNotifier {
   final GoogleAdsService _googleAdsService =
       locator<GoogleAdsService>();
    
+  final RemoteConfigService _remoteConfigService = 
+  locator<RemoteConfigService>();
 
   BannerAd get bannserAd => _googleAdsService.bannserAd;
   InterstitialAd get interstitialAd => _googleAdsService.interstitialAd;
   User get currentUser => _authenticationService.currentUser;
-
+  bool get showMainBanner => _remoteConfigService.showMainBanner;
 
    
 

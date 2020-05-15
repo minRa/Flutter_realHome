@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+import 'package:realhome/locator.dart';
 import 'package:realhome/models/postProperty.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/ui/widgets/Introduce.dart';
 import 'package:realhome/ui/widgets/add_place.dart';
 import 'package:realhome/ui/widgets/images.dart';
@@ -39,10 +41,15 @@ class _PostHouseViewState extends State<PostHouseView> {
          _userDataMap[data[0]] = data[1];
     }
 
+    
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+
 
   void initState() {
     // init values
-
+    if(!_googleAdsService.onBanner) {
+    _googleAdsService.bottomBanner();
+    }
     if(widget._postProperty != null) {
       _textAreaController.text = widget._postProperty.message;
       _messengerController.text = widget._postProperty.messenger;
@@ -84,8 +91,8 @@ class _PostHouseViewState extends State<PostHouseView> {
     return ViewModelProvider<PostHouseViewModel>.withConsumer(
       viewModel: PostHouseViewModel(), 
       onModelReady: widget._postProperty != null? 
-      (model) => model.getPostProperty(widget._postProperty) :
-      (model) => model.getGoogleAdService(),
+      (model) => model.getPostProperty(widget._postProperty) : null,
+     // (model) => model.getGoogleAdService(),
       builder: (context, model, child) => 
        Scaffold(
       // backgroundColor: Colors.white,

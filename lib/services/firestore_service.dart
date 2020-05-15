@@ -26,7 +26,7 @@ class FirestoreService {
       final CollectionReference _messagetsCollectionReference =
   Firestore.instance.collection('messages');
   
-  
+    int count = 0;
   // final StreamController<List<Post>> _postsController =
   //     StreamController<List<Post>>.broadcast();
 
@@ -35,7 +35,7 @@ class FirestoreService {
 
   List<List<PostProperty>> _allPropertyPagedResults = List<List<PostProperty>>();
   List<List<PostProperty>> get allPropertyPagedResults => _allPropertyPagedResults;
-  static const int postPropertyLimit = 5;
+  static const int postPropertyLimit = 4;
 
 
   // #6: Create a list that will keep the paged results
@@ -312,6 +312,7 @@ class FirestoreService {
     // #5: If we have a document start the query after it
     if (_lastDocument != null) {
       pagePostsQuery = pagePostsQuery.startAfterDocument(_lastDocument);
+      
     }
 
     if (!_hasMorePosts) return;

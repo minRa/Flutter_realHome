@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:realhome/constants/route_names.dart';
 import 'package:realhome/locator.dart';
+import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/authentication_service.dart';
 import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/navigation_service.dart';
@@ -12,9 +13,9 @@ class SignUpViewModel extends BaseModel {
       locator<AuthenticationService>();
   final DialogService _dialogService = locator<DialogService>();
   final NavigationService _navigationService = locator<NavigationService>();
-  //final AnalyticsService _analyticsService = locator<AnalyticsService>();
+  final AnalyticsService _analyticsService = locator<AnalyticsService>();
 
-  String _selectedRole = 'User';
+  String _selectedRole = 'Email_user';
   String get selectedRole => _selectedRole;
 
   // void setSelectedRole(dynamic role) {
@@ -39,7 +40,7 @@ class SignUpViewModel extends BaseModel {
 
     if (result is bool) {
       if (result) {
-        //await _analyticsService.logSignUp();
+        await _analyticsService.logSignUp();
         _navigationService.navigateTo(StartPageRoute);
       } else {
         await _dialogService.showDialog(

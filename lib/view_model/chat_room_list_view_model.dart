@@ -6,7 +6,6 @@ import 'package:realhome/models/message.dart';
 // import 'package:realhome/services/dialog_service.dart';
  import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/navigation_service.dart';
- import 'package:realhome/services/googleAds_service.dart';
 // import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
 
@@ -22,7 +21,6 @@ class ChatRoomListModel extends BaseModel {
     final FirestoreService _firestoreService = locator<FirestoreService>();
 //     final DialogService _dialogService = locator<DialogService>();
 
- final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
     List<List<Message>> _message;
     List<List<Message>> get message => _message;
     bool _loading = false;
@@ -34,6 +32,7 @@ class ChatRoomListModel extends BaseModel {
     List<User> _peers = List<User>();
     List<User> get peers => _peers;
     User peer ;
+
     Future<void> getAllUserIformation() async {
       
         _loading = true;
@@ -41,6 +40,12 @@ class ChatRoomListModel extends BaseModel {
        notifyListeners();
         _users= await _firestoreService.getUserList();
          await _authenticationService.isUserLoggedIn();
+         if(_authenticationService.currentUser == null) {
+         _loading = false;
+         notifyListeners();
+          return;
+         }
+
         _user= _authenticationService.currentUser;
         var result =  await  _firestoreService.tryFindMessageRoom(_user);
          
@@ -60,7 +65,7 @@ class ChatRoomListModel extends BaseModel {
           });
         }
 
-        await _googleAdsService.bottomBanner(); 
+       // await _googleAdsService.bottomBanner(); 
 
     //   await  _firestoreService.getUserList().then((data) {
     //     _owner = data.singleWhere((id) => id.id == postProperty.id);

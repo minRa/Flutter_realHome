@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/viewmodel_provider.dart';
 import 'package:realhome/view_model/setting_view_model.dart';
-//const adUnitId = 'ca-app-pub-7333672372977808/7613866872';
-// import 'package:datingappmain/commons/constData.dart';
-// import 'package:datingappmain/commons/userProfile.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/services/googleAds_service.dart';
 
@@ -19,19 +16,18 @@ class Settings extends StatefulWidget {
 class _Settings extends State<Settings> {
   double _animatedHeight = 0;
   final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
- //bool status = true;
- @override
+
+  @override
   void initState() {
-      if(!_googleAdsService.onBanner) {
-        _googleAdsService.bottomBanner();
-      }
+   if(!_googleAdsService.onBanner) {
+     _googleAdsService.bottomBanner();
+    }
     super.initState();
   }
 
-
-   void googleAdOff(bool onOff) {
+   void googleAdOff(bool onOff) async {
     if(!onOff) {
-     _googleAdsService.disposeGoogleAds();
+      await _googleAdsService.disposeGoogleAds();
     }
   } 
 
@@ -50,7 +46,9 @@ class _Settings extends State<Settings> {
             child: ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(15.0),
-                child: model.currentUser.profileUrl !=null?
+                child:
+                 model.currentUser != null?
+                 model.currentUser.profileUrl !=null?
                    Image.network(model.currentUser.profileUrl,
                     height: 100,
                     fit: BoxFit.cover,
@@ -68,13 +66,20 @@ class _Settings extends State<Settings> {
                     Image.asset('assets/images/avata.png',
                     height: 80,
                     fit: BoxFit.cover,
-                    width: 60,
-                    
-                    ),
-              ),
-              title: Text('${model.currentUser.fullName } (${model.currentUser.email})',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.mcLaren(fontSize: 20),) //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                    width: 60,  
+                    ) :
+                     Image.asset('assets/images/avata.png',
+                    height: 80,
+                    fit: BoxFit.cover,
+                    width: 60,  
+                    )
+                    ,
+                 ),
+                title: model.currentUser == null?
+                Text('Guest', style: GoogleFonts.mcLaren(fontSize: 20), textAlign: TextAlign.center, ) :
+                Text('${model.currentUser.fullName } (${model.currentUser.email})',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.mcLaren(fontSize: 20),) //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
               
               // onTap: () {
               //   Navigator.push(
@@ -179,6 +184,20 @@ class _Settings extends State<Settings> {
             width: 100.0,
           ),
           Divider(),
+            model.currentUser == null ?
+           Padding(
+            padding: const EdgeInsets.fromLTRB(0,10,0,0),
+            child: ListTile(
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(15.0),
+                child: Icon(Icons.person, size: 40,color: Colors.greenAccent[900]),
+              ),
+              title: Text('Login',
+              style: GoogleFonts.mcLaren(fontSize: 20),), //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              onTap: () => model.navigateToLogin()
+            ),
+          )
+         :
           Padding(
             padding: const EdgeInsets.fromLTRB(0,10,0,0),
             child: ListTile(

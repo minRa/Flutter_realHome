@@ -9,7 +9,7 @@ import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
-import 'package:realhome/services/googleAds_service.dart';
+
 
 
 
@@ -17,7 +17,6 @@ class PropertyManageViewModel extends BaseModel {
 
 final AuthenticationService _authenticationService = locator<AuthenticationService>();
 final FirestoreService _firestoreService = locator<FirestoreService>();
-final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
 final NavigationService _navigationService = 
    locator<NavigationService>();
 
@@ -44,12 +43,12 @@ Future <void> nonUserAddPost() async {
   
   List<PostProperty> _userPostProperty;
   List<PostProperty> get userPostProperty => _userPostProperty;
-  bool finish;
+  bool finish = false;
 
      Future<void> currentUserPostPropertyList() async {
-
-        _googleAdsService.bottomBanner();
+     //   _googleAdsService.bottomBanner();
       // setBusy(true); 
+       
        finish = false;      
         notifyListeners();
        try {
@@ -76,18 +75,25 @@ Future <void> nonUserAddPost() async {
     _navigationService.navigateTo(PostHouseViewRoute, arguments: _userPostProperty[index]);
   }
 
+   bool _onLoading = false;
+   bool get onLoading => _onLoading;
+
+
     Future userProfileImageChange(String type) async {
-     print(type);
-     setBusy(true);
+     
+     //print(type);
+     _onLoading = true;
+      notifyListeners();
      File image = await getImage();
      if(image != null) {
        await _firestoreService.updateUserImage(currentUser, image, type);
        await _authenticationService.isUserLoggedIn();
        currentUser;
      }
+     _onLoading = false;
      notifyListeners();
-     setBusy(false);  
-
+   
+   
     }
      
 

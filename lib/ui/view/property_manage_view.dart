@@ -1,7 +1,10 @@
 
 //import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+import 'package:realhome/locator.dart';
+import 'package:realhome/services/googleAds_service.dart';
 
 //import 'package:realhome/ui/widgets/app_drawer.dart';
 import 'package:realhome/ui/widgets/list_view_card.dart';
@@ -17,7 +20,17 @@ class PropertyManageView extends StatefulWidget {
 }
 
 class _PropertyManageViewState extends State<PropertyManageView> {
- 
+  
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+  @override
+  void initState() {
+   if(!_googleAdsService.onBanner) {
+    _googleAdsService.bottomBanner();
+    }
+    super.initState();
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,13 +45,42 @@ class _PropertyManageViewState extends State<PropertyManageView> {
           model.finish ?
           model.userPostProperty == null
           || model.userPostProperty.length == 0  ?
-          UserProfilePage(
-              onAuth: true,
-              navigate:model.navigateToStartPageView,
-              user: model.currentUser,
-              editImage:()=> model.userProfileImageChange('profile'),
-              editBackground:()=> model.userProfileImageChange('abc'),
-              ) :
+          Column(
+            children: <Widget>[
+              Expanded(
+              flex: 10,
+              child: Container(
+                child: UserProfilePage(
+                onAuth: true,
+                navigate:model.navigateToStartPageView,
+                user: model.currentUser,
+                editImage:()=> model.userProfileImageChange('profile'),
+                editBackground:()=> model.userProfileImageChange('abc'),
+                ),
+              ),),
+              Expanded(
+                flex: 9,
+                child: Container(
+                color: Colors.white,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      child: Image.asset('assets/images/property.png',
+                      fit: BoxFit.cover,
+                      ),
+                    ),
+                    Positioned(
+                       bottom: 130,
+                       left: 130,
+                      child: Text('post your rent house',
+                      style: GoogleFonts.mcLaren(),
+                      ),
+                    )
+                  ],
+                ),
+              ))
+            ],
+          ) :
             Column(
             children: <Widget>[  
                 Expanded(
@@ -48,6 +90,7 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                     onAuth:model.currentUser.id != model.userPostProperty[0].id ? false : true ,
                     navigate: model.navigateToStartPageView,
                     user: model.currentUser,
+                    onLoading: model.onLoading,
                     editImage:()=> model.userProfileImageChange('profile'),
                     editBackground:()=> model.userProfileImageChange('abc'),
                     )),
@@ -68,7 +111,19 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                             ),
                           ),
                         ) :
-                        Container()
+                        Container(
+                          color: Colors.white,
+                          child: Column(
+                            children: <Widget>[
+                              Image.asset('assets/images/property.png',
+                              fit: BoxFit.cover,
+                              ),
+                              Text('post your rent house',
+                              style: GoogleFonts.mcLaren(),
+                              )
+                            ],
+                          ),
+                        )
                       ),
                         Expanded(
                       flex: 3,
@@ -97,17 +152,19 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                       // SizedBox(height: screenSize.height / 3.0),
                        Positioned(
                           top: 120,
-                          left: 70,
+                          left: 50,
                           child: 
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
+                              Row(),
                               Container(
                               height: 200,
                               width: 200,
                               decoration: BoxDecoration(
                               image:DecorationImage(
-                              image:AssetImage('assets/images/avata.png') ,
+                              image:AssetImage('assets/images/nonuser.png') ,
                               fit: BoxFit.cover,),
                                 borderRadius: BorderRadius.circular(100.0),
                                 border: Border.all(
@@ -117,8 +174,8 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                                   ),
                               ),
                              SizedBox(height: 5,),
-                              Text('GUEST',
-                              style: TextStyle(
+                              Text(' GUEST',
+                              style:GoogleFonts.mcLaren(
                               fontSize: 30,
                               fontWeight: FontWeight.w900,
                               color: Colors.black
@@ -127,13 +184,9 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                            ),
                             SizedBox(height: 20,),
                             Text('Post Property Management page',
-                            style: TextStyle(
-                              fontSize: 18
-                            ),),
-                            Text('This service rquired to login',
-                             style: TextStyle(
-                              fontSize: 18
-                            ),),
+                            style: GoogleFonts.mcLaren(fontSize: 18)),
+                            Text('only for login user',
+                             style: GoogleFonts.mcLaren(fontSize: 18)),
                             ],
                           ),
                        ),],

@@ -30,14 +30,16 @@ class _BigImageViewState extends State<BigImageView> {
 
   @override
   void initState() {
-     _googleAdsService.bottomBanner();
+   if(!_googleAdsService.onBanner) {
+    _googleAdsService.bottomBanner();
+    }
     super.initState();
   }
 
   @override
   void dispose() {
-     imgList.clear();
     _googleAdsService.disposeGoogleAds();
+    imgList.clear();
     super.dispose();
   }
 

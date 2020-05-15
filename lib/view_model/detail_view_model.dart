@@ -8,7 +8,7 @@ import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
-import 'package:realhome/services/googleAds_service.dart';
+
 
 
 class DetailViewModel extends BaseModel {
@@ -21,26 +21,32 @@ class DetailViewModel extends BaseModel {
    final FirestoreService _firestoreService = locator<FirestoreService>();
     final DialogService _dialogService = locator<DialogService>();
 
-final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
-
   User _owner;
   User get owner =>_owner;
 
+  bool _onloading = false;
+  bool get onloading => _onloading;
+
  Future<void> getStartCurrentDetail(PostProperty postProperty) async {
-      
-
+    
+      _onloading = true;
+      notifyListeners();
       //_owner.profileUrl ='string';
+ 
+      var users =  await _firestoreService.getUserList();
 
-      var users =    await _firestoreService.getUserList();
-       _googleAdsService.disposeGoogleAds();
+      // _googleAdsService.disposeGoogleAds();
 
     //   await  _firestoreService.getUserList().then((data) {
     //     _owner = data.singleWhere((id) => id.id == postProperty.id);
     // });
      _owner = await users.singleWhere((id) => id.id == postProperty.id);
    // _owner = poster.profileUrl;
-       notifyListeners();
+
     await  googleMapPreview(postProperty);
+     _onloading = false;
+    notifyListeners();
+
  }
 
 

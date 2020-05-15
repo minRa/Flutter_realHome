@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+import 'package:realhome/locator.dart';
 import 'package:realhome/models/message.dart';
 import 'package:realhome/models/user.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/view_model/chat_room_list_view_model.dart';
 
 
@@ -17,6 +19,16 @@ class _ChatRoomListViewState extends State<ChatRoomListView> {
 
   // final _serchTextController = TextEditingController();
   // bool onSearch = false;
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+
+  @override
+  void initState() {
+   if(!_googleAdsService.onBanner) {
+    _googleAdsService.bottomBanner();
+    }
+    super.initState();
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -30,30 +42,33 @@ class _ChatRoomListViewState extends State<ChatRoomListView> {
             children: <Widget>[
               SizedBox(height: 10,),
               Container(
-                  color: Colors.white,
-                  child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                     Container(
-                       padding: EdgeInsets.only(top:15),
-                       child: Image.asset('assets/images/logo2.png',
-                        scale:12,
-                        fit: BoxFit.cover,),
-                     ),
-                     Container (
-                        padding: EdgeInsets.only(top:15),
-                        child: Text(' Chatting',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.mcLaren(fontSize: 20),
-                        // style: TextStyle(
-                        //   fontSize: 20
-                        // ),
-                      ),),
-                      SizedBox(width: 35,)
-                  ],
-                ),
+                color: Colors.white,
+                child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                   Container(
+                     padding: EdgeInsets.only(top:15),
+                     child: Image.asset('assets/images/logo2.png',
+                      scale:12,
+                      fit: BoxFit.cover,),
+                   ),
+                   Container (
+                      padding: EdgeInsets.only(top:15),
+                      child: Text(' Chatting',
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.mcLaren(fontSize: 20),
+                      // style: TextStyle(
+                      //   fontSize: 20
+                      // ),
+                    ),),
+                    SizedBox(width: 35,
+                    )
+                ],
               ),
-              SizedBox(height: 10,),
+                ),
+              Container(height: 10,
+              color: Colors.white,
+              ),
               Expanded(
                 flex: 10,
                 child: model.loading ? 
@@ -62,7 +77,24 @@ class _ChatRoomListViewState extends State<ChatRoomListView> {
                   valueColor: AlwaysStoppedAnimation(
                   Theme.of(context).primaryColor
                   ),),)
-                 : model.message != null?
+                 : 
+                 model.currentUser == null?
+                 Container(
+                   padding: EdgeInsets.only(top:50),
+                  color: Colors.white,
+                   child: Column(
+                     children: <Widget>[
+                       Container(
+                         child: Image.asset('assets/images/guest.png',
+                         fit: BoxFit.cover,
+                         )
+                       ),
+                       Text('only for login user',
+                       style: GoogleFonts.mcLaren(fontSize: 18),
+                       textAlign: TextAlign.center,),
+                     ],
+                   ),)
+                 :model.message != null && model.message.length > 0?
                    ReorderableListView(
                      onReorder: (int oldIndex, int newIndex) {
                       setState(
@@ -136,11 +168,21 @@ class _ChatRoomListViewState extends State<ChatRoomListView> {
                     },
                     ),
                   ) : Container(
-                       padding: EdgeInsets.only(top:150) ,
-                      child: Text('There are no Chat list',
+                      color: Colors.white,
+                      padding: EdgeInsets.only(top:20) ,
+                      child: Column(
+                        children: <Widget>[
+                           Container(
+                         child: Image.asset('assets/images/notchat.png',
+                         fit: BoxFit.cover,
+                         )
+                       ),
+                      Text('There is no Chat list',
                      style: GoogleFonts.mcLaren(fontSize: 18),
-                     textAlign: TextAlign.center,),),
-                 ),
+                     textAlign: TextAlign.center,),
+                        ],
+                      ),),
+              ),
                   Expanded(
                     flex: 2,
                     child:Container(),)

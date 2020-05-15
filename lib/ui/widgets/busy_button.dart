@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:realhome/ui/shared/shared_styles.dart';
+import 'package:google_fonts/google_fonts.dart';
+//import 'package:realhome/ui/shared/shared_styles.dart';
 
 /// A button that shows a busy indicator in place of title
 class BusyButton extends StatefulWidget {
@@ -39,7 +40,7 @@ class _BusyButtonState extends State<BusyButton> {
           child: !widget.busy
               ? Text(
                   widget.title,
-                  style: buttonTitleTextStyle,
+                  style: GoogleFonts.mcLaren(fontWeight: FontWeight.w700, color: Colors.white) //buttonTitleTextStyle,
                 )
               : CircularProgressIndicator(
                   strokeWidth: 2,

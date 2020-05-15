@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/ui/view/initial_view.dart';
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
             builder: (context) => DialogManager(child: child)),
       ),
       navigatorKey: locator<NavigationService>().navigationKey,
-      //navigatorObservers: [locator<AnalyticsService>().getAnalyticsObserver()],
+      navigatorObservers: [locator<AnalyticsService>().getAnalyticsObserver()],
       theme: ThemeData(
         primaryColor: Color(0xff19c7c1),
         textTheme: Theme.of(context).textTheme.apply(

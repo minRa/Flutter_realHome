@@ -5,6 +5,8 @@ import 'package:realhome/models/user.dart';
 
 class UserProfilePage extends StatelessWidget {
   final bool onAuth;
+  final bool guest;
+  final bool onLoading;
   final Function navigate;
   final User user;
   final Function editImage;
@@ -12,11 +14,13 @@ class UserProfilePage extends StatelessWidget {
   final Function goToChatRoom;
 
   UserProfilePage({
+    this.guest,
     this.navigate,
     this.user,
     this.onAuth,
     this.editImage,
     this.editBackground,
+    this.onLoading = false,
     this.goToChatRoom
   });
 
@@ -79,10 +83,9 @@ class UserProfilePage extends StatelessWidget {
               child: Container(
                   height: 50,
                   width: 50,
-                  //color: Colors.white.withOpacity(0.1),
                   child: IconButton(
                   icon: Icon(Icons.edit,size: 30,),
-                  color: Colors.white,
+                  color: Colors.blueGrey,
                   onPressed: () {
                   showDialog(
                   context: context,
@@ -118,7 +121,7 @@ class UserProfilePage extends StatelessWidget {
 
   Widget _buildGetInTouch(BuildContext context) {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Colors.white,  //Theme.of(context).scaffoldBackgroundColor,
       //padding: EdgeInsets.only(top: 8.0),
       child: Text(
         user.email,
@@ -140,7 +143,10 @@ class UserProfilePage extends StatelessWidget {
     Size screenSize = MediaQuery.of(context).size/ 2;
     return SafeArea(
         child: Scaffold(
-        body: Stack(
+        backgroundColor: Colors.white,
+        body: onLoading ?
+        Center(child: CircularProgressIndicator()):
+        Stack(
           children: <Widget>[
             _buildCoverImage(context, screenSize),
             SingleChildScrollView(
@@ -161,7 +167,7 @@ class UserProfilePage extends StatelessWidget {
                     title: _buildFullName(),
                     subtitle: _buildGetInTouch(context),
                     trailing:
-                     onAuth ?  SizedBox(
+                     onAuth || guest? SizedBox(
                       width: 43,
                     ) :
                      Container(

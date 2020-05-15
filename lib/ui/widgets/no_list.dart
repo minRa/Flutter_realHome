@@ -4,13 +4,14 @@ class NoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+     color: Colors.white,
      child: Column(
        children: <Widget>[
          Container(
            margin: EdgeInsets.only(top:40),
            height: 270,
            width: 300,
-           child: Image.asset('assets/images/nolist2.jpg',
+           child:Image.asset('assets/images/emty.png',
             fit: BoxFit.cover,
               ),
             ),

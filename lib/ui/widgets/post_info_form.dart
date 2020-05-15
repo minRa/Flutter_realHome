@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class InputInformationForm extends StatefulWidget {
   InputInformationForm(
@@ -81,7 +82,8 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       border: InputBorder.none,
                       icon: Icon(Icons.title, color: Colors.blueGrey),
                       labelText: 'Title',
-                      hintText: 'Type your title'
+                      hintText: 'Type your title',
+                      hintStyle: GoogleFonts.mcLaren()
                   ),
                   validator: (String value) {
                     if (value.trim().isEmpty) {
@@ -90,7 +92,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       return null;
                     }
                   },
-                  style: TextStyle(color:Colors.blueGrey),
+                  style: GoogleFonts.mcLaren(color:Colors.blueGrey),
                   controller: widget.titleController,
                 ),
               ),
@@ -102,7 +104,8 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       border: InputBorder.none,
                       icon:Icon(Icons.credit_card, color: Colors.blueGrey),
                       labelText: 'Price',
-                      hintText: 'Type Rent Price'
+                      hintText: 'Type Rent Price',
+                      hintStyle: GoogleFonts.mcLaren()
                   ),
                   validator: (String value) {
                     if (value.trim().isEmpty) {
@@ -111,7 +114,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       return null;
                     }
                   },
-                  style: TextStyle(color: Colors.black),
+                  style: GoogleFonts.mcLaren(color: Colors.black),
                   controller: widget.priceController,
                 ),
               ),
@@ -123,7 +126,8 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       border: InputBorder.none,
                       icon:Icon(Icons.mobile_screen_share, color: Colors.blueGrey),
                       labelText: 'Messenger',
-                      hintText: 'Type your Messenger & ID'
+                      hintText: 'Type your Messenger & ID',
+                      hintStyle: GoogleFonts.mcLaren(),
                   ),
                   validator: (String value) {
                     if (value.trim().isEmpty) {
@@ -132,7 +136,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       return null;
                     }
                   },
-                  style: TextStyle(color: Colors.black),
+                  style: GoogleFonts.mcLaren(color: Colors.black),
                   controller: widget.messengerController,
                 ),
               ),
@@ -144,7 +148,8 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                       border: InputBorder.none,
                       icon:Icon(Icons.phone, color: Colors.blueGrey,),
                       labelText: 'phone',
-                      hintText: 'Type your phone number'
+                      hintText: 'Type your phone number',
+                      hintStyle: GoogleFonts.mcLaren()
                   ),
                   validator: (String value) {
                     if (value.trim().isEmpty) {
@@ -154,6 +159,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                     }
                   },
                   controller: widget.phoneController,
+                  style: GoogleFonts.mcLaren(color: Colors.black),
                 ),
               ),
               Divider(),
@@ -180,7 +186,9 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                           widget.rentType('Single');
                       });
                     },
-                    child: Text('Single'),
+                    child: Text('Single',
+                    style: GoogleFonts.mcLaren()
+                    ),
                   ),
                   SizedBox(width: 10,),
                   Radio(
@@ -202,7 +210,9 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                           widget.rentType('Double');
                       });
                     },
-                    child: Text('Double'),
+                    child: Text('Double',
+                    style: GoogleFonts.mcLaren()
+                    ),
                   ),
                      SizedBox(width: 10,),
                   Radio(
@@ -224,7 +234,9 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                         widget.rentType('Fmaily');
                       });
                     },
-                    child: Text('Fmaily'),
+                    child: Text('Fmaily',
+                   style: GoogleFonts.mcLaren()
+                    ),
                   ),
                 ],
               ),               
@@ -243,7 +255,9 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                           onPressed: () {
                             _selectDate(context);
                           },
-                          child: Text(_selectDateString),
+                          child: Text(_selectDateString,
+                          style: GoogleFonts.mcLaren(),
+                          ),
                           color: Colors.white,
                         ),
                       ),
@@ -267,13 +281,15 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                           _setAgreedToTerm(_agreedToTerm);
                         },
                         child:
-                        Text('I agree to '),
+                        Text('I agree to ',
+                        style: GoogleFonts.mcLaren(),
+                        ),
                       ),
                       GestureDetector(
                         onTap: () => _showTermPolicy(),
-                        child: const Text(
+                        child: Text(
                           'Terms of Services',
-                          style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold),
+                          style: GoogleFonts.mcLaren(color: Colors.blue,fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -289,7 +305,9 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
   void _showTermPolicy() {
     showDialog(context: context, child:
        AlertDialog(
-       title: Text("Terms of Services, Privacy Policy"),
+       title: Text("Terms of Services, Privacy Policy",
+       style: GoogleFonts.mcLaren(),
+       ),
        shape: RoundedRectangleBorder(
            borderRadius: BorderRadius.all(Radius.circular(20.0))),
        content: Container(
@@ -343,7 +361,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
 
   // Text(
   //                 '--- Rent House Information ---',
-  //                 style: TextStyle (
+  //                 style: GoogleFonts.mcLaren (
   //                   fontSize: 20.0,
   //                   color: Colors.blueAccent,                  
   //                    ),),

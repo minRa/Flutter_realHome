@@ -2,7 +2,9 @@
 //import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+//mport 'package:realhome/locator.dart';
 import 'package:realhome/models/user.dart';
+//import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/ui/widgets/list_view_card.dart';
 import 'package:realhome/ui/widgets/user_profile.dart';
 import 'package:realhome/view_model/post_owner_info_view_model.dart';
@@ -20,6 +22,13 @@ class PostOwnerInfoView extends StatefulWidget {
 class _PostOwnerInfoViewState extends State<PostOwnerInfoView> {
 
   
+  //final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+
+  @override
+  void initState() {
+  //  _googleAdsService.bottomBanner();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +46,7 @@ class _PostOwnerInfoViewState extends State<PostOwnerInfoView> {
                 flex: 7,
                child: 
                UserProfilePage(
+                 guest: model.currentUser == null? true : false,
                  navigate: model.navigateToStartPageView,
                  user: widget.owner,
                  onAuth: false,

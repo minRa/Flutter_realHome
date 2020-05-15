@@ -6,11 +6,13 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/user.dart';
+import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/firestore_service.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirestoreService _firestoreService = locator<FirestoreService>();
+  final AnalyticsService _analyticsService = locator<AnalyticsService>();
 
   User _currentUser;
   User get currentUser => _currentUser;
@@ -55,6 +57,10 @@ class AuthenticationService {
 
       await _firestoreService.createUser(_currentUser).catchError((e) 
       => print(e.toString()));
+         await _analyticsService.setUserProperties(
+        userId: authResult.user.uid,
+        userRole: _currentUser.userRole,
+      );
 
       return authResult.user != null;
     } catch (e) {
@@ -84,11 +90,16 @@ class AuthenticationService {
             id: user.uid,
             email: user.email,
             fullName: user.displayName,
-            userRole: 'User',
+            userRole: 'Google_user',
           );
 
       await _firestoreService.createUser(_currentUser);
        await _populateCurrentUser(user);
+          await _analyticsService.setUserProperties(
+        userId: user.uid,
+        userRole: _currentUser.userRole,
+      );
+       
 
       return user != null;
     }catch (e) {
@@ -114,11 +125,15 @@ class AuthenticationService {
             id: user.uid,
             email: user.email,
             fullName: user.displayName,
-            userRole: 'User',
+            userRole: 'Facebook_user',
           );
 
          await _firestoreService.createUser(_currentUser);
         await _populateCurrentUser(user);
+           await _analyticsService.setUserProperties(
+        userId: user.uid,
+        userRole: _currentUser.userRole,
+      );
         return user != null;
       }
     }catch (e) {
@@ -141,6 +156,10 @@ class AuthenticationService {
              
          } else {  
            _currentUser = result;
+            await _analyticsService.setUserProperties(
+              userId: user.uid,
+              userRole: _currentUser.userRole,
+            );
         }
     }
   }

@@ -47,12 +47,17 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
   bool _ban = false;
   bool get ban =>_ban;
   //const nativeAdUnitID = "ca-app-pub-7333672372977808/9632212477";
-
+  googleAdBan() {
+    _ban = true;
+  }
 
 
   Future<void> bottomBanner() async {
       // return;
-      if(!_googleAdOnOff) return;
+      if(!_googleAdOnOff || _ban) {
+        _ban= false;
+        return;
+        }
       if(_onBanner) return; 
       await FirebaseAdMob.instance.initialize(
       appId: appId);
@@ -62,13 +67,33 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
          size: AdSize.smartBanner,
         // targetingInfo: targetingInfo,
         listener: (MobileAdEvent event) {
-        print("BannerAd event is $event");
-        },); //..load()..show();
+           if (event == MobileAdEvent.loaded) {
+           // dispose after you received the loaded event seems okay. 
+          //   if (_googleAdOnOff && !_onBanner && !_ban) {
+          //     _onBanner = true;
+          //     _bannerAd..show();
+          //   } else {
+          //    _bannerAd = null;
+          //  }
+        }});
+        
 
-        _bannerAd..load().then((loaded) {
-         if(loaded && _googleAdOnOff && !_onBanner)
+
+      //   print("BannerAd event is $event");
+      //   },); //..load()..show();
+
+        _bannerAd..load().then((loaded) async {
+         if(loaded &&
+          _googleAdOnOff && 
+          !_onBanner && 
+          !_ban
+          ) {
            _bannerAd.show();
            _onBanner = true;
+          } else {
+            await _bannerAd.dispose();
+            _bannerAd = null;
+          }
        });  
  }
 
@@ -91,11 +116,11 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
  }
 
 
-    Future<void> disposeGoogleAds() async {
+  Future<void> disposeGoogleAds() async {
     if(_onBanner) {
+      _onBanner = false;
       await _bannerAd?.dispose();
-        _bannerAd =null;
-        _onBanner = false;
+      _bannerAd = null;
       //myInterstitialAd.dispose();
     }
   }

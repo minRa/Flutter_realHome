@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Introduce extends StatefulWidget {
 
@@ -41,7 +42,9 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
           ))
         ],
         hideHeader: true,
-        title: new Text("Select Number of $type", textAlign: TextAlign.center,),
+        title: new Text("Select Number of $type", 
+        style: GoogleFonts.mcLaren(),
+        textAlign: TextAlign.center,),
         onConfirm: (Picker picker, List value) {
           setState(() {
             if(type == 'Room')
@@ -80,14 +83,16 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
                           onTap: () {
                             showPickerNumber(context, 'Room');
                           }, 
-                          child: Row(children: <Widget>[
+                          child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
                           Icon(Icons.hotel, color: Colors.blueGrey,),
                           SizedBox(width: 15,),
                           Icon(Icons.arrow_back_ios,
                           size: 11,
                           ),
                           Text(' $room ', 
-                          style :TextStyle(fontSize: 18),),
+                          style :GoogleFonts.mcLaren(fontSize: 18),),
                           Icon(Icons.arrow_forward_ios,
                           size: 11,)
                         ],),
@@ -106,7 +111,7 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
                           size: 11,
                           ),
                           Text(' $toilet ', 
-                          style :TextStyle(fontSize: 18),),
+                          style :GoogleFonts.mcLaren(fontSize: 18),),
                           Icon(Icons.arrow_forward_ios,
                           size: 11,)
                         ],),
@@ -125,7 +130,7 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
                           size: 11,
                           ),
                           Text(' $carpark ', 
-                          style :TextStyle(fontSize: 18),),
+                          style :GoogleFonts.mcLaren(fontSize: 18),),
                           Icon(Icons.arrow_forward_ios,
                           size: 11,)
                         ],),
@@ -143,7 +148,8 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
                     child: TextFormField(
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Type about Rent House'
+                        hintText: 'Type about Rent House',
+                        hintStyle: GoogleFonts.mcLaren(),
                       ),
                         maxLines:10 ,
                         controller: widget.introduceTextController,
@@ -192,7 +198,7 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
 //                       return null;
 //                     }
 //                   },
-//                   style: TextStyle(color:Colors.blueGrey),
+//                   style: GoogleFonts.mcLaren(color:Colors.blueGrey),
 //                   controller: widget.titleController,
 //                 ),
 //               ),

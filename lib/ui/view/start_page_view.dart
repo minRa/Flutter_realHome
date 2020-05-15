@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/ui/view/chat_room_list_view.dart';
 import 'package:realhome/ui/view/house_overview.dart';
-import 'package:realhome/ui/view/login_view.dart';
 //import 'package:realhome/ui/view/post_owner_info_view.dart';
 import 'package:realhome/ui/view/property_manage_view.dart';
 import 'package:realhome/ui/view/settings.dart';
@@ -110,21 +109,22 @@ class _StartPageViewState extends State<StartPageView> with TickerProviderStateM
                       ), 
                     
                    // snapshot.hasData ?
-                    model.currentUser !=null ?
+                   // model.currentUser !=null ?
                      Tooltip(
                        message:'Settings' ,
                       child: Tab(icon: Icon(Icons.settings,
                       color: _tabController.index == 3
                           ? Colors.deepPurple
                           : Colors.blueGrey)),
-                      ) :
-                      Tooltip(
-                       message:'Login' ,
-                      child: Tab(icon: Icon(Icons.person,
-                      color: _tabController.index == 3
-                          ? Colors.deepPurple
-                          : Colors.blueGrey)),
-                      ),
+                      ) 
+                      // :
+                      // Tooltip(
+                      //  message:'Login' ,
+                      // child: Tab(icon: Icon(Icons.person,
+                      // color: _tabController.index == 3
+                      //     ? Colors.deepPurple
+                      //     : Colors.blueGrey)),
+                      // ),
 
                     ],
                   ),
@@ -139,8 +139,8 @@ class _StartPageViewState extends State<StartPageView> with TickerProviderStateM
                 PropertyManageView(),
                 ChatRoomListView(),
                //  snapshot.hasData ?
-               model.currentUser !=null ?
-                Settings() : LoginView(),
+             //  model.currentUser !=null ?
+                Settings() // : LoginView(),
                 //PostOwnerInfoView(),
               ] 
             ),

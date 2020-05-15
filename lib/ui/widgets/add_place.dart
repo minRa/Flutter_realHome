@@ -32,7 +32,6 @@ class _AddPlaceState extends State<AddPlace> {
    String _addressDisplay;
  @override
   void initState() {
- 
      if(widget.address.text !=''){
        _addressDisplay = widget.address.text;
      }

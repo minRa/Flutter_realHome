@@ -4,6 +4,7 @@ import 'package:realhome/constants/route_names.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/place.dart';
 import 'package:realhome/models/postProperty.dart';
+import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/authentication_service.dart';
 import 'package:realhome/services/cloud_storage_service.dart';
 import 'package:realhome/services/dialog_service.dart';
@@ -11,7 +12,6 @@ import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
-import 'package:realhome/services/googleAds_service.dart';
 import 'package:path_provider/path_provider.dart';
 
 
@@ -25,8 +25,8 @@ class PostHouseViewModel extends BaseModel {
   final FirestoreService _firestoreService = locator<FirestoreService>();
   final CloudStorageService _cloudStorageService = locator<CloudStorageService>();
   final GoogleMapServices _googleMapServices = locator<GoogleMapServices>();
-     final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
-  
+  final AnalyticsService _analyticsService = locator<AnalyticsService>();
+
     
     String _date;
      updateDate(String date) {
@@ -132,6 +132,7 @@ class PostHouseViewModel extends BaseModel {
         }
 
         var result = await _firestoreService.postHouseIntoFirebase(_postProperty);
+        _analyticsService.logPostCreated(hasImage: _userDataMap != null);
         _userDataMap.clear();
          print(' i have return with result => $result');
         
@@ -186,14 +187,13 @@ class PostHouseViewModel extends BaseModel {
 
   PostProperty get getPostPropertyData => _postProperty;
 
-    void getGoogleAdService() async {
-      await _googleAdsService.bottomBanner();
-    }
+    // void getGoogleAdService() async {
+    //   await _googleAdsService.bottomBanner();
+    // }
 
   void getPostProperty(PostProperty postProperty) async {
-      
-        await _googleAdsService.bottomBanner();
-
+    
+      //  await _googleAdsService.bottomBanner();
            //postProperty.imageUrl.clear();
           _postProperty = postProperty;
           _cloudStorageService.deleteImageFileToFireStroage(postProperty.imageUrl)

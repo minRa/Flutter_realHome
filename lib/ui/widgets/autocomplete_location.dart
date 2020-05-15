@@ -43,6 +43,12 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
     _checkGPSAvailability();
   }
  
+  @override
+  void dispose() {
+  FocusScope.of(context).unfocus();
+  _searchController.dispose();
+    super.dispose();
+  }
 
 
   void _checkGPSAvailability() async {
@@ -50,37 +56,40 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
         await Geolocator().checkGeolocationPermissionStatus();
   //  print('i am herer ==========================>$geolocationStatus');
 
-    if (geolocationStatus != GeolocationStatus.granted) {
-      showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (ctx) {
-          return AlertDialog(
-            title: Text('Error !',
-            style: GoogleFonts.mcLaren(),
-            ),
-            content: Text('GPS is unable to acess ',
-             style: GoogleFonts.mcLaren(),
-            ),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('OK',
-                 style: GoogleFonts.mcLaren(),
-                ),
-                onPressed: () {
-                  Navigator.pop(ctx);
-                },
-              ),
-            ],
-          );
-        },
-      ).then((_) => Navigator.pop(context));
-    } else {
+     if (geolocationStatus != GeolocationStatus.granted) {}
+
+    //   showDialog(
+    //     barrierDismissible: false,
+    //     context: context,
+    //     builder: (ctx) {
+    //       return AlertDialog(
+    //         title: Text('Error !',
+    //         style: GoogleFonts.mcLaren(),
+    //         ),
+    //         content: Text('GPS is unable to acess ',
+    //          style: GoogleFonts.mcLaren(),
+    //         ),
+    //         actions: <Widget>[
+    //           FlatButton(
+    //             child: Text('OK',
+    //              style: GoogleFonts.mcLaren(),
+    //             ),
+    //             onPressed: () {
+    //               Navigator.pop(ctx);
+    //             },
+    //           ),
+    //         ],
+    //       );
+    //     },
+    //   ).then((_) => Navigator.pop(context));
+    // } else {
+
       await _getGPSLocation();
       myAddr = await GoogleMapServices.getAddrFromLocation(
           position.latitude, position.longitude);
       _setMyLocation();
-    }
+
+    //}
   }
 
   Future<void> _getGPSLocation() async {
@@ -158,9 +167,10 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
               style: GoogleFonts.mcLaren(),
               ),
               onPressed:() {
+                FocusScope.of(context).unfocus();
                 Navigator.of(context).pop();    
                 ok = true;
-                FocusScope.of(context).unfocus();
+
  
               }
             ),
@@ -255,9 +265,12 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
+              SizedBox(height: 15,),
               SizedBox(
-                height: 45.0,
-                child: Image.asset('assets/images/powered_by_google.png'),
+                height: 35.0,
+                child: Text('Google Map',
+                style: GoogleFonts.mcLaren(),
+                ) // Image.asset('assets/images/powered_by_google.png'),
               ),
               TypeAheadField(
                 debounceDuration: Duration(milliseconds: 500),
@@ -265,7 +278,9 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                   controller: _searchController,
                   autofocus: true,
                   decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
                       hintText: 'Search house address...',
                       hintStyle: GoogleFonts.mcLaren(),
                       ),
@@ -304,10 +319,10 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                 },
                 
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 10),
               Container(
                 width: double.infinity,
-                height: 350,
+                height: 340,
                 child: GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(
@@ -321,7 +336,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                   markers: _markers,
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 5),
               _showPlaceInfo(),
             ],
           ),

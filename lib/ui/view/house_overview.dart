@@ -5,6 +5,8 @@ import 'package:flutter_native_admob/flutter_native_admob.dart';
 import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
+import 'package:realhome/locator.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/ui/widgets/creation_aware_list_item.dart';
 import 'package:realhome/ui/widgets/dropdown.dart';
 import 'package:realhome/ui/widgets/no_list.dart';
@@ -24,11 +26,15 @@ class _HouseOverviewState extends State<HouseOverview> {
   final _nativeAdController = NativeAdmobController();
   double _height = 0;
 
-
-
+  final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
   @override
   void initState() {
-    //_subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
+    if(_googleAdsService.googleAdOnOff) {
+     _subscription = _nativeAdController.stateChanged.listen(_onStateChanged);
+    }
+  if(!_googleAdsService.onBanner) {
+     _googleAdsService.bottomBanner();
+    }
     super.initState();
   }
 
@@ -68,28 +74,64 @@ class _HouseOverviewState extends State<HouseOverview> {
        builder: (context, model, child) => 
        Scaffold(
        body:
-       model.postProperty != null ?
+       model.onLoading ?
+        Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation(
+              Theme.of(context).primaryColor
+              ),),):
+       model.postProperty != null && model.postProperty.length > 0 ?
        Column(
             children: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            Stack(
               children: <Widget>[
-                DropDownBox(
-                   cities: model.cities,
-                    searchCondition: model.updatePostCodition,
-                    ),
-                    Container(
-                      child: Row(
-                        children: <Widget>[
-                          Text('Total :',
-                          style: GoogleFonts.mcLaren(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    DropDownBox(
+                       cities: model.cities,
+                        searchCondition: model.updatePostCodition,
+                        ),
+                        Container(
+                          child: Row(
+                            children: <Widget>[
+                              Text('Total :',
+                              style: GoogleFonts.mcLaren(),
+                              ),
+                              Text(' ${model.total}',
+                               style: GoogleFonts.mcLaren()
+                              )
+                            ],
                           ),
-                          Text(' ${model.total}',
-                           style: GoogleFonts.mcLaren()
-                          )
-                        ],
-                      ),
-                    )
+                        )
+                      ],
+                    ),
+                 Positioned(
+                   child: model.showMainBanner ?
+                       Visibility(
+                         visible: model.show ,
+                         child: Container(
+                         height: 80,
+                         width: double.infinity,
+                         padding: const EdgeInsets.symmetric(horizontal: 10),
+                         margin: const EdgeInsets.symmetric(vertical: 15),
+                         decoration: BoxDecoration(
+                             boxShadow: [
+                               BoxShadow(
+                                   color: Colors.black12,
+                                   blurRadius: 4,
+                                   offset: Offset(0, 4))
+                             ],
+                             color: Colors.white,
+                             borderRadius: BorderRadius.circular(10)),
+                         alignment: Alignment.center,
+                         child: Text(
+                           'Welecome to visit realHome app :)',
+                           style: GoogleFonts.mcLaren(fontSize: 20, fontWeight: FontWeight.bold),
+                           textAlign: TextAlign.center,
+                           )),
+                       ) : Container(),
+                    )   
                   ],
                 ),
                 SizedBox(height: 10,),
@@ -136,11 +178,7 @@ class _HouseOverviewState extends State<HouseOverview> {
               ),
             ),                        
           ])
-          :  Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation(
-              Theme.of(context).primaryColor
-              ),),)
+          : NoList()
       //})
      ) 
    );

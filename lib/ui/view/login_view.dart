@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/viewmodel_provider.dart';
-//import 'package:realhome/ui/shared/ui_helpers.dart';
+import 'package:realhome/ui/shared/ui_helpers.dart';
 import 'package:realhome/ui/widgets/busy_button.dart';
 import 'package:realhome/ui/widgets/input_field.dart';
 import 'package:realhome/ui/widgets/text_link.dart';
 import 'package:realhome/view_model/login_view_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:realhome/ui/widgets/Input_Field_login.dart';
+
+
+
+
+
 
 class LoginView extends StatefulWidget {
   @override
@@ -56,7 +62,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    
+
     return ViewModelProvider<LoginViewModel>.withConsumer(
       viewModel: LoginViewModel(),
       builder: (context, model, child) => Scaffold(
@@ -72,11 +78,14 @@ class _LoginViewState extends State<LoginView> {
                       child: Image.asset('assets/images/logo.png',
                       scale: 2 ,)
                     ),
+                  //buildEmailTF(emailController),
                   InputField(
                     placeholder: 'Email',
                     controller: emailController,
                   ),
-                  //verticalSpaceSmall,
+                //  buildPasswordTF(passwordController),
+
+                  verticalSpaceSmall,
                   InputField(
                     placeholder: 'Password',
                     password: true,
@@ -117,7 +126,6 @@ class _LoginViewState extends State<LoginView> {
                   TextLink(
                     'Create an Account with your emaill',
                     onPressed:model.navigateToSignUp,
-
                   ),
                  SizedBox(height: 10,), // verticalSpaceMedium,
                    Row(

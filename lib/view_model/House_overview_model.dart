@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:realhome/constants/route_names.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/postProperty.dart';
@@ -14,7 +16,8 @@ class HouseOverviewModel extends BaseModel {
    locator<NavigationService>();
  
 
-  bool data;
+  
+
   List<PostProperty> _postProperty;
   List<PostProperty> get postProperty => _postProperty;
   // List<User> _userList;
@@ -30,10 +33,28 @@ class HouseOverviewModel extends BaseModel {
    
    //bool _first = true;
 
-  Future<void> listenToPosts() async {  
-        
+ Timer timer;
+ bool _show = false;
+ bool get show => _show;
+ bool data;
+ bool _onLoading = false;
+ bool get onLoading => _onLoading;
+ 
+Future<void> listenToPosts() async {  
+
          data = false;
-        await getCities();     
+         _onLoading = true;
+         notifyListeners();
+          if(_firestoreService.count == 0) {
+              _firestoreService.count++;
+            _show = true;
+            notifyListeners();
+            timer = Timer.periodic(Duration(seconds: 5), (Timer t) {
+              _show = false;
+              notifyListeners();
+          });
+         }
+      await getCities();     
         _firestoreService.listenToPostPropertyRealTime().listen((postsData) {
         List<PostProperty> updatedPosts = postsData;
         if (updatedPosts != null && updatedPosts.length > 0) {
@@ -42,12 +63,21 @@ class HouseOverviewModel extends BaseModel {
         //  data = true;
           }});
       
-        if(data == false) {
-            _postProperty =  _firestoreService.allPropertyPagedResults[0]; 
-            notifyListeners();
+       if(data == false) {
+           if(_firestoreService.allPropertyPagedResults !=null 
+           &&_firestoreService.allPropertyPagedResults.length > 0) {
+                
+              List<PostProperty> temp = List<PostProperty>();  
+              await Future.forEach(_firestoreService.allPropertyPagedResults, (element){
+                 temp+= element;
+              });
+              _postProperty = temp; 
+               notifyListeners();
+           }       
         } 
-        setBusy(false);
-        // notifyListeners();
+
+        _onLoading = false; 
+        notifyListeners();      
   }
   
    int _total = 0;

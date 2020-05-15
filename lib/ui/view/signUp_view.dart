@@ -26,17 +26,9 @@ class SignUpView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
                SizedBox(
-                      height: 120,
-                      child: Image.asset('assets/images/logo.png',
-                      scale: 2 ,)
-                    ),
-              // Text(
-              //   '-- Sign Up --',
-              //   style: TextStyle(
-              //     fontSize: 15,
-              //   ),
-              // ),
-            //  verticalSpaceLarge,
+                child: Image.asset('assets/images/signup.png',
+                scale: 2 ,)
+              ),
               InputField(
                 placeholder: 'Full Name',
                 controller: fullNameController,

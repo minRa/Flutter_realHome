@@ -4,8 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-//import 'package:flutter_chat_demo/const.dart';
-//import 'package:flutter_chat_demo/fullPhoto.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -38,19 +36,8 @@ class ChatView extends StatelessWidget {
                 cancelTitle: 'CANCEL'        
               );
             if(dialogResponse.confirmed) {
-
-              // if(peer.chattings.contains('$groupChatId-${user.id}') ||
-              //  peer.chattings.contains('$groupChatId-${peer.id}')) {
-              //    await Firestore.instance
-              //   .collection('messages/$groupChatId/$groupChatId')
-              //   .getDocuments().then((snapshot) {
-              //     for (DocumentSnapshot doc in snapshot.documents) {
-              //       doc.reference.delete();
-              //       }
-              //   });             
-              // } else {
-                if(!user.chattings.contains('$groupChatId-${peer.id}') 
-                 || !user.chattings.contains('$groupChatId-${user.id}' )){
+                if(user.chattings != null && (!user.chattings.contains('$groupChatId-${peer.id}') 
+                 || !user.chattings.contains('$groupChatId-${user.id}'))){
                  int i =0;
                  List<dynamic> userChat = List<dynamic>.generate(user.chattings.length, (index) => '');
                  await Future.forEach(user.chattings, (element){
@@ -62,12 +49,8 @@ class ChatView extends StatelessWidget {
                           i++;
                       });
                  Firestore.instance.collection('users').document(user.id).updateData({'chattings': userChat});          
-                // user.chattings.remove(groupChatId);
-           //  }
             }
-            model.navigateToStartPageView(2);
-             // model.na
-         //    Navigator.pop(context);   
+            model.navigateToStartPageView(2);  
         } 
       }
   
@@ -85,10 +68,10 @@ class ChatView extends StatelessWidget {
      // onModelReady: (model) => model.getAllUserIformation(),
       builder: (context, model, child) =>
       new Scaffold(
-        appBar: new AppBar(
+        appBar: AppBar(
           backgroundColor: Colors.white,
-          title: new Text(
-            'CHAT',
+          title: Text(
+            '${peerUser[1].fullName}',
             style: GoogleFonts.mcLaren(),
            // style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold),
           ),
@@ -165,6 +148,9 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
   final ScrollController listScrollController = new ScrollController();
   final FocusNode focusNode = new FocusNode();
   final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
+ 
+
+
   @override
   void initState() {
     _googleAdsService.disposeGoogleAds();
@@ -178,6 +164,8 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
    WidgetsBinding.instance.addObserver(this);
   }
 
+  
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
@@ -189,14 +177,17 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
       case AppLifecycleState.resumed:
         print('resumed state');
        Firestore.instance.collection('users').document(user.id).updateData({'chattingWith':peer.id });
+       //_navigationService.navigateTo(ChatView(peerUser))
+        
         break;
       case AppLifecycleState.inactive:
         print('inactive state');
-         Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': null});
+
+         //Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': null});
         break;
       case AppLifecycleState.detached:
         print('detached state');
-        
+
            Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': null});
         break;
     }
@@ -210,6 +201,7 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
     textEditingController.dispose();
     listScrollController.dispose();
     focusNode.dispose();
+    _googleAdsService.bottomBanner();
     super.dispose();
   }
 
@@ -232,22 +224,24 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
     // } else {
     //   groupChatId = '${peer.id}-${user.id}';
     // }
+List<dynamic> userChat; 
+if(user.chattings == null || user.chattings.length == 0) {
+     userChat = List<dynamic>.generate(1, (index) => '');
+     userChat[0] = groupChatId;
+  Firestore.instance.collection('users').document(user.id).updateData({'chattings': userChat});
+} 
 
-  if(user.chattings == null ||!user.chattings.contains(groupChatId)) {
-    List<dynamic> userChat;
+if(user.chattings != null && user.chattings.length > 0 && !user.chattings.contains(groupChatId)) {
+
     if(!user.chattings.contains('$groupChatId-${peer.id}')) {
-       userChat = List<dynamic>.generate(user.chattings.length + 1, (index) => ''); //user.chattings;
-      //userChat = user.chattings;
-      if(user.chattings == null) {
-        userChat[0] = groupChatId;
-      } else {
+        userChat = List<dynamic>.generate(user.chattings.length + 1, (index) => '');
          int i = 0;
         await Future.forEach(user.chattings, (element){
            userChat[i] = element;
            i++;
         });
         userChat[user.chattings.length] =groupChatId;
-      }
+      
     }else {
       userChat = List<dynamic>.generate(user.chattings.length, (index) => '');
         int i = 0;
@@ -261,29 +255,26 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
        });
     }
     //  print(userChat);
- Firestore.instance.collection('users').document(user.id).updateData({'chattings': userChat});
+     Firestore.instance.collection('users').document(user.id).updateData({'chattings': userChat});
   }
-if(!peer.chattings.contains('$groupChatId-${user.id}')){ 
+
+List<dynamic> peerChat;
+if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')){ 
   if( !peer.chattings.contains(groupChatId)) {
-   List<dynamic> peerChat =List<dynamic>.generate(peer.chattings.length +1, (index) => '');
-    //peerChat = peer.chattings;
-      if(peer.chattings == null) {
-         peerChat[0]=groupChatId;
-       } else {
+         peerChat =List<dynamic>.generate(peer.chattings.length +1, (index) => ''); 
          int i = 0;
         await Future.forEach(peer.chattings, (element){
            peerChat[i] = element;
            i++;
         });
          peerChat[peer.chattings.length] = groupChatId;
-       }  
       Firestore.instance.collection('users').document(peer.id).updateData({'chattings': peerChat});
-    }
+    } 
   }
 
      
 
-     Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': peer.id});
+ Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': peer.id});
     //setState(() {});
     // Future.delayed(const Duration(milliseconds: 500), () {
     //    Firestore.instance.collection('users').document(id).updateData({'chattingWith': null});
@@ -336,24 +327,31 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
     if (content.trim() != '') {
       textEditingController.clear();
 
-    if(peer.chattings.contains('$groupChatId-${user.id}')) {
-      List<dynamic> peerChat =List<dynamic>.generate(peer.chattings.length, (index) => '');
-        //peerChat = peer.chattings;
-          if(peer.chattings == null) {
-            peerChat[0]=groupChatId;
-          } else {
-            int i = 0;
-            await Future.forEach(peer.chattings, (element){
-              if(element =='$groupChatId-${user.id}') {
-                peerChat[i] = groupChatId;
-              }else {
-                peerChat[i] = element;
-              }
-              i++;
-            });
-          }  
-          Firestore.instance.collection('users').document(peer.id).updateData({'chattings': peerChat});
-        }
+    var newpeer = await Firestore.instance.collection('users').document(peer.id).get();
+    if(newpeer != null) {
+       peer = User.fromData(newpeer.data);
+    }
+     // var abc = newpeer.data['chattings'];
+    List<dynamic> peerChat;
+    if(peer.chattings == null ||  peer.chattings.length == 0) {
+       peerChat =List<dynamic>.generate(1, (index) => ''); 
+       peerChat[0]=groupChatId;
+       Firestore.instance.collection('users').document(peer.id).updateData({'chattings': peerChat});
+    } 
+
+    if( peer.chattings != null && peer.chattings.length > 0 && peer.chattings.contains('$groupChatId-${user.id}')) {
+       peerChat =List<dynamic>.generate(peer.chattings.length, (index) => ''); 
+        int i = 0;
+        await Future.forEach(peer.chattings, (element){
+          if(element =='$groupChatId-${user.id}') {
+            peerChat[i] = groupChatId;
+          }else {
+            peerChat[i] = element;
+          }
+          i++;
+        });
+        Firestore.instance.collection('users').document(peer.id).updateData({'chattings': peerChat});
+       }
 
       var documentReference = Firestore.instance
           .collection('messages')
@@ -390,11 +388,12 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
               ? Container(
                   child: Text(
                     document['content'],
-                    textAlign: TextAlign.end,
-                    style: TextStyle(color: primaryColor),
+                    textAlign: TextAlign.start,
+                    style: GoogleFonts.mcLaren(color: primaryColor) //TextStyle(color: primaryColor),
                   ),
                   padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                  width: 200.0,
+                  //width: null,
+                  width: document['content'].length > 12 ? 200 : null,
                   decoration: BoxDecoration(color: greyColor2, borderRadius: BorderRadius.circular(8.0)),
                   margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
                 )
@@ -406,7 +405,7 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
                           child: CachedNetworkImage(
                             placeholder: (context, url) => Container(
                               child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+                               // valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                               ),
                               width: 200.0,
                               height: 200.0,
@@ -468,19 +467,25 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
               children: <Widget>[
                 isLastMessageLeft(index)
                     ? Material(
-                        child: CachedNetworkImage(
+                        child: peer.profileUrl == null ?
+                        Image.asset('assets/images/avata.png',
+                          width: 35.0,
+                          height: 35.0,
+                          fit: BoxFit.cover,
+                        ):
+                        CachedNetworkImage(
                           placeholder: (context, url) => Container(
                             child: CircularProgressIndicator(
                               strokeWidth: 1.0,
-                              valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+                              //valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                             ),
                             width: 35.0,
                             height: 35.0,
                             padding: EdgeInsets.all(10.0),
                           ),
-                          imageUrl: peer.profileUrl == null ?
-                          'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
-                          :peer.profileUrl, 
+                          imageUrl: 
+                          //'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
+                          peer.profileUrl, 
                           width: 35.0,
                           height: 35.0,
                           fit: BoxFit.cover,
@@ -496,10 +501,11 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
                     ? Container(
                         child: Text(
                           document['content'],
-                          style: TextStyle(color: Colors.white),
+                          style: GoogleFonts.mcLaren(color: Colors.white) //TextStyle(color: Colors.white),
                         ),
                         padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-                        width: 200.0,
+                         width: document['content'].length > 12 ? 200 : null,
+                        //width: 200.0,
                         decoration: BoxDecoration(color: Colors.blueGrey, borderRadius: BorderRadius.circular(8.0)),
                         margin: EdgeInsets.only(left: 10.0),
                       )
@@ -510,7 +516,7 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
                                 child: CachedNetworkImage(
                                   placeholder: (context, url) => Container(
                                     child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+                                     // valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                                     ),
                                     width: 200.0,
                                     height: 200.0,
@@ -604,10 +610,6 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
       });
     } else {
       Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': null});
-      //  Navigator.push(context,
-      //   MaterialPageRoute(builder: (context) => ChatRoomListView()));
-      //                        // },
-
       Navigator.pop(context);
     }
 
@@ -831,7 +833,9 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
   Widget buildListMessage() {
     return Flexible(
       child: groupChatId == ''
-          ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(themeColor)))
+          ? Center(child: CircularProgressIndicator(
+           // valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+            ))
           : StreamBuilder(
               stream: Firestore.instance
                   .collection('messages')
@@ -843,7 +847,9 @@ if(!peer.chattings.contains('$groupChatId-${user.id}')){
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(
-                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(themeColor)));
+                      child: CircularProgressIndicator(
+                       // valueColor: AlwaysStoppedAnimation<Color>(themeColor)
+                        ));
                 } else {
                   listMessage = snapshot.data.documents;
                   return ListView.builder(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TextLink extends StatelessWidget {
   final String text;
@@ -11,7 +12,7 @@ class TextLink extends StatelessWidget {
       onTap: onPressed,
       child: Text(
         text,
-        style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+        style: GoogleFonts.mcLaren(fontWeight: FontWeight.w700, fontSize: 14)
       ),
     );
   }

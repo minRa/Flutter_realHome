@@ -18,10 +18,6 @@ class SignUpViewModel extends BaseModel {
   String _selectedRole = 'Email_user';
   String get selectedRole => _selectedRole;
 
-  // void setSelectedRole(dynamic role) {
-  //   _selectedRole = role;
-  //   notifyListeners();
-  // }
 
   Future signUp({
     @required String email,

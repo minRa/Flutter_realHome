@@ -30,7 +30,7 @@ class ChatView extends StatelessWidget {
   void goOutOfChat(BuildContext context, ChatRoomListModel model,  User user, User peer, String groupChatId) async { 
   
         var dialogResponse = await _dialogService.showConfirmationDialog(
-                title: 'go out of a chat',
+                title: 'Quit chat',
                 description: 'do you wanna quit a chat with ${peer.fullName} ?',
                 confirmationTitle: 'OK',
                 cancelTitle: 'CANCEL'        
@@ -129,15 +129,12 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
   });
 
   User user;
-  //String userAvatar;
-
   User peer;
-  //String peerAvatar;
-  //String id;
+
 
   var listMessage;
   String groupChatId;
-  //SharedPreferences prefs;
+
 
   File imageFile;
   bool isLoading;
@@ -156,7 +153,6 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
     _googleAdsService.disposeGoogleAds();
     super.initState();
     focusNode.addListener(onFocusChange);
-    //groupChatId = '';
     isLoading = false;
     isShowSticker = false;
     imageUrl = '';
@@ -177,13 +173,12 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
       case AppLifecycleState.resumed:
         print('resumed state');
        Firestore.instance.collection('users').document(user.id).updateData({'chattingWith':peer.id });
-       //_navigationService.navigateTo(ChatView(peerUser))
+    
         
         break;
       case AppLifecycleState.inactive:
         print('inactive state');
-
-         //Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': null});
+        
         break;
       case AppLifecycleState.detached:
         print('detached state');
@@ -214,16 +209,8 @@ class ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver
     }
   }
   
-
-  readLocal() async {
-   /// prefs = await SharedPreferences.getInstance();
-    //id = prefs.getString('id') ?? '';
-    
-    // if (user.id.hashCode <= peer.id.hashCode) {
-    //   groupChatId = '${user.id}-${peer.id}';
-    // } else {
-    //   groupChatId = '${peer.id}-${user.id}';
-    // }
+readLocal() async {
+ 
 List<dynamic> userChat; 
 if(user.chattings == null || user.chattings.length == 0) {
      userChat = List<dynamic>.generate(1, (index) => '');
@@ -272,14 +259,7 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
     } 
   }
 
-     
-
  Firestore.instance.collection('users').document(user.id).updateData({'chattingWith': peer.id});
-    //setState(() {});
-    // Future.delayed(const Duration(milliseconds: 500), () {
-    //    Firestore.instance.collection('users').document(id).updateData({'chattingWith': null});
-    // });
-    //groupChatId = '';
   }
 
   Future getImage() async {
@@ -294,7 +274,6 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
   }
 
   void getSticker() {
-    // Hide keyboard when sticker appear
     focusNode.unfocus();
     setState(() {
       isShowSticker = !isShowSticker;
@@ -403,40 +382,40 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
                       child: FlatButton(
                         child: Material(
                           child: CachedNetworkImage(
-                            placeholder: (context, url) => Container(
-                              child: CircularProgressIndicator(
-                               // valueColor: AlwaysStoppedAnimation<Color>(themeColor),
-                              ),
-                              width: 200.0,
-                              height: 200.0,
-                              padding: EdgeInsets.all(70.0),
-                              decoration: BoxDecoration(
-                                color: greyColor2,
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(8.0),
-                                ),
-                              ),
+                          placeholder: (context, url) => Container(
+                          child: CircularProgressIndicator(
+                            // valueColor: AlwaysStoppedAnimation<Color>(themeColor),
+                           ),
+                           width: 200.0,
+                           height: 200.0,
+                           padding: EdgeInsets.all(70.0),
+                           decoration: BoxDecoration(
+                             color: greyColor2,
+                             borderRadius: BorderRadius.all(
+                               Radius.circular(8.0),
+                             ),
+                           ),
+                         ),
+                         errorWidget: (context, url, error) => Material(
+                           child: Image.asset(
+                             'images/img_not_available.jpeg',
+                             width: 200.0,
+                             height: 200.0,
+                             fit: BoxFit.cover,
+                           ),
+                           borderRadius: BorderRadius.all(
+                             Radius.circular(8.0),
+                           ),
+                           clipBehavior: Clip.hardEdge,
+                         ),
+                         imageUrl: document['content'],
+                         width: 200.0,
+                         height: 200.0,
+                         fit: BoxFit.cover,
                             ),
-                            errorWidget: (context, url, error) => Material(
-                              child: Image.asset(
-                                'images/img_not_available.jpeg',
-                                width: 200.0,
-                                height: 200.0,
-                                fit: BoxFit.cover,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(8.0),
-                              ),
-                              clipBehavior: Clip.hardEdge,
-                            ),
-                            imageUrl: document['content'],
-                            width: 200.0,
-                            height: 200.0,
-                            fit: BoxFit.cover,
+                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                            clipBehavior: Clip.hardEdge,
                           ),
-                          borderRadius: BorderRadius.all(Radius.circular(8.0)),
-                          clipBehavior: Clip.hardEdge,
-                        ),
                         onPressed: () {
                           Navigator.push(
                               context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
@@ -484,7 +463,6 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
                             padding: EdgeInsets.all(10.0),
                           ),
                           imageUrl: 
-                          //'https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50'
                           peer.profileUrl, 
                           width: 35.0,
                           height: 35.0,
@@ -501,7 +479,7 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
                     ? Container(
                         child: Text(
                           document['content'],
-                          style: GoogleFonts.mcLaren(color: Colors.white) //TextStyle(color: Colors.white),
+                          style: GoogleFonts.mcLaren(color: Colors.white) 
                         ),
                         padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                          width: document['content'].length > 12 ? 200 : null,
@@ -516,7 +494,6 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
                                 child: CachedNetworkImage(
                                   placeholder: (context, url) => Container(
                                     child: CircularProgressIndicator(
-                                     // valueColor: AlwaysStoppedAnimation<Color>(themeColor),
                                     ),
                                     width: 200.0,
                                     height: 200.0,
@@ -758,7 +735,7 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
       child: isLoading
           ? Container(
               child: Center(
-                child: CircularProgressIndicator()//valueColor: AlwaysStoppedAnimation<Color>(themeColor)),
+                child: CircularProgressIndicator()
               ),
               color: Colors.white.withOpacity(0.8),
             )
@@ -834,7 +811,6 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
     return Flexible(
       child: groupChatId == ''
           ? Center(child: CircularProgressIndicator(
-           // valueColor: AlwaysStoppedAnimation<Color>(themeColor)
             ))
           : StreamBuilder(
               stream: Firestore.instance
@@ -848,7 +824,6 @@ if(peer.chattings != null && !peer.chattings.contains('$groupChatId-${user.id}')
                 if (!snapshot.hasData) {
                   return Center(
                       child: CircularProgressIndicator(
-                       // valueColor: AlwaysStoppedAnimation<Color>(themeColor)
                         ));
                 } else {
                   listMessage = snapshot.data.documents;

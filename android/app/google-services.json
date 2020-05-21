@@ -8,17 +8,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:431278317520:android:a7bc55debf143df38ba3d5",
+        "mobilesdk_app_id": "1:431278317520:android:d6ea1b8c3f00e2a88ba3d5",
         "android_client_info": {
-          "package_name": "com.example.realhome"
+          "package_name": "com.min.realHome"
         }
       },
       "oauth_client": [
         {
-          "client_id": "431278317520-dcu6lvqnmkj49007hp9r34blgesj7q65.apps.googleusercontent.com",
+          "client_id": "431278317520-2tui02k6esjaqr7it239f45632r3kini.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.realhome",
+            "package_name": "com.min.realHome",
             "certificate_hash": "2828b235376dca92be222201940428a4c127052f"
           }
         },
@@ -29,7 +29,7 @@
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAZIYGDCCO08hdysw5pgJFauLFRUNT9_Q0"
+          "current_key": "AIzaSyCv8-8NF_SH_4wljPZew3n1VPHesJwZewE"
         }
       ],
       "services": {
@@ -41,8 +41,7 @@
             }
           ]
         }
-      },
-      "admob_app_id": "ca-app-pub-7333672372977808~8123239007"
+      }
     }
   ],
   "configuration_version": "1"

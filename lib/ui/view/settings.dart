@@ -37,182 +37,133 @@ class _Settings extends State<Settings> {
       viewModel: SettingsViewModel(), 
       onModelReady: (model) => model.currentUser,
       builder: (context, model, child) =>  SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          SizedBox(height: 40,),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0,10,0,0),
-            child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child:
-                 model.currentUser != null?
-                 model.currentUser.profileUrl !=null?
-                   Image.network(model.currentUser.profileUrl,
-                    height: 100,
-                    fit: BoxFit.cover,
-                     loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
-                      if (loadingProgress == null) return child;
-                        return Center(
-                          child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null ? 
-                                loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                                : null,
-                          ),
-                        );
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            SizedBox(height: 20,),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,10,0,0),
+              child: ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child:
+                   model.currentUser != null?
+                   model.currentUser.profileUrl !=null?
+                     Image.network(model.currentUser.profileUrl,
+                      height: 100,
+                      fit: BoxFit.cover,
+                       loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null ? 
+                                  loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                  : null,
+                            ),
+                          );
+                        },
+                      width: 70) :
+                      Image.asset('assets/images/avata2.png',
+                      height: 80,
+                      fit: BoxFit.cover,
+                      width: 60,  
+                      ) :
+                       Image.asset('assets/images/avata2.png',
+                      height: 80,
+                      fit: BoxFit.cover,
+                      width: 60,  
+                      )
+                      ,
+                   ),
+                  title: model.currentUser == null?
+                  Text('Guest', style: GoogleFonts.mcLaren(fontSize: 20), textAlign: TextAlign.center, ) :
+                  Text('${model.currentUser.fullName } (${model.currentUser.email})',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.mcLaren(fontSize: 20),) //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+              ),
+            ),
+            SizedBox(height: 10,),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,10,0,0),
+              child: ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: Icon(Icons.settings, size: 34,color: Colors.greenAccent[900],),
+                ),
+                title: Text('Setting',
+                style: GoogleFonts.mcLaren(fontSize: 20),),    //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                onTap: () {
+                  setState(() {
+                    _animatedHeight!=0.0?_animatedHeight=0.0:_animatedHeight=100.0;
+                  });
+                },
+              ),
+            ),
+            new AnimatedContainer(duration: const Duration(milliseconds: 120),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(28.0,10,10,10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: <Widget>[
+                    //Icon(Icons.wc,size: 26,),
+                    Text("Google AD",
+                    style:GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 18),), 
+                     CustomSwitch(
+                      activeColor: Colors.blueGrey,
+                      value: _googleAdsService.googleAdOnOff,
+                      onChanged: (value)
+                       {
+                         print("VALUE : $value");
+                         setState(() {
+                           _googleAdsService.updateGoogleAdOnOff(value);
+                           googleAdOff(value);
+                        });
                       },
-                    width: 70) :
-                    Image.asset('assets/images/avata.png',
-                    height: 80,
-                    fit: BoxFit.cover,
-                    width: 60,  
-                    ) :
-                     Image.asset('assets/images/avata.png',
-                    height: 80,
-                    fit: BoxFit.cover,
-                    width: 60,  
-                    )
-                    ,
-                 ),
-                title: model.currentUser == null?
-                Text('Guest', style: GoogleFonts.mcLaren(fontSize: 20), textAlign: TextAlign.center, ) :
-                Text('${model.currentUser.fullName } (${model.currentUser.email})',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.mcLaren(fontSize: 20),) //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-              
-              // onTap: () {
-              //   Navigator.push(
-              //     context,
-              //     MaterialPageRoute(
-              //         builder: (context) => UserProfile(myProfileName,'Male','I legitimately like romantic comedies. I grew up with three sisters and too man females and aunts. I was outnumbered. Plus, they have great dialogue and plot structure. ',myProfileImage,true)),
-              //   );
-              // },
-              // trailing: IconButton(
-              //   icon: Icon(Icons.edit),
-              //   onPressed: model.userProfileImageChange,
-              // ),
-            ),
-          ),
-          Divider(),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0,10,0,0),
-            child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: Icon(Icons.settings, size: 34,color: Colors.greenAccent[900],),
+                    ),
+                  ],
+                ),
               ),
-              title: Text('Setting',
-              style: GoogleFonts.mcLaren(fontSize: 20),),    //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-              onTap: () {
-                setState(() {
-                  _animatedHeight!=0.0?_animatedHeight=0.0:_animatedHeight=100.0;
-                });
-              },
+              height: _animatedHeight,
+              width: 100.0,
             ),
-          ),
-          new AnimatedContainer(duration: const Duration(milliseconds: 120),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(28.0,10,10,10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  //Icon(Icons.wc,size: 26,),
-                  Text("Google AD",
-                  style:GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 18),), 
-                   CustomSwitch(
-                    activeColor: Colors.blueGrey,
-                    value: _googleAdsService.googleAdOnOff,
-                    onChanged: (value)
-                     {
-                       print("VALUE : $value");
-                       setState(() {
-                         _googleAdsService.updateGoogleAdOnOff(value);
-                         googleAdOff(value);
-                       // status = value;
-                      });
-                      // _googleAdsService.updateGoogleAdOnOff(value);
-                      // googleAdOff(value);
-                      // setState(() {
-                      //   status = value;
-                      //   googleAdOff(value);
-                      // });
-                    },
-                  ),
-                  // SizedBox(height: 12.0,),
-                  // Text('Value : $status', style: TextStyle(
-                  //   color: Colors.black,
-                  //   fontSize: 20.0
-                  // ),)
-                      // TextStyle(fontWeight: FontWeight.bold,fontSize: 18),),
-                  // Checkbox(
-                  // value: _manValue,
-                  // onChanged: (bool newValue) {
-                  //     setState(() {
-                  //       _manValue = newValue;
-                  //     });
-                  //   },
-                  // ),
-                  // GestureDetector(
-                  //     child: Text("Man",style: TextStyle(fontSize: 18)),
-                  //     onTap: () {
-                  //       setState(() {
-                  //         _manValue = !_manValue;
-                  //       });
-                  //     },),
-                  // Padding(
-                  //   padding: const EdgeInsets.only(left:12.0),
-                  //   child: Checkbox(
-                  //     value: _womanValue,
-                  //     onChanged: (bool newValue) {
-                  //       setState(() {
-                  //         _womanValue = newValue;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // GestureDetector(child: Text("Woman",style: TextStyle(fontSize: 18)),
-                  //   onTap: () {
-                  //     setState(() {
-                  //       _womanValue = !_womanValue;
-                  //     });
-                  //   },),
-                ],
+             SizedBox(height: 10,),
+              model.currentUser == null ?
+             Padding(
+              padding: const EdgeInsets.fromLTRB(0,10,0,0),
+              child: ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: Icon(Icons.person, size: 40,color: Colors.greenAccent[900]),
+                ),
+                title: Text('Login',
+                style: GoogleFonts.mcLaren(fontSize: 20),), 
+                onTap: () => model.navigateToLogin()
+              ),
+            )
+           :
+            Padding(
+              padding: const EdgeInsets.fromLTRB(0,10,0,0),
+              child: ListTile(
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(15.0),
+                  child: Icon(Icons.lock_open, size: 40,color: Colors.greenAccent[900]),
+                ),
+                title: Text('Sign Out',
+                style: GoogleFonts.mcLaren(fontSize: 20),), 
+                onTap: () {
+                  _showDialog(model.logout);
+                },
               ),
             ),
-            height: _animatedHeight,
-            width: 100.0,
-          ),
-          Divider(),
-            model.currentUser == null ?
-           Padding(
-            padding: const EdgeInsets.fromLTRB(0,10,0,0),
-            child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: Icon(Icons.person, size: 40,color: Colors.greenAccent[900]),
+            Container(
+              child: Image.asset('assets/images/settings2.png',
+              fit: BoxFit.cover,
               ),
-              title: Text('Login',
-              style: GoogleFonts.mcLaren(fontSize: 20),), //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-              onTap: () => model.navigateToLogin()
-            ),
-          )
-         :
-          Padding(
-            padding: const EdgeInsets.fromLTRB(0,10,0,0),
-            child: ListTile(
-              leading: ClipRRect(
-                borderRadius: BorderRadius.circular(15.0),
-                child: Icon(Icons.lock_open, size: 40,color: Colors.greenAccent[900]),
-              ),
-              title: Text('Sign Out',
-              style: GoogleFonts.mcLaren(fontSize: 20),), //TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
-              onTap: () {
-                _showDialog(model.logout);
-              },
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
       ),)
     );
   }
@@ -224,17 +175,21 @@ class _Settings extends State<Settings> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Do you want to log out?"),
+          title: Text("Log-out ?",
+          style: GoogleFonts.mcLaren(),
+          ),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
-            new FlatButton(
-              child: new Text("No", style: TextStyle(color: Colors.grey),),
+             FlatButton(
+              child:  Text("No", style: GoogleFonts.mcLaren(color: Colors.grey),),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            new FlatButton(
-              child: new Text("Yes"),
+             FlatButton(
+              child:  Text("Yes",
+              style: GoogleFonts.mcLaren(),
+              ),
               onPressed:() {
                 Navigator.of(context).pop();  
                 logout();   

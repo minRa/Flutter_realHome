@@ -1,16 +1,13 @@
 
-//import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/services/googleAds_service.dart';
-
-//import 'package:realhome/ui/widgets/app_drawer.dart';
 import 'package:realhome/ui/widgets/list_view_card.dart';
 import 'package:realhome/ui/widgets/user_profile.dart';
 import 'package:realhome/view_model/property_manage_view_model.dart';
-//const adUnitId= 'ca-app-pub-7333672372977808/7997010253';
+
 
 
 class PropertyManageView extends StatefulWidget {
@@ -34,6 +31,7 @@ class _PropertyManageViewState extends State<PropertyManageView> {
 
   @override
   Widget build(BuildContext context) {
+      Size screenSize = MediaQuery.of(context).size/ 1;
     return ViewModelProvider<PropertyManageViewModel>.withConsumer(
       viewModel: PropertyManageViewModel(),    
       onModelReady: (model) => model.currentUserPostPropertyList(), 
@@ -53,6 +51,7 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                 child: UserProfilePage(
                 onAuth: true,
                 navigate:model.navigateToStartPageView,
+                onLoading: model.onLoading,
                 user: model.currentUser,
                 editImage:()=> model.userProfileImageChange('profile'),
                 editBackground:()=> model.userProfileImageChange('abc'),
@@ -70,8 +69,9 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                       ),
                     ),
                     Positioned(
-                       bottom: 130,
-                       left: 130,
+                       bottom: screenSize.height > 700 ?  130 :
+                       screenSize.height > 600 ? 100 : 80,
+                       left:screenSize.height > 700 ?  130 :110,
                       child: Text('post your rent house',
                       style: GoogleFonts.mcLaren(),
                       ),
@@ -95,7 +95,9 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                     editBackground:()=> model.userProfileImageChange('abc'),
                     )),
                   Expanded(
-                  flex: 4,
+                  flex: _googleAdsService.onBanner ?
+                  screenSize.height > 700 ? 7
+                  : screenSize.height > 600 ? 6 : 5 : 7,
                   child: model.userPostProperty.length > 0?
                     ListView.builder(
                     itemCount: model.userPostProperty.length,
@@ -125,9 +127,11 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                           ),
                         )
                       ),
+                      _googleAdsService.onBanner?
                         Expanded(
-                      flex: 3,
-                      child: Container(),),               
+                      flex: 1,
+                      child: Container(),)
+                      : Container(),               
                   ],) 
               
                 : Center(
@@ -135,24 +139,21 @@ class _PropertyManageViewState extends State<PropertyManageView> {
                     valueColor: AlwaysStoppedAnimation(
                     Theme.of(context).primaryColor),
                           ),)
-                 : Container(
+                 : SingleChildScrollView(
                    child: Column(
                      children: <Widget>[
                        Stack(
-                         //mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Container(
-                        //  height:,
                           width: double.infinity,
                          child: Image.asset('assets/images/cover.jpg',
                           fit: BoxFit.cover,
                           scale: 1.5,
                           ),
                        ),
-                      // SizedBox(height: screenSize.height / 3.0),
                        Positioned(
-                          top: 120,
-                          left: 50,
+                          top: screenSize.height > 700 ?  120 : 100,
+                          left: screenSize.height > 700 ? 50 : 30,
                           child: 
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -197,7 +198,13 @@ class _PropertyManageViewState extends State<PropertyManageView> {
               floatingActionButton: 
                model.currentUser != null ?
                Container(
-                padding: EdgeInsets.symmetric(vertical: 100),
+                padding: _googleAdsService.onBanner ?
+                screenSize.height > 700 ?
+                 EdgeInsets.symmetric(vertical: 60)
+                  :screenSize.height > 600 ?
+                   EdgeInsets.symmetric(vertical: 40)
+                  :EdgeInsets.symmetric(vertical: 10)
+                  :EdgeInsets.symmetric(vertical: 0) ,
                 child: FloatingActionButton(
                         child: Icon(Icons.border_color),
                             onPressed: () => model.navigateToPostHouseView()
@@ -208,140 +215,3 @@ class _PropertyManageViewState extends State<PropertyManageView> {
             );  
         }
 }
-
-//   Widget _mainBody(BuildContext context) {
-//     return StreamBuilder<QuerySnapshot>(
-//       stream: Firestore.instance.collection('').snapshots(),
-//       builder: (context, snapshot) {
-//         if (!snapshot.hasData) return LinearProgressIndicator();
-
-//         return _propertylistbuild(context, snapshot.data.documents);
-//       },
-//     );
-//   }
-
-//  @override
-//   Widget _propertylistbuild(BuildContext context, List<DocumentSnapshot> snapshot) {
-//   return ViewModelProvider<PropertyManageViewModel>.withConsumer(
-//      viewModel: PropertyManageViewModel(),
-//      builder: (context, model, child) =>
-//       Expanded(
-//       flex: 8,
-//       child: ListView.builder(
-//           itemCount: model.userPostProperty.length,
-//           itemBuilder: (context, index) =>
-//             GestureDetector(
-//               onTap: ()=> model.navigateToDetailView(index),
-//               child:ListViewCard (
-//                 onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
-//                 userProperty: model.userPostProperty[index], 
-//                 edit:()=> model.navigateToPostHouseView2(index),  
-//                 delete: () => model.deleteUserPostProperty(index),                 
-//                 ),
-//               ),
-//               )   
-//           ),
-//       );
-//     }
-
-
-
-
-
- 
-// FutureBuilder(
-// future: model.currentUserPostPropertyList(),
-// builder: (ctx, dataSnapshot) {
-//   if(dataSnapshot.connectionState == ConnectionState.waiting){
-//     return Center(
-//         child: CircularProgressIndicator(
-//         valueColor: AlwaysStoppedAnimation(
-//         Theme.of(context).primaryColor),
-//         ),);  
-//       } else {
-//         if (dataSnapshot.error != null) {
-//           // ...
-//           // Do error handling stuff
-//           return Center(
-//             child: Text('An error occurred!'),
-//           );
-//         } else {           
-//           return Column(
-//           children: <Widget>[  
-//                   Expanded(
-//                     flex: 4,
-//                   child: 
-//                   UserProfilePage(
-//                     onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
-//                     user: model.currentUser,
-//                     editImage: model.userProfileImageChange,
-//                     ) 
-//                   ),
-//                   Expanded(
-//                     flex: 8,
-//                       child: ListView.builder(
-//                       itemCount: model.userPostProperty.length,
-//                       itemBuilder: (context, index) =>
-//                         GestureDetector(
-//                           onTap: ()=> model.navigateToDetailView(index),
-//                           child:ListViewCard (
-//                             onAuth: model.currentUser.id != model.userPostProperty[0].id ? false : true,
-//                             userProperty: model.userPostProperty[index], 
-//                             edit:()=> model.navigateToPostHouseView2(index),  
-//                             delete: () => model.deleteUserPostProperty(index),                 
-//                                   ), ),)                  
-//                               ),              
-//                             ],);    
-//                           }
-//                         }
-//                       }
-//                   ), 
-//                   floatingActionButton: Container(
-//                   padding: EdgeInsets.symmetric(vertical: 100),
-//                   child: FloatingActionButton(
-//                           child: Icon(Icons.border_color),
-//                             onPressed: model.currentUser != null ?
-//                             model.navigateToPostHouseView :
-//                             model.nonUserAddPost
-//                             )
-//                         )
-//       ),
-//     );  
-//   }
-// }
-
-
-
-
-
- 
-
-// ReorderableListView(
-//   onReorder: (int oldIndex, int newIndex) {
-//     setState(
-//       () {
-//         if (newIndex > oldIndex) {
-//           newIndex -= 1;
-//         }
-//       final PostProperty item = model.userPostProperty.removeAt(oldIndex);
-//       model.userPostProperty.insert(newIndex, item);
-//     },
-//   );}, //_onReorder,
-//   scrollDirection: Axis.vertical,       
-//   padding: const EdgeInsets.symmetric(vertical: 8.0),               
-//   children: List.generate(
-//     model.userPostProperty.length,
-//   (index) {
-//     return GestureDetector(
-//       onTap: model.navigateToDetailView(index),
-//       child: ListViewCard(
-//       index: index,
-//       key:ValueKey('$index'),
-//       listItems: model.userPostProperty[index],                                      
-//       ),
-//     );
-//     },
-//   ),
-//  )
-
-

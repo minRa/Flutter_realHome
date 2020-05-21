@@ -74,7 +74,7 @@ class LoginViewModel extends BaseModel {
 
   }
 
-  Future<void> loginlogg (var result) async {
+  Future<void> loginlogg (var result) async {   
     if (result is bool) {
       if (result) {
          await _analyticsService.logLogin();
@@ -85,29 +85,36 @@ class LoginViewModel extends BaseModel {
           description: 'General login failure. Please try again later',
         );
       }
-    } else {
+    } else if(result == 'Given String is empty or null' ) {
       await _dialogService.showDialog(
+        title: 'Login Failure',
+        description: 'you didn\'t enter Email or password',
+      );
+    }else if(result =='The password is invalid or the user does not have a password.') {
+      await _dialogService.showDialog(
+        title: 'Login Failure',
+        description: 'Login credentials do not match. a user doesn\'t exist or please enter valid Email & password',
+      );
+    } else if(result == null) {
+       await _dialogService.showDialog(
+        title: 'Login Failure',
+        description: 'User not found...',
+      );
+    } else {
+       await _dialogService.showDialog(
         title: 'Login Failure',
         description: result,
       );
     }
+
+  //  print(result);
   }
 
 
 
 
   Future<void> nonUserEnter () async {
-
-    // var dialogResponse = await _dialogService.showConfirmationDialog(
-    //       title: 'Gust',
-    //       description: 'are you ok to enter as guest',
-    //       confirmationTitle: 'OK',
-    //       cancelTitle: 'CANCEL'        
-    //     );
-
-    //  if(dialogResponse.confirmed) {
         await _authenticationService.logOut();
-            navigateToStartPageView(0);                   
-   //    }     
+            navigateToStartPageView(0);                     
     } 
 }

@@ -8,6 +8,7 @@ import 'package:realhome/locator.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/firestore_service.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -90,6 +91,7 @@ class AuthenticationService {
             id: user.uid,
             email: user.email,
             fullName: user.displayName,
+            profileUrl: user.photoUrl,
             userRole: 'Google_user',
           );
 
@@ -123,8 +125,9 @@ class AuthenticationService {
         print('signed in ' + user.displayName);
           _currentUser = User(
             id: user.uid,
-            email: user.email,
+            email: user.email== null ? Uuid().v1() : user.email,
             fullName: user.displayName,
+            profileUrl: user.photoUrl,
             userRole: 'Facebook_user',
           );
 

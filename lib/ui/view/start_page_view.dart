@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/ui/view/chat_room_list_view.dart';
 import 'package:realhome/ui/view/house_overview.dart';
-//import 'package:realhome/ui/view/post_owner_info_view.dart';
 import 'package:realhome/ui/view/property_manage_view.dart';
 import 'package:realhome/ui/view/settings.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:realhome/view_model/start_page_view_model.dart';
 
 

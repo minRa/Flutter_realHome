@@ -117,21 +117,6 @@ void registerNotification(String userId) {
   });
 
 
-
-//  Future<dynamic> myBackgroundMessageHandler(Map<String, dynamic> message) async {
-//   if (message.containsKey('data')) {
-//     // Handle data message
-//     final dynamic data = message['data'];
-//     print(data);
-//   }
-
-//   if (message.containsKey('notification')) {
-//     // Handle notification message
-//     final dynamic notification = message['notification'];
-//     print(notification);
-//   }
-// }
-  
   _firebaseMessaging.getToken().then((token) {
    // print('token: $token');
     Firestore.instance
@@ -155,10 +140,10 @@ void registerNotification(String userId) {
   void showNotification(message) async {
     var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
       Platform.isAndroid
-          ? 'com.example.realhome'
-          : 'com.example.realhome',
-      'Flutter chat demo',
-      'channel description',
+          ? 'com.min.realhome'
+          : 'com.min.realhome',
+      'realHome',
+      'Chat',
       playSound: true,
       enableVibration: true,
       importance: Importance.Max,
@@ -169,8 +154,6 @@ void registerNotification(String userId) {
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
     print(message);
-//    print(message['body'].toString());
-//    print(json.encode(message));
 
     await flutterLocalNotificationsPlugin
     .show(0, message['title'].toString(),
@@ -179,10 +162,6 @@ void registerNotification(String userId) {
            payload: json.encode(message),);
 
     
-
-//    await flutterLocalNotificationsPlugin.show(
-//        0, 'plain title', 'plain body', platformChannelSpecifics,
-//        payload: 'item x');
   }
 
   void configLocalNotification() {
@@ -193,18 +172,6 @@ void registerNotification(String userId) {
         initializationSettingsAndroid, initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
-
-
-//   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-// // initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
-// var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-// var initializationSettingsIOS = IOSInitializationSettings(
-//     onDidReceiveLocalNotification: onDidReceiveLocalNotification);
-// var initializationSettings = InitializationSettings(
-//     initializationSettingsAndroid, initializationSettingsIOS);
-// await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-//     onSelectNotification: selectNotification)
-
 
 }
 

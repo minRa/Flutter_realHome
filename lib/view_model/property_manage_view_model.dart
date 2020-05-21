@@ -43,12 +43,10 @@ Future <void> nonUserAddPost() async {
   
   List<PostProperty> _userPostProperty;
   List<PostProperty> get userPostProperty => _userPostProperty;
+  
   bool finish = false;
 
-     Future<void> currentUserPostPropertyList() async {
-     //   _googleAdsService.bottomBanner();
-      // setBusy(true); 
-       
+     Future<void> currentUserPostPropertyList() async {     
        finish = false;      
         notifyListeners();
        try {
@@ -63,7 +61,6 @@ Future <void> nonUserAddPost() async {
 
        finish= true;     
       notifyListeners();  
-      // setBusy(false);  
   }
 
 
@@ -101,19 +98,8 @@ Future <void> nonUserAddPost() async {
      Future deleteUserPostProperty(int index) async {
        finish = false;
        notifyListeners();
-      // var dialogResponse = await _dialogService.showConfirmationDialog(
-      //           title: 'Delete Rent House',
-      //           description: 'would you like to delete this house  ?',
-      //           confirmationTitle: 'OK',
-      //           cancelTitle: 'CANCEL'        
-      //         );
-        
-      //   if(dialogResponse.confirmed) {
-        //  setBusy(true);   
-        
             var result = await _firestoreService.deleteUserPostPropertyToFirebaseDB(currentUser, _userPostProperty[index]);
              await  currentUserPostPropertyList();
-             //await currentUserPostPropertyList();
             if(result!=null) {
               await _dialogService.showDialog(
               title: result[0],
@@ -121,9 +107,6 @@ Future <void> nonUserAddPost() async {
             );}
           finish = true;
           notifyListeners();
-
-      //    setBusy(false);  
-        //} 
     }
  
 }

@@ -45,7 +45,9 @@ class BaseModel extends ChangeNotifier {
     _busy = value;
     notifyListeners();
   }
-    
+
+  
+
 
    Future initialGoogleAds () => _googleAdsService.initgoogleAds();
 
@@ -54,9 +56,7 @@ class BaseModel extends ChangeNotifier {
         void navigateToBigImageView(List<dynamic> items) {
    _navigationService.navigateTo(BigImageViewRoute, arguments: items);
   }
-  //     void navigateToHouseOverView() {
-  //  _navigationService.navigateTo(HouseOverviewRoute);
-  // }
+
       void navigateToLogin() {
     _navigationService.navigateTo(LoginViewRoute);
   }
@@ -84,9 +84,7 @@ class BaseModel extends ChangeNotifier {
     // Get image from gallery.
      File image = await ImagePicker.pickImage(
        source: ImageSource.gallery,
-      // imageQuality: 90 ,
-      // maxHeight: 450,
-       //maxWidth: 500
+        maxHeight: 400,
        );
 
       if(image != null) {

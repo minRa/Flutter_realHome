@@ -1,5 +1,4 @@
-//import 'dart:math';
-//import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:realhome/locator.dart';
@@ -46,6 +45,7 @@ class _DetailViewState extends State<DetailView> {
     
   
     Future<void>  _handleSubmitted(String text, User user) async {
+      if(text =='') return;
       FocusScope.of(context).unfocus();
       _textController.text = '';
       //int randomNumber = Random().nextInt(10000);
@@ -85,7 +85,6 @@ class _DetailViewState extends State<DetailView> {
     Future<void> openMap(String address) async {
     String query = Uri.encodeComponent(address);
     String googleUrl = "https://www.google.com/maps/search/?api=1&query=$query";
-    //String googleUrl = 'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude';
     if (await canLaunch(googleUrl)) {
       await launch(googleUrl);
     } else {
@@ -115,7 +114,12 @@ class _DetailViewState extends State<DetailView> {
             margin: new EdgeInsets.symmetric(horizontal: 4.0),
             child: new IconButton(
                 icon: new Icon(Icons.send),
-                onPressed: () => _handleSubmitted(_textController.text, user)),
+                onPressed: () {
+                   if(_textController.text.trim()!=''){
+                  _handleSubmitted(_textController.text, user);
+                 }
+              }
+            ),
           ),
         ],
       ),
@@ -128,6 +132,7 @@ class _DetailViewState extends State<DetailView> {
       viewModel: DetailViewModel(),    
       onModelReady: (model) => model.getStartCurrentDetail(widget.postProperty) , 
       builder: (context, model, child) => Scaffold(
+        //resizeToAvoidBottomPadding: false,
         body: StreamBuilder<QuerySnapshot>(
             stream: Firestore.instance.collection('comments/${widget.postProperty.documentId}/userComments')
             .orderBy('createdAt').snapshots(),
@@ -140,107 +145,106 @@ class _DetailViewState extends State<DetailView> {
                       floating: true,
                       pinned: false,
                       snap: true,
-                      flexibleSpace: Column(
-                        children: <Widget>[
-                          Expanded(
-                            flex: 5,
-                              child: Stack(
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap:() => model.navigateToBigImageView(widget.postProperty.imageUrl),
-                                  child: Hero(
-                                    tag: widget.postProperty.imageUrl[0],
-                                    child: Image.network(widget.postProperty.imageUrl[0],
+                      flexibleSpace: SingleChildScrollView(
+                        child: Column(
+                          children: <Widget>[
+                            Stack(
+                            children: <Widget>[
+                              GestureDetector(
+                                onTap:() => model.navigateToBigImageView(widget.postProperty.imageUrl),
+                                child: Hero(
+                                  tag: widget.postProperty.imageUrl[0],
+                                  child: Image.network(widget.postProperty.imageUrl[0],
+                                  height:300,
+                                  width: size.width,
+                                  fit: BoxFit.fill,
+                                  loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                     height:300,
                                     width: size.width,
-                                    fit: BoxFit.fill),
-                                  ),
+                                    child: Center(
+                                     child: CircularProgressIndicator(
+                                    value: loadingProgress.expectedTotalBytes != null ? 
+                                    loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                      : null,
+                                    ),
                                 ),
-                                Positioned(
-                                  bottom: 0,
-                                  child: Container(
-                                    height: 35,
-                                    width: 400,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(3.0),
-                                        color: Colors.black.withOpacity(0.5),//Color(0xff0F0F0F),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.greenAccent.withOpacity(0.1),
-                                          )
-                                        ]
+                                  );
+                              },
+                            )
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                child: Container(
+                                  height: 35,
+                                  width: 400,
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(3.0),
+                                      color: Colors.black.withOpacity(0.5),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.greenAccent.withOpacity(0.1),
+                                        )
+                                      ]
+                                     ),
+                                  child: GestureDetector(
+                                      onTap:() => showDialog(
+                                        context: context,
+                                       builder: (context) => detailDialog(context, widget.postProperty),
                                        ),
-                                    child: GestureDetector(
-                                        onTap:() => showDialog(
-                                          context: context,
-                                         builder: (context) => detailDialog(context, widget.postProperty),
-                                         ),
-                                        child: Center(
-                                        child: Text( 'Rent Imformation',
-                                          textAlign: TextAlign.start,
-                                          style: GoogleFonts.mcLaren(
-                                            color: Colors.white,
-                                            textBaseline: TextBaseline.ideographic                                     
-                                            ), ), ),),)),    
+                                      child: Center(
+                                      child: Text( 'Rent Imformation',
+                                        textAlign: TextAlign.start,
+                                        style: GoogleFonts.mcLaren(
+                                          color: Colors.white,
+                                          textBaseline: TextBaseline.ideographic                                     
+                                          ), ), ),),)),    
 
-                                      Positioned(
-                                          top: 28,
-                                          left: size.width - 100,
-                                          child: Center(
-                                            child: Column(
-                                              children: <Widget>[
-                                                GestureDetector(
-                                                     onTap: model.currentUser == null || widget.postProperty.id != model.currentUser.id ?
-                                                     () => model.navigateToPostOwnerInfoView(model.owner) :
-                                                     () => model.navigateToPropertyManageView(),                                         child: ClipOval(
-                                                     child: SizedBox(
-                                                      height: 80,
-                                                      width: 80,
-                                                      child: model.onloading ?
-                                                      Center(child: CircularProgressIndicator(),):
-                                                      model.owner.profileUrl == null? 
-                                                       Image.asset('assets/images/avata2.png',
-                                                       fit: BoxFit.cover,
-                                                      ):  
-                                                      Image.network(model.owner.profileUrl,
-                                                      fit: BoxFit.cover,
-                                                      loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
-                                                      if (loadingProgress == null) return child;
-                                                        return Center(
-                                                          child: CircularProgressIndicator(
-                                                          value: loadingProgress.expectedTotalBytes != null ? 
-                                                                loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
-                                                                : null,
-                                                          ),
-                                                        );
-                                                      },
-                                                      )
-                                                    ),
+                                    Positioned(
+                                        top: 28,
+                                        left: size.width - 100,
+                                        child: Center(
+                                          child: Column(
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                   onTap: model.currentUser == null || widget.postProperty.id != model.currentUser.id ?
+                                                   () => model.navigateToPostOwnerInfoView(model.owner) :
+                                                   () => model.navigateToPropertyManageView(),                                         child: ClipOval(
+                                                   child: SizedBox(
+                                                    height: 80,
+                                                    width: 80,
+                                                    child: model.onloading ?
+                                                    Center(child: CircularProgressIndicator(),):
+                                                    model.owner.profileUrl == null? 
+                                                     Image.asset('assets/images/avata2.png',
+                                                     fit: BoxFit.cover,
+                                                    ):  
+                                                    Image.network(model.owner.profileUrl,
+                                                    fit: BoxFit.cover,
+                                                    loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
+                                                    if (loadingProgress == null) return child;
+                                                      return Center(
+                                                        child: CircularProgressIndicator(
+                                                        value: loadingProgress.expectedTotalBytes != null ? 
+                                                              loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes
+                                                              : null,
+                                                        ),
+                                                      );
+                                                    },
+                                                    )
                                                   ),
                                                 ),
-                                              //   Padding(
-                                              //     padding: const EdgeInsets.only(left: 8,right: 6, top: 3,bottom: 3),
-                                              //     child: Icon(Icons.favorite,
-                                              //       size: 24,
-                                              //       color: Colors.red,),
-                                              //  ),
-                                                // Text( '11',
-                                                //   style: TextStyle(color: Colors.white),
-                                                // ),
-                                              ],
-                                            ),
-                                      )
-                                )
+                                              ),
+                                            ],
+                                          ),
+                                    )
+                              )
 
-                              ],
-                            ),
-                          ),
-                      Container(
-                      //margin: EdgeInsets.only(top:0, bottom:5),
-                     // child: Text('Google Map')
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: Container(
+                            ],
+                              ),
+                        Container(
                             child: Column(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,11 +258,6 @@ class _DetailViewState extends State<DetailView> {
                                    fontWeight: FontWeight.w600,
                                    color: Colors.black
                                    ),
-                                  // TextStyle(
-                                  //   color: Colors.black,
-                                  //   fontSize: 20,
-                                  //   fontWeight: FontWeight.w600
-                                  //  ),
                                   ),
                                    FlatButton.icon(
                                     icon: Icon(
@@ -270,13 +269,10 @@ class _DetailViewState extends State<DetailView> {
                                     textColor: Theme.of(context).primaryColor,
                                     onPressed: ()=> openMap(
                                       widget.postProperty.address
-                                      // postProperty.latitude,
-                                      //  postProperty.longitude
                                        ) ,
                                   ),
                                 ],
                               ),
-                              //SizedBox(height: 5,),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
@@ -285,23 +281,13 @@ class _DetailViewState extends State<DetailView> {
                                    fontWeight: FontWeight.w600,
                                    color: Colors.grey
                                    ),
-                                  //  TextStyle(
-                                  // color: Colors.grey,
-                                  // fontSize: 15,
-                                  // fontWeight: FontWeight.w600),
                                ),
-                              Text("\$${widget.postProperty.price} /\ week  ",
+                              Text("\$ ${widget.postProperty.price} /\ per week  ",
                                style: GoogleFonts.mcLaren(fontSize: 15,
                                    fontWeight: FontWeight.w600,
                                    color: Colors.grey
-                                   ),
-                                // TextStyle(
-                                //   color: Colors.grey,
-                                //   fontSize: 15,
-                                //   fontWeight: FontWeight.w600
-                                // ),
-                              ),
-
+                                   ),                    
+                                  ),
                                 ],
                               ),
                               SizedBox(height: 10,),
@@ -316,10 +302,10 @@ class _DetailViewState extends State<DetailView> {
                               ), 
                             ],
                           ),
-                        ),
-                      ),                  
-                      ],
+                        ),                  
+                        ],
                      ),
+                      ),
                       expandedHeight: 480,
                       backgroundColor: Colors.white,
                     ),
@@ -330,84 +316,74 @@ class _DetailViewState extends State<DetailView> {
                              var user = model.getUser();
                              if(user == null) {
                                return Container (
-                                 child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                    Icon(Icons.person), 
-                                    FlatButton(
-                                      textColor: Colors.black,
-                                      child: Text('Login rquired to comments',
-                                      style: GoogleFonts.mcLaren()
-                                      ),
-                                      onPressed:() => model.navigateToLogin(),
-                                    )
-                                 ],),);
+                                child: Row(
+                                   mainAxisAlignment: MainAxisAlignment.center,
+                                   children: <Widget>[
+                                   Icon(Icons.person), 
+                                   FlatButton(
+                                     textColor: Colors.black,
+                                     child: Text('Login rquired to comments',
+                                     style: GoogleFonts.mcLaren()
+                                     ),
+                                     onPressed:() => model.navigateToLogin(),
+                                   )
+                                ],),);
                              }else {
                                return _buildTextComposer(user);
                              }
                           }else {
                             return Column(
-                              children: <Widget>[
-                                Divider(),
-                                  GestureDetector(
-                                    onLongPress: () => model.commmentsDelete(
-                                    widget.postProperty.documentId,
-                                    snapshot.data.documents[index-1].data['userId'],
-                                    snapshot.data.documents[index-1].data['date'],),
-                                      child: ListTile(
-                                      leading: 
-                                      Column(
-                                        children: <Widget>[
-                                          ClipOval(
-                                            child:SizedBox(
-                                            height: 40,
-                                            width: 40,
-                                            child: snapshot.data.documents[index-1].data['profileImage'] is String?
-                                            Image.network(snapshot.data.documents[index-1].data['profileImage'],
-                                              fit: BoxFit.cover,
-                                            ):
-                                            Image.asset('assets/images/avata.png',
-                                              fit: BoxFit.cover,),
-                                            ),
+                            children: <Widget>[
+                              Divider(),
+                                GestureDetector(
+                                  onLongPress: () => model.commmentsDelete(
+                                  widget.postProperty.documentId,
+                                  snapshot.data.documents[index-1].data['userId'],
+                                  snapshot.data.documents[index-1].data['date'],),
+                                    child: ListTile(
+                                    leading: 
+                                    Column(
+                                      children: <Widget>[
+                                        ClipOval(
+                                          child:SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: snapshot.data.documents[index-1].data['profileImage'] is String?
+                                          FadeInImage(
+                                            image: NetworkImage(snapshot.data.documents[index-1].data['profileImage'],),
+                                            placeholder: AssetImage('assets/images/avata.png'))          
+                                          :Image.asset('assets/images/avata.png',
+                                            fit: BoxFit.cover,),
                                           ),
-                                           Text(snapshot.data.documents[index-1].data['fullName'],
-                                            style: GoogleFonts.mcLaren(fontSize:10),
-                                            ),
-                                        ],
-                                       //) 
-                                      // Column(
-                                      //   children: <Widget>[
-                                      //     Icon(Icons.account_circle,
-                                      //       size: 40,),
-                                      //        Text(snapshot.data.documents[index-1].data['fullName'],
-                                      //       style: GoogleFonts.mcLaren(fontSize:10),
-                                      //       ),
-                                      //   ],
-                                       ),
-                                        title: Column(
-                                          children: <Widget>[
-                                            Padding(
-                                              padding: const EdgeInsets.only(top: 8.0),
-                                              child: Text(snapshot.data.documents[index-1].data['content'],
-                                              style: GoogleFonts.mcLaren()
-                                              ),
-                                            ),
-                                          ],
-                                          crossAxisAlignment: CrossAxisAlignment.start,
                                         ),
-                                          subtitle: Padding(
-                                          padding: const EdgeInsets.only(top: 10),
-                                          child:Text(
-                                          DateFormat('dd MMM kk:mm')
-                                              .format(DateTime.fromMillisecondsSinceEpoch(int.parse(snapshot.data.documents[index-1].data['createdAt']))),
-                                          style: TextStyle(color:Colors.grey, fontSize: 12, fontStyle: FontStyle.italic),
+                                         Text(snapshot.data.documents[index-1].data['fullName'],
+                                          style: GoogleFonts.mcLaren(fontSize:10),
                                           ),
-                                         // Text(snapshot.data.documents[index-1].data['date']),
-                                         )
-                                    ),
-                               ),
-                              ],
-                            );
+                                      ],
+                                     ),
+                                      title: Column(
+                                        children: <Widget>[
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 8.0),
+                                            child: Text(snapshot.data.documents[index-1].data['content'],
+                                            style: GoogleFonts.mcLaren()
+                                            ),
+                                          ),
+                                        ],
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                      ),
+                                        subtitle: Padding(
+                                        padding: const EdgeInsets.only(top: 10),
+                                        child:Text(
+                                        DateFormat('dd MMM kk:mm')
+                                            .format(DateTime.fromMillisecondsSinceEpoch(int.parse(snapshot.data.documents[index-1].data['createdAt']))),
+                                        style: TextStyle(color:Colors.grey, fontSize: 12, fontStyle: FontStyle.italic),
+                                        ),
+                                       )
+                                  ),
+                             ),
+                            ],
+                              );
                           }
                         },
                         childCount: (snapshot.data.documents.length+1),
@@ -424,10 +400,6 @@ class _DetailViewState extends State<DetailView> {
 
   _facilityCard(Icon asset, String name) {
     return Container(
-      // decoration: BoxDecoration(
-      //   borderRadius: BorderRadius.circular(10.0),
-      //   border: Border.all(color: Colors.black)
-      // ),
       child: Padding(
         padding:  EdgeInsets.symmetric(
           vertical: 10,
@@ -437,7 +409,6 @@ class _DetailViewState extends State<DetailView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             asset,
-            //Image.asset(asset, height: 40, width: 40 ,),
             SizedBox(height: 5,),
             Text(name, style: TextStyle(
               fontSize: 15,
@@ -462,91 +433,56 @@ Widget detailDialog(BuildContext context, PostProperty postProperty) {
         child: Image.network(
         postProperty.imageUrl[0],
         height: 300,
-        fit: BoxFit.fill),
+        fit: BoxFit.fill,),
         ),
         Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SingleChildScrollView(
-      child: Container(
-      width: double.infinity,
-      child: DataTable( 
-      
-      columnSpacing: 0, 
-      dataRowHeight: 35, 
-      columns: [
-        DataColumn(label: Text('Information', style: TextStyle(fontSize: 20),)),
-        DataColumn(label: Row(
-        //mainAxisAlignment: MainAxisAlignment.end,
+      SingleChildScrollView(
+      child: Column(
         children: <Widget>[
-        SizedBox(width: 30,),
-        Icon(Icons.hotel, size: 20,),
-        Text(' ${postProperty.room}  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),                                       
-        Icon(Icons.airline_seat_legroom_reduced, size: 20,),
-        Text(' ${postProperty.toilet}  ',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),
-        Icon(Icons.time_to_leave, size: 20,),
-        Text(' ${postProperty.carpark}',style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15),),          
-        ],),       
-         )],
-      rows: [
-        DataRow(cells: [
-        DataCell(Text('Title',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.title,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('City',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.city,style: TextStyle(fontSize: 14),)),
-        ]),
-         DataRow(cells: [
-        DataCell(Text('RentType',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.rentType,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('Address',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.address,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('Price',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.price,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('Avaible date',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.date,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('Name',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.fullName,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('Email',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.email,style: TextStyle(fontSize: 14),)),
-        ]),
-        DataRow(cells: [
-        DataCell(Text('messenger',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.messenger,style: TextStyle(fontSize: 14),)),
-        ]),
-         DataRow(cells: [
-        DataCell(Text('Phone',style: TextStyle(fontSize: 15),)),
-        DataCell(Text(postProperty.phone,style: TextStyle(fontSize: 14),)),
-        ]),
-         DataRow(  
-         cells: [
-         DataCell(Text('note',style: TextStyle(fontSize: 15),)),
-         DataCell(Text(postProperty.message,style: TextStyle(fontSize: 14),)),
-        ]),
-      ],
-      ),
-      ),
-    ),
+          Container(
+            child: Row(
+              children: <Widget>[
+                SizedBox(width: 5,),
+                Container(
+                  width: 120,
+                  child: Text('Information     ',style: GoogleFonts.mcLaren(fontSize: 20),)),
+                Container(
+                 width: 155,
 
 
-            // Text(
-            //   title,
-            //   style: localTheme.textTheme.display1,
-            // ),
-            // Text(
-            //   explain,
-            // ),
+                child:Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                  SizedBox(width: 10,),
+                  Icon(Icons.hotel, size: 20,),
+                  Text('   ${postProperty.room}   ',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),                                       
+                  Icon(Icons.airline_seat_legroom_reduced, size: 18,),
+                  Text('   ${postProperty.toilet}   ',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),
+                  Icon(Icons.time_to_leave, size: 18,),
+                  Text('   ${postProperty.carpark}',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),          
+                  ],),       
+                )
+              ],
+            ),
+          ),       
+          Information('Title', postProperty.title),
+          Information('City', postProperty.city),
+          Information('Rent type', postProperty.rentType),
+          Information('Address', postProperty.address),
+          Information('Price', postProperty.price),
+          Information('Available date', postProperty.date),
+          Information('Name', postProperty.fullName),
+          Information('Email', postProperty.email),
+          Information('Messenger', postProperty.messenger),
+          Information('Phone', postProperty.phone),
+          Information('Note', postProperty.message),
+        ],
+      ),
+   ),
+
             SizedBox(height: 16),
             Align(
               alignment: Alignment.centerRight,
@@ -556,16 +492,10 @@ Widget detailDialog(BuildContext context, PostProperty postProperty) {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text('OK'),
+                    child: Text('OK',
+                    style: GoogleFonts.mcLaren(),
+                    ),
                   ),
-                  // RaisedButton(
-                  //   onPressed: () {
-                  //     Navigator.of(context).push(MaterialPageRoute(builder: (_){
-                  //       return Second(appBarTitle: title,imageURL: imageURL);
-                  //     }));
-                  //   },
-                  //   child: const Text('Move Next Class'),
-                  // )
                 ],
               ),
             )
@@ -575,280 +505,35 @@ Widget detailDialog(BuildContext context, PostProperty postProperty) {
   );
 }
 
+class Information extends StatelessWidget {
+   final String title;
+   final String content;
+   Information(this.title, this.content);
+  
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: <Widget>[
+          Divider(),
+          Row(
+            children: <Widget>[
+              SizedBox(width: 10,),
+              Container(
+                width: 100,
+                child: Text('$title    ',style: GoogleFonts.mcLaren(fontSize: 15),)),
+              Container(
+              width: 165,
+              child: title =='Price' ?
+               Text('\$ $content /\ per week ',style: GoogleFonts.mcLaren(fontSize: 14),)
+              :Text(content,style: GoogleFonts.mcLaren(fontSize: 14),)
+              )
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 
-
-// class ImformationWidget extends StatelessWidget {
-//   const ImformationWidget({
-//     Key key,
-//     @required PostProperty postProperty,
-//   }) : _postProperty = postProperty, super(key: key);
-
-//   final PostProperty _postProperty;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return SingleChildScrollView(
-//       child: Container(
-//       width: double.infinity,
-//       child: DataTable( 
-      
-//       columnSpacing: 0, 
-//       dataRowHeight: 35, 
-//       columns: [
-//         DataColumn(label: Text('Information', style: TextStyle(fontSize: 20),)),
-//         DataColumn(label: Text('')),
-//       ],
-//       rows: [
-//           DataRow(cells: [
-//           DataCell(Text('Title',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.title,style: TextStyle(fontSize: 14),)),
-//         ]),
-//         DataRow(cells: [
-//           DataCell(Text('City',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.city,style: TextStyle(fontSize: 14),)),
-//         ]),
-//            DataRow(cells: [
-//           DataCell(Text('RentType',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.rentType,style: TextStyle(fontSize: 14),)),
-//         ]),
-//           DataRow(cells: [
-//           DataCell(Text('Address',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.address,style: TextStyle(fontSize: 14),)),
-//         ]),
-//           DataRow(cells: [
-//           DataCell(Text('Price',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.price,style: TextStyle(fontSize: 14),)),
-//         ]),
-//           DataRow(cells: [
-//           DataCell(Text('Avaible date',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.date,style: TextStyle(fontSize: 14),)),
-//         ]),
-//         DataRow(cells: [
-//           DataCell(Text('Name',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.fullName,style: TextStyle(fontSize: 14),)),
-//         ]),
-//         DataRow(cells: [
-//           DataCell(Text('Email',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.email,style: TextStyle(fontSize: 14),)),
-//         ]),
-//         DataRow(cells: [
-//           DataCell(Text('messenger',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.messenger,style: TextStyle(fontSize: 14),)),
-//         ]),
-//            DataRow(cells: [
-//           DataCell(Text('Phone',style: TextStyle(fontSize: 15),)),
-//           DataCell(Text(_postProperty.phone,style: TextStyle(fontSize: 14),)),
-//         ]),
-//          DataRow(  
-//            cells: [
-//            DataCell(Text('note',style: TextStyle(fontSize: 15),)),
-//            DataCell(Text(_postProperty.message,style: TextStyle(fontSize: 14),)),
-//         ]),
-//       ],
-//       ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-      // Scaffold(
-      // backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   //automaticallyImplyLeading: false,
-      //   centerTitle: true,
-      //   title: Row(
-      //     mainAxisAlignment: MainAxisAlignment.center,
-      //     children: <Widget>[       
-      //       Hero(
-      //         tag: 'logo',
-      //         child: Image.asset('assets/images/logo.png',
-      //         scale: 4,),
-      //       ),
-      //       SizedBox(width: 5,),
-      //       Text('Rent House Detail'),
-      //     ],
-      //   ),
-      //   actions: <Widget>[
-      //     Container(
-      //       child: model.currentUser != null?            
-      //       IconButton(
-      //         icon:Icon(Icons.exit_to_app),
-      //         onPressed:model.logout)
-      //         : IconButton(
-      //         icon:Icon(Icons.person_add),
-      //         onPressed: model.navigateToLogin
-      //         ) 
-      //    )
-      //   ],
-      // ),
-      // drawer:
-      // AppDrawer(
-      //   currentUser: model.currentUser,
-      //   home:model.navigateToHouseOverView,
-      //   mebership: model.navigateToMembershipView,
-      //   property: model.navigateToPropertyManageView,
-      //   logout: model.logout
-      // ),
-      // body:SingleChildScrollView(
-      //         child: Column(
-      //           children: <Widget>[
-      //            Container(
-      //              margin: EdgeInsets.only(top:20, bottom:20),
-      //              child: Center(
-      //                child: Text('House picture Button Icon',
-      //                     style: TextStyle(
-      //                       color: Colors.black54,
-      //                     ),
-      //                ),
-      //              ),
-      //            ),
-      //            Container(                 
-      //              width: 100,
-      //              height: 100,
-      //              child: GestureDetector(
-      //                   onTap: () => model.navigateToBigImageView(_postProperty.imageUrl),
-      //                   child: Hero(
-      //                   tag: _postProperty.imageUrl[0],
-      //                   child: Container(    
-      //                     child: ClipOval(
-      //                       child: Image.network(_postProperty.imageUrl[0], fit: BoxFit.cover,))),
-      //                   ),
-      //                 ),
-      //           ), 
-      //          Container(
-      //           child: ImformationWidget(postProperty: _postProperty)),
-      //            Container(
-      //              margin: EdgeInsets.only(top:10, bottom:10),
-      //              child: Text('Google Map')
-      //              ),
-      //             Container(
-      //               margin: EdgeInsets.only(bottom:10),
-      //               height: 170,
-      //               width: double.infinity,
-      //               alignment: Alignment.center,
-      //               decoration: BoxDecoration(
-      //                 border: Border.all(width: 1, color: Colors.grey),
-      //               ),
-      //                       child: model.preview == null
-      //               ? Text(
-      //                   'No Location Chosen',
-      //                   textAlign: TextAlign.center,
-      //                 )
-      //               : Image.network(
-      //                   model.preview,
-      //                   fit: BoxFit.cover,
-      //                   width: double.infinity,
-      //                 ),
-      //             ),                  
-      //      ],
-      //     ),
-      // ),       
-      //  )
-
-
-
-// Expanded(
-//                flex: 2,
-//               child: GridView.builder(
-//               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//               crossAxisCount: 4,
-//               crossAxisSpacing: 1.0,
-//               mainAxisSpacing: 1.0,
-//               ),
-//               itemCount: _postProperty.imageUrl.length,
-//               itemBuilder: (ctx, i) => 
-//                   GestureDetector(
-//                     onTap: () => model.navigateToBigImageView(_postProperty.imageUrl, i),
-//                     child: Hero(
-//                     tag: _postProperty.imageUrl[i],
-//                     child: Container(    
-//                       child: ClipOval(child: Image.network(_postProperty.imageUrl[i], fit: BoxFit.cover,))),
-//                     ),
-//                   )
-//                 ),
-//               ),    
-
-
-//  body: Column(
-//          children: <Widget>[
-//              Expanded(
-//                flex: 5,
-//               child: GridView.builder(
-//               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//               crossAxisCount: 2,
-//               crossAxisSpacing: 1.0,
-//               mainAxisSpacing: 1.0,
-//               ),
-//               itemCount: _postProperty.imageUrl.length,
-//               itemBuilder: (ctx, i) => 
-//                   GestureDetector(
-//                     onTap: () => model.navigateToBigImageView(_postProperty.imageUrl, i),
-//                     child: Hero(
-//                     tag: _postProperty.imageUrl[i],
-//                     child: Container(       
-//                       child: Image.network(_postProperty.imageUrl[i], fit: BoxFit.cover,)),
-//                     ),
-//                   )
-//                 ),
-//               ),    
-//               Expanded(
-//               flex:7 ,
-//                 child: Container(
-//                     child: ConstrainedBox(
-//                     constraints:BoxConstraints.expand(width: MediaQuery.of(context).size.width),
-//                     child: DataTable( 
-//                     columnSpacing: 0,  
-//                     columns: [
-//                       DataColumn(label: Text('Information Table')),
-//                       DataColumn(label: Text('')),
-//                     ],
-//                     rows: [
-//                         DataRow(cells: [
-//                         DataCell(Text('title')),
-//                         DataCell(Text(_postProperty.title)),
-//                       ]),
-//                       DataRow(cells: [
-//                         DataCell(Text('City')),
-//                         DataCell(Text(_postProperty.city)),
-//                       ]),
-//                         DataRow(cells: [
-//                         DataCell(Text('Address')),
-//                         DataCell(Text(_postProperty.address)),
-//                       ]),
-//                       DataRow(cells: [
-//                         DataCell(Text('Name')),
-//                         DataCell(Text(_postProperty.fullName)),
-//                       ]),
-//                       DataRow(cells: [
-//                         DataCell(Text('Email')),
-//                         DataCell(Text(_postProperty.email)),
-//                       ]),
-//                       DataRow(cells: [
-//                         DataCell(Text(_postProperty.messenger)),
-//                         DataCell(Text(_postProperty.messengerId)),
-//                       ]),
-//                        DataRow(cells: [
-//                         DataCell(Text(_postProperty.message)),
-//                          DataCell(Text('')),
-//                       ]),
-//                     ],
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//              Expanded(
-//                 flex: 2,
-//                 child: Container(
-//                   color: Colors.white,
-//                   child: Text('google Ads area'),
-//                 ),
-//               ),                        
-//          ],
-//         ),       

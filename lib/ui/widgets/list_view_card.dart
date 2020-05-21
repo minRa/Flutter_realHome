@@ -89,20 +89,11 @@ class ListViewCard extends StatelessWidget {
           ListTile(
           contentPadding:EdgeInsets.only(left:20, right: 20, top: 10, bottom: 10) ,
           leading: Container(
-              //  margin: EdgeInsets.only(right: 10),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(5.0),
                   child: Container(
-                   width: 90 ,
+                  width: 90 ,
                   height: 72 ,
-                  //  decoration: BoxDecoration(
-                  //    borderRadius: BorderRadius.only(
-                  //      topLeft: Radius.circular(100.0),
-                  //      topRight:Radius.circular(100.0) ,
-                  //      bottomLeft: Radius.circular(100.0),
-                  //      bottomRight: Radius.circular(100.0),
-                  //    )
-                  //    ),
                   child: Image.network(userProperty.imageUrl[0],
                   fit: BoxFit.cover,
                     loadingBuilder:(BuildContext context, Widget child,ImageChunkEvent loadingProgress) {
@@ -120,24 +111,20 @@ class ListViewCard extends StatelessWidget {
                 ),
               ),
              title: Container(
-                    //padding: const EdgeInsets.only(top:10.0,right: 20,),
                     alignment: Alignment.topLeft,
                     child: Text(
                       '${userProperty.title}',
                       style: GoogleFonts.mcLaren(fontSize: 16,fontWeight: FontWeight.bold ),
-                          //TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                       textAlign: TextAlign.left,
                       maxLines: 5,
                     ),
                   ), 
 
               subtitle:  Container(
-                   // padding: const EdgeInsets.only(top:4),
                     alignment: Alignment.topLeft,
                     child: Text(
                       '${userProperty.city} \$${userProperty.price}',
                       style: GoogleFonts.mcLaren(fontSize: 13,fontWeight: FontWeight.normal ),
-                     // TextStyle( fontWeight: FontWeight.normal, fontSize: 13),
                       textAlign: TextAlign.left,
                       maxLines: 5,
                     ),
@@ -146,15 +133,16 @@ class ListViewCard extends StatelessWidget {
               trailing: !onAuth ? 
              SizedBox()
             :Container(
-              padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-              child: IconButton(
-                icon:Icon(Icons.edit, size: 24.0,),
-                color: Colors.blueGrey,
-                tooltip: 'Edit',
-                onPressed: edit,                   
-              )),            
-
-            ),
+              //padding: const EdgeInsets.fromLTRB(0, 0, 0, 10),
+              child:
+                  IconButton(
+                    icon:Icon(Icons.edit, size: 24.0,),
+                    color: Colors.blueGrey,
+                    tooltip: 'Edit',
+                    onPressed: edit,                   
+                  ),
+                  ),            
+                ),
             Divider()
         ],
       ),

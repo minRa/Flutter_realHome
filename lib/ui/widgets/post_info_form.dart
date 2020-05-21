@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:realhome/ui/widgets/term_of_service.dart';
+import 'package:realhome/ui/widgets/text_link.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class InputInformationForm extends StatefulWidget {
   InputInformationForm(
@@ -32,6 +35,11 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
   String _selectDateString = 'Avaiable Date';
   bool _agreedToTerm = false;
 
+  Future<String> getFileData(String path) async {
+     var data = await rootBundle.loadString(path);
+     return data.toString();
+}
+
   Future<Null> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -41,9 +49,6 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
     if (picked != null && picked != DateTime.now())
       setState(() {
         _selectDateString = "${picked.toLocal()}".split(' ')[0];
-        // _passDataToParent('move_year',picked.year.toString());
-        // _passDataToParent('move_month',picked.month.toString());
-        // _passDataToParent('move_day',picked.day.toString());
           widget.date (picked.toString().split(' ')[0]);
           print(widget.date);
         
@@ -61,18 +66,17 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
 
   @override
   Widget build(BuildContext context) {
-    print(widget.rentType);
     super.build(context);
+      double setHeight =5;
+      Size screenSize = MediaQuery.of(context).size/ 1;
     return SingleChildScrollView(
           child: Container(
-           margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
-           padding: const EdgeInsets.fromLTRB(14.0,10,14,10),
-          // decoration: BoxDecoration(
-          //   border: Border.all(color: Colors.grey[400]),
-          //   // borderRadius: BorderRadius.all(
-          //   //     Radius.circular(25.0)
-          //   // ),
-          // ),
+           margin: screenSize.height > 700 ?
+           EdgeInsets.fromLTRB(14.0,15,15,10)
+           :EdgeInsets.fromLTRB(14.0,0,0,10),
+           padding: screenSize.height > 700 ?
+           EdgeInsets.fromLTRB(14.0,10,14,10)
+           : EdgeInsets.fromLTRB(14.0,0,14,0),
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -96,7 +100,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                   controller: widget.titleController,
                 ),
               ),
-              Divider(),
+              SizedBox(height: setHeight,),
               SizedBox(
                 width: 360,
                 child: TextFormField(
@@ -118,7 +122,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                   controller: widget.priceController,
                 ),
               ),
-              Divider(),
+               SizedBox(height: setHeight,),
                SizedBox(
                 width: 360,
                 child: TextFormField(
@@ -140,7 +144,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                   controller: widget.messengerController,
                 ),
               ),
-              Divider(),
+             SizedBox(height: setHeight,),
               SizedBox(
                 width: 360,
                 child: TextFormField(
@@ -162,85 +166,83 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                   style: GoogleFonts.mcLaren(color: Colors.black),
                 ),
               ),
-              Divider(),
+            //  Divider(),
               Row(
-                children: <Widget>[
-                  Icon(Icons.wc,color: Colors.blueGrey,),
-                  Radio(
-                    value: RentTypeEnum.single,
-                    groupValue: _rentType,
-                    onChanged: (RentTypeEnum value) {
-                      setState(() {
-                  
-                      //  _passDataToParent('rentType','Single',);
-                        _rentType = value;
-                          widget.rentType('Single');
-                      });
-                    },
+              children: <Widget>[
+                Icon(Icons.wc,color: Colors.blueGrey,),
+                Radio(
+                  value: RentTypeEnum.single,
+                  groupValue: _rentType,
+                  onChanged: (RentTypeEnum value) {
+                    setState(() {
+                      _rentType = value;
+                        widget.rentType('Single');
+                    });
+                  },
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                    //  _passDataToParent('rentType','Single');
+                      _rentType = RentTypeEnum.single;
+                        widget.rentType('Single');
+                    });
+                  },
+                  child: Text('Single',
+                  style: GoogleFonts.mcLaren(fontSize: 12)
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                      //  _passDataToParent('rentType','Single');
-                        _rentType = RentTypeEnum.single;
-                          widget.rentType('Single');
-                      });
-                    },
-                    child: Text('Single',
-                    style: GoogleFonts.mcLaren()
-                    ),
+                ),
+                SizedBox(width: setHeight,),
+                Radio(
+                  value: RentTypeEnum.ddouble,
+                  groupValue: _rentType,
+                  onChanged: (RentTypeEnum value) {
+                    setState(() {
+                    //  _passDataToParent('rentType','Double');
+                      _rentType = value;
+                        widget.rentType('Double');
+                    });
+                  },
+                ),
+                 GestureDetector(
+                  onTap: () {
+                    setState(() {
+                     // _passDataToParent('rentType','Double');
+                      _rentType = RentTypeEnum.ddouble;
+                        widget.rentType('Double');
+                    });
+                  },
+                  child: Text('Double',
+                  style: GoogleFonts.mcLaren(fontSize: 12)
                   ),
-                  SizedBox(width: 10,),
-                  Radio(
-                    value: RentTypeEnum.ddouble,
-                    groupValue: _rentType,
-                    onChanged: (RentTypeEnum value) {
-                      setState(() {
-                      //  _passDataToParent('rentType','Double');
-                        _rentType = value;
-                          widget.rentType('Double');
-                      });
-                    },
+                ),
+                   SizedBox(width: setHeight,),
+                Radio(
+                  value: RentTypeEnum.family,
+                  groupValue: _rentType,
+                  onChanged: (RentTypeEnum value) {
+                    setState(() {
+                      //_passDataToParent('rentType','Fmaily');
+                      _rentType = value;
+                      widget.rentType('Fmaily');
+                    });
+                  },
+                ),
+                 GestureDetector(
+                  onTap: () {
+                    setState(() {
+                     // _passDataToParent('rentType','Fmaily');
+                      _rentType = RentTypeEnum.family;
+                      widget.rentType('Fmaily');
+                    });
+                  },
+                  child: Text('Fmaily',
+                 style: GoogleFonts.mcLaren(fontSize: 12)
                   ),
-                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                       // _passDataToParent('rentType','Double');
-                        _rentType = RentTypeEnum.ddouble;
-                          widget.rentType('Double');
-                      });
-                    },
-                    child: Text('Double',
-                    style: GoogleFonts.mcLaren()
-                    ),
-                  ),
-                     SizedBox(width: 10,),
-                  Radio(
-                    value: RentTypeEnum.family,
-                    groupValue: _rentType,
-                    onChanged: (RentTypeEnum value) {
-                      setState(() {
-                        //_passDataToParent('rentType','Fmaily');
-                        _rentType = value;
-                        widget.rentType('Fmaily');
-                      });
-                    },
-                  ),
-                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                       // _passDataToParent('rentType','Fmaily');
-                        _rentType = RentTypeEnum.family;
-                        widget.rentType('Fmaily');
-                      });
-                    },
-                    child: Text('Fmaily',
-                   style: GoogleFonts.mcLaren()
-                    ),
-                  ),
-                ],
-              ),               
-              Divider(),
+                ),
+              ],
+                ),               
+              SizedBox(height: setHeight,),
               SizedBox(
                 width: 360,
                 child:
@@ -265,11 +267,13 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                   ],
                 ),
               ),
+              SizedBox(height: setHeight,),
               SizedBox(
                 width: 360,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       Checkbox(
                         value: _agreedToTerm,
@@ -285,14 +289,27 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                         style: GoogleFonts.mcLaren(),
                         ),
                       ),
-                      GestureDetector(
-                        onTap: () => _showTermPolicy(),
-                        child: Text(
-                          'Terms of Services',
-                          style: GoogleFonts.mcLaren(color: Colors.blue,fontWeight: FontWeight.bold),
-                        ),
+                      Container(
+                      child: Column(
+                        children: [
+                          TextLink(
+                           'term of service',
+                           onPressed: ()async {
+                             String term =  await getFileData('assets/text/term.txt'); 
+                               showTermOfService(context,term,'Terms of Services ');
+                             } 
+                            ),
+                           TextLink(
+                              ' & privacy policy',
+                                onPressed: ()  async {
+                                String privacy = await  getFileData('assets/text/privacy.txt');
+                                showTermOfService(context,privacy, 'Privacy Policy');
+                                } 
+                           )
+                        ],
                       ),
-                    ],
+                    ),
+                   ],
                   ),
                 ),
               ),
@@ -302,50 +319,6 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
     );
   }
 
-  void _showTermPolicy() {
-    showDialog(context: context, child:
-       AlertDialog(
-       title: Text("Terms of Services, Privacy Policy",
-       style: GoogleFonts.mcLaren(),
-       ),
-       shape: RoundedRectangleBorder(
-           borderRadius: BorderRadius.all(Radius.circular(20.0))),
-       content: Container(
-         height: 360,
-         width: 300,
-         child: SingleChildScrollView(
-           child: Column(
-             crossAxisAlignment: CrossAxisAlignment.stretch,
-             children: <Widget>[
-               Text(
-                   'RealHomWelcome to our Privacy Policy -- Your privacy is critically important to us.' 'RealHom is located at:'
-                   'It is RealHomw\'s policy to respect your privacy regarding any information we may collect while operating our app.'
-                   'This Privacy Policy applies to realHome. '
-                   'We have adopted this privacy policy ("Privacy Policy") to explain what information may be collected on our app, how we use this information, and under what circumstances we may disclose the information to third parties. '
-                   'This Privacy Policy applies only to information we collect through the app and does not apply to our collection of information from other sources.'
-                   'This Privacy Policy, together with the Terms and conditions posted on our app, set forth the general rules and policies governing your use of our app. Depending on your activities when visiting our app, you may be required to agree to additional terms and conditions.'
-                   'Gathering of Personally-Identifying Information'
-                    'Certain visitors to RealHom\'s app choose to interact with RealHom in ways that require RealHom to gather personally-identifying information.' 
-                    'The amount and type of information that RealHomw gathers depend on the nature of the interaction.'
-                    '- Security The security of your Personal Information is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Information, we cannot guarantee its absolute security.'
-
-               ),
-             ],
-           ),
-         ),
-       ),
-      //  actions: <Widget>[
-      //    FlatButton(
-      //      onPressed: () {
-      //       // Navigator.popUntil(context, context)
-      //       // Navigator.of(context).pop(false);
-      //      },
-      //      child: const Text('Close'),
-      //    )
-      //  ],
-      )
-    );
-  }
 
   void _passDataToParent(String key, dynamic value) {
     List<dynamic> addData = List<dynamic>();
@@ -357,79 +330,3 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
   @override
   bool get wantKeepAlive => true;
 }
-
-
-  // Text(
-  //                 '--- Rent House Information ---',
-  //                 style: GoogleFonts.mcLaren (
-  //                   fontSize: 20.0,
-  //                   color: Colors.blueAccent,                  
-  //                    ),),
-  //                    Divider(), 
-  //                     Container(
-  //                            padding: EdgeInsets.only(top: 20,left: 40,right: 40,bottom:20),
-  //                          // padding: EdgeInsets.all(15.0),
-  //                           child:   InputField(
-  //                           smallVersion: true,
-  //                           placeholder: 'Title',
-  //                           controller: titleController,            
-  //                         ),
-  //                       ),  
-  //                       Container(
-  //                       padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                        child: ExpansionList<String>(
-  //                           items: ['Auckland','Wellington','christchurch','Invercagill'],
-  //                           title: model.selectedCity,
-  //                           onItemSelected: model.setdCity,
-  //                           smallVersion: true,
-  //                           ),
-
-  //                          ), 
-  //                           Container(
-  //                            padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                          // padding: EdgeInsets.all(15.0),
-  //                           child:   InputField(
-  //                           smallVersion: true,
-  //                           placeholder: 'Address Details',
-  //                           controller: adressDetailController,            
-  //                         ),
-  //                       ),  
-                       
-  //                      Container(
-  //                       padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                        child: ExpansionList<String>(
-  //                           items: ['Facebook','Wechat','Line','Kako'],
-  //                           title: model.selectedMessenger,
-  //                           onItemSelected: model.setdMessenger,
-  //                           smallVersion: true,
-  //                           ),
-  //                          ),
-  //                         Container(
-  //                            padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                          // padding: EdgeInsets.all(15.0),
-  //                           child:   InputField(
-  //                           smallVersion: true,
-  //                           placeholder: 'Messenger Id',
-  //                           controller: messengerIdController,            
-  //                         ),
-  //                       ),
-  //                        Container(
-  //                            padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                          // padding: EdgeInsets.all(15.0),
-  //                           child:   InputField(
-  //                           smallVersion: true,
-  //                           placeholder: 'Price /per week',
-  //                           controller: priceController,            
-  //                         ),
-  //                       ),
-  //                     Container(
-  //                       padding: EdgeInsets.only(left: 40,right: 40,bottom:20),
-  //                       // padding: EdgeInsets.all(15.0),
-  //                       child: InputField(
-  //                       maxLines: 200,
-  //                       placeholder: 'Rent House description',
-  //                       bigVersion: true,
-  //                       textInputType: TextInputType.multiline,
-  //                       controller: textAreaController,            
-  //                     ),), 
-                      

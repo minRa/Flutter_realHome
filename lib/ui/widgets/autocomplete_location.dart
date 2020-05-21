@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:realhome/services/googleAds_service.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_fonts/google_fonts.dart';
-//import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:realhome/models/place.dart';
 import 'package:realhome/services/googleMap_service.dart';
@@ -9,8 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:geolocator/geolocator.dart';
 
-// import 'package:example/services/google_map_service.dart';
-// import 'package:example/models/place.dart';
+
 
 class AutocompleteLocation extends StatefulWidget {
   final ValueChanged<PlaceDetail> save;
@@ -24,6 +23,8 @@ class AutocompleteLocation extends StatefulWidget {
 }
 
 class _AutocompleteLocationState extends State<AutocompleteLocation> {
+  
+
   final TextEditingController _searchController = TextEditingController();
   var uuid = Uuid();
   var sessionToken;
@@ -54,36 +55,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
   void _checkGPSAvailability() async {
     GeolocationStatus geolocationStatus =
         await Geolocator().checkGeolocationPermissionStatus();
-  //  print('i am herer ==========================>$geolocationStatus');
-
      if (geolocationStatus != GeolocationStatus.granted) {}
-
-    //   showDialog(
-    //     barrierDismissible: false,
-    //     context: context,
-    //     builder: (ctx) {
-    //       return AlertDialog(
-    //         title: Text('Error !',
-    //         style: GoogleFonts.mcLaren(),
-    //         ),
-    //         content: Text('GPS is unable to acess ',
-    //          style: GoogleFonts.mcLaren(),
-    //         ),
-    //         actions: <Widget>[
-    //           FlatButton(
-    //             child: Text('OK',
-    //              style: GoogleFonts.mcLaren(),
-    //             ),
-    //             onPressed: () {
-    //               Navigator.pop(ctx);
-    //             },
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   ).then((_) => Navigator.pop(context));
-    // } else {
-
       await _getGPSLocation();
       myAddr = await GoogleMapServices.getAddrFromLocation(
           position.latitude, position.longitude);
@@ -202,48 +174,12 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
                  style: GoogleFonts.mcLaren(),
                 ),
                // title: Text('House location: $myAddr - ${placeDetail.name}'),
-                subtitle: Text('${distance.toStringAsFixed(2)} m',
+                subtitle: Text('${distance.toStringAsFixed(2)} m far away from you',
                  style: GoogleFonts.mcLaren(),
                 ),
               ),
             ),
           ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.branding_watermark),
-          //     title: Text('${placeDetail.name}'),
-          //   ),
-          // ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.location_city),
-          //     title: Text('${placeDetail.formattedAddress}'),
-          //   ),
-          // ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.phone),
-          //     title: Text('${placeDetail.formattedPhoneNumber}'),
-          //   ),
-          // ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.favorite),
-          //     title: Text('${placeDetail.rating}'),
-          //   ),
-          // ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.place),
-          //     title: Text('${placeDetail.vicinity}'),
-          //   ),
-          // ),
-          // Card(
-          //   child: ListTile(
-          //     leading: Icon(Icons.web),
-          //     title: Text('${placeDetail.website}'),
-          //   ),
-          // ),
         ],
       ),
     );
@@ -251,6 +187,7 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
 
   @override
   Widget build(BuildContext context) {
+     Size screenSize = MediaQuery.of(context).size/ 1;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -322,7 +259,8 @@ class _AutocompleteLocationState extends State<AutocompleteLocation> {
               SizedBox(height: 10),
               Container(
                 width: double.infinity,
-                height: 340,
+                height: screenSize.height > 700 ? 340 : 
+                 screenSize.height > 620 ? 300 : 250,
                 child: GoogleMap(
                   mapType: MapType.normal,
                   initialCameraPosition: CameraPosition(

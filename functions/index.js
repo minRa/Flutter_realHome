@@ -57,7 +57,7 @@ exports.sendCommentsNotification = functions.firestore
 
                   const payload = {
                     notification: {
-                      title: `You have a comment from "${userFrom.data().fullName}"`,
+                      title: `A comment from "${userFrom.data().fullName}"`,
                       body: contentMessage,
                       badge: '1',
                      // icon:'https://firebasestorage.googleapis.com/v0/b/shop-90345.appspot.com/o/icon%2Fapp_icon.png?alt=media&token=0148983b-0a43-4f2d-86f0-205f244feb8d',
@@ -143,7 +143,7 @@ exports.sendCommentsNotification = functions.firestore
          
                   const payload = {
                     notification: {
-                      title: `You have a message from "${userFrom.data().fullName}"`,
+                      title: `A message from "${userFrom.data().fullName}"`,
                       body: contentMessage,
                       badge: '1',
                      // icon:'https://firebasestorage.googleapis.com/v0/b/shop-90345.appspot.com/o/icon%2Fapp_icon.png?alt=media&token=0148983b-0a43-4f2d-86f0-205f244feb8d',

@@ -48,8 +48,9 @@ class _PostHouseViewState extends State<PostHouseView> {
   void initState() {
     // init values
     if(!_googleAdsService.onBanner) {
-    _googleAdsService.bottomBanner();
+       _googleAdsService.bottomBanner();
     }
+    
     if(widget._postProperty != null) {
       _textAreaController.text = widget._postProperty.message;
       _messengerController.text = widget._postProperty.messenger;
@@ -86,204 +87,176 @@ class _PostHouseViewState extends State<PostHouseView> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size/ 1;
     return ViewModelProvider<PostHouseViewModel>.withConsumer(
       viewModel: PostHouseViewModel(), 
       onModelReady: widget._postProperty != null? 
       (model) => model.getPostProperty(widget._postProperty) : null,
-     // (model) => model.getGoogleAdService(),
       builder: (context, model, child) => 
        Scaffold(
-      // backgroundColor: Colors.white,
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   title: Text('Post Rent House'),
-      //   actions: <Widget>[
-      //     Container(
-      //       child: model.currentUser != null?            
-      //       IconButton(
-      //         icon:Icon(Icons.exit_to_app),
-      //         onPressed:model.logout)
-      //         : IconButton(
-      //         icon:Icon(Icons.person_add),
-      //         onPressed: model.navigateToLogin
-      //         ) 
-      //    )
-      //   ],
-      // ),
-      // drawer:
-      // AppDrawer(
-      //   currentUser: model.currentUser,
-      //   home:model.navigateToHouseOverView,
-      //   mebership: model.navigateToMembershipView,
-      //   property: model.navigateToPropertyManageView,
-      //   logout: model.logout
-      // ),
        body:
       Stack(
         children: <Widget>[
           WillPopScope( // blocking if the user cancel button, close the view.
             child: SingleChildScrollView(
               child: Column(
-               // mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Column(
+                  Container(
+                    padding: _googleAdsService.onBanner ? EdgeInsets.only(top: 30)
+                    :EdgeInsets.only(top: 50),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Text(
+                        'Post Rent House',
+                        style: GoogleFonts.mcLaren(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: _googleAdsService.onBanner ?
+                     screenSize.height > 700 ? 510 : 430
+                     : screenSize.height > 700 ? 560
+                     : screenSize.height > 600 ? 470 : 430,
+                    child: PageView( 
+                      onPageChanged: (int page) {
+                        setState(() {
+                          _currentPage = page;
+                        });
+                        if (page == 3) { // if last page, change text and color
+                          setState(() {
+                            _nextText = 'Post';
+                            _nextColor = Colors.blueAccent;
+                          });
+                        } else {
+                          setState(() {
+                            _nextText = 'Next';
+                            _nextColor = Colors.greenAccent;
+                          });
+                        }
+                      },
+                      controller: _pageController,
+                      children: <Widget>[
+                       InputInformationForm(
+                             model.updateRentType,
+                             model.updateDate,
+                            _messengerController,
+                            _phoneController,
+                            _priceController,
+                            _titleController,
+                             _updateUserData
+                        ),
+                        Introduce(
+                           carpark: model.updateCarpark,
+                           room: model.updateRoom,
+                           toilet: model.updateToilet,
+                           introduceTextController: _textAreaController,
+                          
+                          ),
+                        PickedImages(
+                          multiImage: model.multiImageUpload,
+                          ),
+                        AddPlace(
+                          address: _adressDetailController,
+                          save: model.updatePlaceDetail,
+                          addLocation: model.addPlace,           
+                          )                   
+                      ],
+                      
+                    ),
+                  ),
+                  Row(
                     children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(top: 50),
-                        child: Align(
-                          alignment: Alignment.topCenter,
-                          child: Text(
-                            'Post Rent House',
-                            style: GoogleFonts.mcLaren(fontSize: 20, fontWeight: FontWeight.bold),
+                      Flexible(
+                        child: Padding(
+                          padding:
+                          const EdgeInsets.only(left: 20.0, right: 20.0),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(12.0),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  'Cancel',
+                                  style: GoogleFonts.mcLaren(fontSize: 15),
+                                ),
+                              ],
+                            ),
+                            textColor: Colors.black,
+                            color: Colors.white,
+                            padding: EdgeInsets.all(10),
+                            onPressed: () { 
+                              if (_currentPage > 0) {
+                                _pageController.animateToPage(
+                                    0,
+                                    duration: Duration(milliseconds: 200),
+                                    curve: Curves.easeIn);
+                              } else {
+                                Navigator.pop(context);
+                              }
+                            },
                           ),
                         ),
                       ),
-                      Container(
-                        height: 520,
-                        child: PageView( 
-                          onPageChanged: (int page) {
-                            setState(() {
-                              _currentPage = page;
-                            });
-                            if (page == 3) { // if last page, change text and color
-                              setState(() {
-                                _nextText = 'Post';
-                                _nextColor = Colors.blueAccent;
-                              });
-                            } else {
-                              setState(() {
-                                _nextText = 'Next';
-                                _nextColor = Colors.greenAccent;
-                              });
-                            }
-                          },
-                          controller: _pageController,
-                          children: <Widget>[
-                           InputInformationForm(
-                                 model.updateRentType,
-                                 model.updateDate,
-                                _messengerController,
-                                _phoneController,
-                                _priceController,
-                                _titleController,
-                                 _updateUserData
+                      Flexible(
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.only(left: 20.0, right: 20.0),
+                          child: RaisedButton(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: new BorderRadius.circular(12.0),
                             ),
-                            Introduce(
-                               carpark: model.updateCarpark,
-                               room: model.updateRoom,
-                               toilet: model.updateToilet,
-                               introduceTextController: _textAreaController,
-                              
-                              ),
-                            PickedImages(
-                              multiImage: model.multiImageUpload,
-                             // cropImage: model.cropImage,
-                            //  imageUpload: model.uploadImage,
-                            //  imageUrl: model.images,
-                          //    remove: model.remove,
-                              ),
-                            AddPlace(
-                              address: _adressDetailController,
-                              save: model.updatePlaceDetail,
-                              addLocation: model.addPlace,           
-                              )                   
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          Flexible(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(12.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  _nextText,
+                                  style: GoogleFonts.mcLaren(fontSize: 15),
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(
-                                      'Cancel',
-                                      style: GoogleFonts.mcLaren(fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                                textColor: Colors.black,
-                                color: Colors.white,
-                                padding: EdgeInsets.all(10),
-                                onPressed: () { // move first page view when click 'cancel' button
-                                  if (_currentPage > 0) {
-                                    _pageController.animateToPage(
-                                        0,
-                                        duration: Duration(milliseconds: 200),
-                                        curve: Curves.easeIn);
-                                  } else {
-                                    Navigator.pop(context);
-                                  }
-                                },
-                              ),
+                              ],
                             ),
-                          ),
-                          Flexible(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 8.0, right: 8.0),
-                              child: RaisedButton(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: new BorderRadius.circular(12.0),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Text(
-                                      _nextText,
-                                      style: GoogleFonts.mcLaren(fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                                textColor: Colors.white,
-                                color: _nextColor,
-                                padding: EdgeInsets.all(10),
-                                onPressed: () async {
-                                  if (_pageController.page.toInt() == 0) {
-                                     
-                                      print('page1 or 2');
-                                    if (_validateUserData()) {
-                                      _moveToNextPage(); // check user data validation and move next page
-                                    }
-                                  }else if (_pageController.page.toInt() == 1
-                                 || _pageController.page.toInt() == 2) {
-                                     print('page1 or 2');
-                                    
-                                    _moveToNextPage();
-                                  }else if (_pageController.page.toInt() == 3) {
-                                    if (_validateUserData()) {
-                                      print('last page');
+                            textColor: Colors.white,
+                            color: _nextColor,
+                            padding: EdgeInsets.all(10),
+                            onPressed: () async {
+                              if (_pageController.page.toInt() == 0) {
+                                 
+                                  print('page1 or 2');
+                                if (_validateUserData()) {
+                                  _moveToNextPage(); // check user data validation and move next page
+                                }
+                              }else if (_pageController.page.toInt() == 1
+                             || _pageController.page.toInt() == 2) {
+                                 print('page1 or 2');
+                                
+                                _moveToNextPage();
+                              }else if (_pageController.page.toInt() == 3) {
+                                if (_validateUserData()) {
+                                  print('last page');
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                                                      
+                                   await model.postingHouse(
+                                   // address: _adressDetailController.text,
+                                    message: _textAreaController.text,
+                                    messenger: _messengerController.text,
+                                    phone: _phoneController.text,
+                                    price: _priceController.text,
+                                    title: _titleController.text
+                                  );
                                       setState(() {
-                                        isLoading = true;
-                                      });
-                                                                          
-                                       await model.postingHouse(
-                                       // address: _adressDetailController.text,
-                                        message: _textAreaController.text,
-                                        messenger: _messengerController.text,
-                                        phone: _phoneController.text,
-                                        price: _priceController.text,
-                                        title: _titleController.text
-                                      );
-                                          setState(() {
-                                        isLoading = false;
-                                      });
-                                    }
-                                  }
-                                },
-                              ),
-                            ),
+                                    isLoading = false;
+                                  });
+                                }
+                              }
+                            },
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),
@@ -410,67 +383,3 @@ bool _validateUserData() {
 
 
 
-
-
-
-  // PickedImages(model.updateUserData,0),
-  //                     Container(
-  //                       padding: EdgeInsets.only(right: 300),
-  //                       child: IconButton(
-  //                         icon: addMorePicture1? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),
-                          
-  //                         onPressed: () {
-  //                           setState(() {
-  //                             addMorePicture1 = !addMorePicture1;
-  //                              if(addMorePicture2) addMorePicture2 = !addMorePicture2;
-  //                           });
-  //                         },
-  //                       ),
-  //                     ),
-  //                     Visibility(
-  //                      visible: addMorePicture1,
-  //                      child:PickedImages(model.updateUserData,1),
-  //                    ), 
-  //                     Visibility(
-  //                      visible: addMorePicture1,              
-  //                      child:Container(
-  //                        padding: EdgeInsets.only(right: 300),
-  //                        child: IconButton(
-  //                         icon: addMorePicture2? Icon(Icons.minimize) : Icon(Icons.add_circle_outline),
-  //                         onPressed: () {
-  //                           setState(() {
-  //                             addMorePicture2 = !addMorePicture2;
-  //                           });
-  //                         },
-  //                     ),
-  //                      ),
-  //                    ),      
-  //                     Visibility(
-  //                      visible: addMorePicture2,
-  //                      child:PickedImages(model.updateUserData,2),
-  //                    ) ,
-
-
-
-  // verticalSpaceMedium,
-  //                        Container(
-  //                          padding: EdgeInsets.only(
-  //                            left: 35.0,
-  //                            right: 35.0,
-  //                            bottom: 20.0
-  //                          ),
-  //                          child: BusyButton(
-  //                           title: 'Post House',
-  //                           busy: model.busy,
-  //                           onPressed:() {
-  //                             model.postHouse(
-  //                               title: titleController.text,
-  //                               address:adressDetailController.text,
-  //                               message: messengerIdController.text,
-  //                               messengerId: messengerIdController.text,
-  //                               price: priceController.text,
-
-  //                             );
-  //                           }
-  //                       ),
-  //                        ),         

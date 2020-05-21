@@ -4,6 +4,7 @@ class Message {
   final String idFrom;
   final String idTo;
   final String timestamp;
+  final String docId;
   final int type;
 
   Message({
@@ -12,14 +13,16 @@ class Message {
    this.idTo,
    this.timestamp,
    this.type,
+   this.docId
      });
 
-  Message.fromData(Map<String, dynamic> data)
+  Message.fromData(Map<String, dynamic> data, String docId)
       : content = data['content'],
         idFrom = data['idFrom'],
         idTo = data['idTo'],
         timestamp = data['timestamp'],
-        type = data['type'];
+        type = data['type'],
+        docId = docId;
 
   Map<String, dynamic> toJson() {
     return {

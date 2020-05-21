@@ -1,17 +1,19 @@
-
 import 'package:flutter/material.dart';
 import 'package:realhome/services/AnalyticsService.dart';
 import 'package:realhome/services/dialog_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/ui/view/initial_view.dart';
 import 'managers/dialog_manager.dart';
+import 'package:flutter/services.dart';
 import 'ui/router.dart';
 import 'locator.dart';
 
 Future<void> main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
 
   // Register all the models and services before the app starts
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await setupLocator();
 
   runApp(MyApp());

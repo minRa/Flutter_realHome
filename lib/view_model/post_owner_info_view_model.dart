@@ -14,11 +14,14 @@ final FirestoreService _firestoreService = locator<FirestoreService>();
 
  List <PostProperty> _posts;
  List<PostProperty> get posts => _posts;
+ bool _onLoading = false;
+ bool get onloading => _onLoading;
 
  void currentOwnerPostPropertyList(owner) async {
-     // await _googleAdsService.bottomBanner();
-
+     _onLoading = true;
+     notifyListeners();
     _posts = await _firestoreService.getUserPropertyListFromFirebase(owner);
+    _onLoading = false;
     notifyListeners();
 
   }

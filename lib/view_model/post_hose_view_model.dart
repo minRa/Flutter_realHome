@@ -12,7 +12,11 @@ import 'package:realhome/services/firestore_service.dart';
 import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/services/navigation_service.dart';
 import 'package:realhome/view_model/base_model.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as IMG;
+
+
+
+
 
 
 
@@ -81,10 +85,10 @@ class PostHouseViewModel extends BaseModel {
         return;    
        }
        try {
-        
         print('what is happen ========================================================================');
          setBusy(true);
-          await _cloudStorageService.arrayImageFiles(_userDataMap);
+            await _cloudStorageService.arrayImageFiles(_userDataMap);
+          
 
           if(_postProperty == null) {
           PostProperty property = PostProperty(
@@ -99,17 +103,26 @@ class PostHouseViewModel extends BaseModel {
           price: price,
           message: message,
           messenger: messenger,
-         latitude: _placeDetail.lat, 
-         longitude:_placeDetail.lng,
+          latitude: _placeDetail.lat, 
+          longitude:_placeDetail.lng,
           rentType:_rentType,
           date:_date,              
-           address:_placeDetail.formattedAddress,        
-           city:_placeDetail.city,
+          address:_placeDetail.formattedAddress,        
+          city:_placeDetail.city,
           update:DateTime.now().millisecondsSinceEpoch.toString(),
           createdAt:DateTime.now().millisecondsSinceEpoch.toString(),
           );
           _postProperty = property;
         } else {
+
+           if(tempImage != null && tempImage.length > 0) {
+             await _cloudStorageService.deleteImageFileToFireStroage(tempImage)
+               .catchError((err) => {
+            });
+            _postProperty.imageUrl = null;
+           }
+           
+            
             if(_toilet!=1) _postProperty.toilet = _toilet;
             if(_room != 1) _postProperty.room = _room;
             if(_carpark!=0) _postProperty.carpark=_carpark;
@@ -134,24 +147,15 @@ class PostHouseViewModel extends BaseModel {
         var result = await _firestoreService.postHouseIntoFirebase(_postProperty);
         _analyticsService.logPostCreated(hasImage: _userDataMap != null);
         _userDataMap.clear();
-         print(' i have return with result => $result');
-        
-        // var result=['aaaaa', 'aaaaa'];
-          
+         print(' i have return with result => $result');          
         if(result != null) {
           await _dialogService.showDialog(
           title: result[0],
           description: result[1],
         );}
         
-         
-        //  if(_authenticationService.currentUser.uploadCount < 2) 
-        //  _authenticationService.currentUser.uploadCount += 1;
-        //  print(_authenticationService.currentUser.uploadCount);
-       // await _analyticsService.logSignUp();
         setBusy(false);
      
-
        } catch (e) {
           print('i am error ===============================>${e.toString()}');
        }
@@ -159,17 +163,13 @@ class PostHouseViewModel extends BaseModel {
   }
   
   PlaceDetail _placeDetail;
- // PlaceDetail get placeDetail => _placeDetail;
+
    updatePlaceDetail(PlaceDetail place) {
      _placeDetail = place;
-     //notifyListeners();
+     notifyListeners();
      print(_placeDetail);
    }
 
-
-  // Place findById(String id) {
-  //   return _items.firstWhere((place) => place.id == id);
-  // }
 
 
   Future<void> addPlace(double lat, double lng) async {
@@ -186,53 +186,36 @@ class PostHouseViewModel extends BaseModel {
   
 
   PostProperty get getPostPropertyData => _postProperty;
-
-    // void getGoogleAdService() async {
-    //   await _googleAdsService.bottomBanner();
-    // }
+ 
+  List<dynamic> tempImage;
 
   void getPostProperty(PostProperty postProperty) async {
-    
-      //  await _googleAdsService.bottomBanner();
-           //postProperty.imageUrl.clear();
           _postProperty = postProperty;
-          _cloudStorageService.deleteImageFileToFireStroage(postProperty.imageUrl)
-             .catchError((err) => {
-        });
-          
-          
-        //  for(var i =0; i < postProperty.imageUrl.length; i++ ) {
-        //    _userDataMap['image$i'] = postProperty.imageUrl[i];
-        //    _images[i] =postProperty.imageUrl[i];
-        //  }
+          tempImage = postProperty.imageUrl;     
           notifyListeners();
-         print(_userDataMap['image0']);
-         print(_postProperty.latitude);
-         print(_postProperty.documentId);
-        // _images = _postProperty.imageUrl;
   }
 
   List<String> _images = List<String>.generate(9,(i) => '');
   List<String> get images =>_images;
          
          
-Future<File> getImageFileFromAssets(String name , var data) async {
-  //final byteData = await rootBundle.load('assets/$path');
-  final file = File('${(await getTemporaryDirectory()).path}/$name');
-  await file.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
-  return file;
-}
+// Future<File> getImageFileFromAssets(String name , var data) async {
+//   final file = File('${(await getTemporaryDirectory()).path}/$name');
+//   await file.writeAsBytes(data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+//   return file;
+// }
 
 
  Future multiImageUpload(List<dynamic> images) async {
-
+   
     if(images!= null) {
       int i = 0;
-      await Future.forEach(images, (element)  async {
-          // var data = await element.getByteData();
-          // File image = await getImageFileFromAssets(element.name, data);    
-           var image = (await element.getByteData()).buffer.asUint8List();
-          _userDataMap['image$i'] = image;
+      await Future.forEach(images, (element)  async {  
+           //var image1 = (await element.getByteData()).buffer.asUint8List();
+           IMG.Image image = IMG.decodeImage((await element.getByteData()).buffer.asUint8List());
+           IMG.Image resizeImage = IMG.copyResize(image, height: 650,); 
+           var data = IMG.encodeJpg(resizeImage);
+          _userDataMap['image$i'] = data;
           i++;
       });
     }
@@ -250,11 +233,6 @@ Future<File> getImageFileFromAssets(String name , var data) async {
     }
      if(image != null) {
       _userDataMap['image$index'] =image;
-    
-       //String uid = postProperty.uuid == null? uuid : _postProperty.uuid;
-      //  imageUrl =  await _firestoreService.uploadImageData(image, index, _authenticationService.currentUser); 
-      // _images[index] =(imageUrl);     
-       // print('i added it !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! {$imageUrl}');
         notifyListeners();
      }
      setBusy(false); 
@@ -279,14 +257,10 @@ Future<File> getImageFileFromAssets(String name , var data) async {
         ok = true;
          await _cloudStorageService.imageDatadelete(_images[index]);
          if(_postProperty != null)
-      //   await _firestoreService.imageDataDelete(_images[index], _postProperty.documentId);
-       // print( 'i will remove !!!!!!!!!!!!!!!!!= ====> ${_images[index]}');
          _userDataMap.remove('image$index');
          _images[index] ='';
            print('${_userDataMap.length}');
          print('${_images.length}');
-       // print('I AM having data =============>!!!!!${_images.length}');
-       // print(_images);
         notifyListeners();
     }   
      return ok;

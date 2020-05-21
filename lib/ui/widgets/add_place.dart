@@ -4,13 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:location/location.dart';
 import 'package:realhome/models/place.dart';
 import 'package:realhome/services/googleMap_service.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
-//import 'package:location/location.dart';
-//import 'package:realhome/models/place.dart';
-//import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/ui/widgets/autocomplete_location.dart';
-//import 'package:realhome/ui/widgets/custom_button.dart';
-//import 'package:realhome/ui/widgets/google_map_view.dart';
+import 'package:realhome/locator.dart';
+import 'package:realhome/services/googleAds_service.dart';
 
 class AddPlace extends StatefulWidget {
 
@@ -26,7 +22,7 @@ class AddPlace extends StatefulWidget {
   @override
   _AddPlaceState createState() => _AddPlaceState();
 }
-
+final GoogleAdsService _googleAdsService = locator<GoogleAdsService>(); 
 class _AddPlaceState extends State<AddPlace> {
    String _previewImageUrl;
    String _addressDisplay;
@@ -37,6 +33,14 @@ class _AddPlaceState extends State<AddPlace> {
      }
     super.initState();
   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   if(!_googleAdsService.onBanner){
+  //      _googleAdsService.bottomBanner();
+  //   }
+  //   super.didChangeDependencies();
+  // }
 
    void _showPreview(double lat, double lng) {
     final staticMapImageUrl = GoogleMapServices.generateLocationPreviewImage(
@@ -119,14 +123,14 @@ class _AddPlaceState extends State<AddPlace> {
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     FlatButton.icon(
                                       icon: Icon(
                                         Icons.location_on,
                                       ),
                                       label: Text('Current Location',
-                                      style: GoogleFonts.mcLaren(),),
+                                      style: GoogleFonts.mcLaren(fontSize: 13),),
                                       textColor: Theme.of(context).primaryColor,
                                       onPressed: _getCurrentUserLocation,
                                     ),
@@ -135,13 +139,13 @@ class _AddPlaceState extends State<AddPlace> {
                                         Icons.map,
                                       ),
                                       label: Text('Select on Map',
-                                      style: GoogleFonts.mcLaren(),
+                                      style: GoogleFonts.mcLaren(fontSize: 13),
                                       ),
                                       textColor: Theme.of(context).primaryColor,
                                       onPressed: () {
                                            Navigator.of(context).push(
                                            MaterialPageRoute(builder: (context) {
-                                          return AutocompleteLocation(
+                                           return AutocompleteLocation(
                                             previewUrl:updatePrivewImageUrl ,
                                             save: updatePlaceDetail,
                                           );
@@ -151,8 +155,6 @@ class _AddPlaceState extends State<AddPlace> {
                                         ],
                                       ),
                                     SizedBox(height: 30,),  
-                                    // Card(
-                                    // child: 
                                     ListTile(
                                     leading: Text('Address : ',
                                     style: GoogleFonts.mcLaren(fontSize: 20),
@@ -183,214 +185,3 @@ class _AddPlaceState extends State<AddPlace> {
   }
 }
 
-//  String _previewImageUrl;
-  //  Place _pickedLocation;
-  //  String addressDisplay;
-  //  bool visual = false;
-
-  //  void _showPreview(double lat, double lng) {
-  //   final staticMapImageUrl = GoogleMapService.generateLocationPreviewImage(
-  //     latitude: lat,
-  //     longitude: lng,
-  //   );
-  //   setState(() {
-  //     _previewImageUrl = staticMapImageUrl;
-  //   });  
-  // }
-
-  // void _onSelectPlace(double lat, double lng) {
-  //   _pickedLocation = Place(latitude: lat, longitude: lng);
-  //    _savePlace();  
-  // }
-
-  // Future<void> _getCurrentUserLocation() async {
-  //   try {
-  //     final locData = await Location().getLocation();
-  //     _showPreview(locData.latitude, locData.longitude);
-  //     _onSelectPlace(locData.latitude, locData.longitude);
-  //   } catch (error) {
-  //     return;
-  //   }
-  // }
-
-  // Future<void> _selectOnMap() async {
-
-  //   final selectedLocation = await Navigator.of(context).push<LatLng>(
-  //     MaterialPageRoute(
-  //       fullscreenDialog: true,
-  //       builder: (ctx) =>GoogleMapView(
-  //             isSelecting: true,
-  //           ),
-  //     ),
-  //   );
-  //   if (selectedLocation == null) {
-  //     return;
-  //   }
-  //   _showPreview(selectedLocation.latitude, selectedLocation.longitude);
-  //   _onSelectPlace(selectedLocation.latitude, selectedLocation.longitude);
-
-  // }
-
-  // Future<void> _savePlace() async {
-  //   if (_pickedLocation == null) {
-  //     return;
-  //   }
-  //   var address = await widget.addLocation( _pickedLocation);
-  //   if(address !=null)
-  //    setState(() {
-  //      addressDisplay = address;
-  //    });
-  //  // Navigator.of(context).pop();
-  // }
-
-// Column(
-// children: <Widget>[
-//   Container(
-//     height: 170,
-//     width: double.infinity,
-//     alignment: Alignment.center,
-//     decoration: BoxDecoration(
-//       border: Border.all(width: 1, color: Colors.grey),
-//     ),
-//             child: _previewImageUrl == null
-//     ? Text(
-//         'No Location Chosen',
-//         textAlign: TextAlign.center,
-//       )
-//     : Image.network(
-//         _previewImageUrl,
-//         fit: BoxFit.cover,
-//         width: double.infinity,
-//       ),
-//     ),
-//       Row(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: <Widget>[
-//           FlatButton.icon(
-//             icon: Icon(
-//               Icons.location_on,
-//             ),
-//             label: Text('Current Location'),
-//             textColor: Theme.of(context).primaryColor,
-//             onPressed: _getCurrentUserLocation,
-//           ),
-//           FlatButton.icon(
-//             icon: Icon(
-//               Icons.map,
-//             ),
-//             label: Text('Select on Map'),
-//             textColor: Theme.of(context).primaryColor,
-//             onPressed: _selectOnMap,
-//                         ),
-//               ],
-//             ),
-//           Container(
-//             child: addressDisplay != null ?  
-//             Text(
-//               addressDisplay,
-//               textAlign: TextAlign.center,
-//               style: TextStyle(
-//                 color: Colors.black54,
-//                 fontSize: 20.0
-//               ),
-//               )
-//               : null
-//           )
-//           ],
-//         ),
-
-// // class LocationInput extends StatefulWidget {
-// //   final Function onSelectPlace;
-
-// //   LocationInput(this.onSelectPlace);
-
-// //   @override
-// //   _LocationInputState createState() => _LocationInputState();
-// // }
-
-// // class _LocationInputState extends State<LocationInput> {
-// //   String _previewImageUrl;
-
-// //   void _showPreview(double lat, double lng) {
-// //     final staticMapImageUrl = LocationHelper.generateLocationPreviewImage(
-// //       latitude: lat,
-// //       longitude: lng,
-// //     );
-// //     setState(() {
-// //       _previewImageUrl = staticMapImageUrl;
-// //     });
-// //   }
-
-// //   Future<void> _getCurrentUserLocation() async {
-// //     try {
-// //       final locData = await Location().getLocation();
-// //       _showPreview(locData.latitude, locData.longitude);
-// //       widget.onSelectPlace(locData.latitude, locData.longitude);
-// //     } catch (error) {
-// //       return;
-// //     }
-// //   }
-
-// //   Future<void> _selectOnMap() async {
-// //     final selectedLocation = await Navigator.of(context).push<LatLng>(
-// //       MaterialPageRoute(
-// //         fullscreenDialog: true,
-// //         builder: (ctx) => MapScreen(
-// //               isSelecting: true,
-// //             ),
-// //       ),
-// //     );
-// //     if (selectedLocation == null) {
-// //       return;
-// //     }
-// //     _showPreview(selectedLocation.latitude, selectedLocation.longitude);
-// //     widget.onSelectPlace(selectedLocation.latitude, selectedLocation.longitude);
-// //   }
-
-// //   @override
-// //   Widget build(BuildContext context) {
-// //     return Column(
-// //       children: <Widget>[
-// //         Container(
-// //           height: 170,
-// //           width: double.infinity,
-// //           alignment: Alignment.center,
-// //           decoration: BoxDecoration(
-// //             border: Border.all(width: 1, color: Colors.grey),
-// //           ),
-// //           child: _previewImageUrl == null
-// //               ? Text(
-// //                   'No Location Chosen',
-// //                   textAlign: TextAlign.center,
-// //                 )
-// //               : Image.network(
-// //                   _previewImageUrl,
-// //                   fit: BoxFit.cover,
-// //                   width: double.infinity,
-// //                 ),
-// //         ),
-// //         Row(
-// //           mainAxisAlignment: MainAxisAlignment.center,
-// //           children: <Widget>[
-// //             FlatButton.icon(
-// //               icon: Icon(
-// //                 Icons.location_on,
-// //               ),
-// //               label: Text('Current Location'),
-// //               textColor: Theme.of(context).primaryColor,
-// //               onPressed: _getCurrentUserLocation,
-// //             ),
-// //             FlatButton.icon(
-// //               icon: Icon(
-// //                 Icons.map,
-// //               ),
-// //               label: Text('Select on Map'),
-// //               textColor: Theme.of(context).primaryColor,
-// //               onPressed: _selectOnMap,
-// //             ),
-// //           ],
-// //         ),
-// //       ],
-// //     );
-// //   }
-// // }

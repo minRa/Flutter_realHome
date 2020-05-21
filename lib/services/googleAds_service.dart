@@ -46,14 +46,13 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
 
   bool _ban = false;
   bool get ban =>_ban;
-  //const nativeAdUnitID = "ca-app-pub-7333672372977808/9632212477";
   googleAdBan() {
     _ban = true;
   }
 
 
   Future<void> bottomBanner() async {
-      // return;
+           
       if(!_googleAdOnOff || _ban) {
         _ban= false;
         return;
@@ -68,19 +67,10 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
         // targetingInfo: targetingInfo,
         listener: (MobileAdEvent event) {
            if (event == MobileAdEvent.loaded) {
-           // dispose after you received the loaded event seems okay. 
-          //   if (_googleAdOnOff && !_onBanner && !_ban) {
-          //     _onBanner = true;
-          //     _bannerAd..show();
-          //   } else {
-          //    _bannerAd = null;
-          //  }
         }});
         
 
-
-      //   print("BannerAd event is $event");
-      //   },); //..load()..show();
+    
 
         _bannerAd..load().then((loaded) async {
          if(loaded &&
@@ -104,15 +94,6 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
      await FirebaseAdMob.instance.initialize(
         appId: appId
     );
-
-    // _interstitialAd =  myInterstitialAd..load()..show(
-    //   anchorType: AnchorType.bottom,
-    //   anchorOffset: 0.0,
-    //   horizontalCenterOffset: 0.0,);
-
-    //_bannerAd = myBanner..load()..show(
-      //horizontalCenterOffset: 0.0,
-     // anchorType: AnchorType.bottom);
  }
 
 
@@ -121,7 +102,6 @@ static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
       _onBanner = false;
       await _bannerAd?.dispose();
       _bannerAd = null;
-      //myInterstitialAd.dispose();
     }
   }
  }

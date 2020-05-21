@@ -1,4 +1,4 @@
-package com.example.realhome
+package com.min.realHome
 
 import android.os.Bundle
 

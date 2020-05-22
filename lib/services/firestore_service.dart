@@ -7,15 +7,14 @@ import 'package:realhome/models/message.dart';
 import 'package:realhome/models/postProperty.dart';
 import 'package:realhome/models/user.dart';
 import 'package:realhome/services/cloud_storage_service.dart';
-//import 'package:shared_preferences/shared_preferences.dart';
+
 
 class FirestoreService {
    final CloudStorageService _cloudStorageService = locator<CloudStorageService>();
 
   final CollectionReference _usersCollectionReference =
       Firestore.instance.collection('users');
-  // final CollectionReference _postsCollectionReference =
-  //     Firestore.instance.collection('posts');
+
 
   final CollectionReference _postPropertyCollectionReference =
   Firestore.instance.collection('PostProperties');
@@ -25,10 +24,7 @@ class FirestoreService {
 
       final CollectionReference _messagetsCollectionReference =
   Firestore.instance.collection('messages');
-  
-    int count = 0;
-  // final StreamController<List<Post>> _postsController =
-  //     StreamController<List<Post>>.broadcast();
+  int count = 0;
 
   final StreamController<List<PostProperty>> _postPropertyController =
       StreamController<List<PostProperty>>.broadcast();
@@ -37,11 +33,6 @@ class FirestoreService {
   List<List<PostProperty>> get allPropertyPagedResults => _allPropertyPagedResults;
   static const int postPropertyLimit = 7;
 
-
-  // #6: Create a list that will keep the paged results
-  //List<List<Post>> _allPagedResults = List<List<Post>>();
-
-  //static const int PostsLimit = 20;
 
   DocumentSnapshot _lastDocument;
   bool _hasMorePosts = true;
@@ -82,8 +73,6 @@ class FirestoreService {
     }
   } 
 
-
-
   Future getUserList() async {
     var result;
     try { 
@@ -114,12 +103,12 @@ Future deleteMessagePushToken(String userId) async {
 }
 
     
+ 
 
   Future tryFindMessageRoom(User user) async {
+    List<Message> messages = List<Message>();
+    var messageId = user.chattings;
      try{  
-
-        List<Message> messages = List<Message>();
-        var messageId = user.chattings;
         if(messageId != null || messageId.length > 0) {
           await Future.forEach(messageId, (element) async {
             var result = await _messagetsCollectionReference.document(element).collection(element)
@@ -181,15 +170,6 @@ Future deleteMessagePushToken(String userId) async {
           .document(date).delete();
    }
  
-  // Future uploadImageData(File image, int index, User user) async {
-  //     String imageStringUrl = await _cloudStorageService.uploadPostPropertyImage(user, index, image);
-  //     if(imageStringUrl != null) {
-  //       return imageStringUrl;
-  //     }else {
-  //       print('error ocurred !');
-  //       return null;
-  //     }     
-  // }
 
   Future imageDataDelete(String imageUrl, String documentId) async {  
          await _postPropertyCollectionReference.document(documentId)

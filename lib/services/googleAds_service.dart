@@ -1,8 +1,7 @@
 import 'package:firebase_admob/firebase_admob.dart';
-
+const appId ='ca-app-pub-7333672372977808~8123239007';
 
 class GoogleAdsService {
-static const appId ='ca-app-pub-7333672372977808~8123239007';
 
 static const MobileAdTargetingInfo targetingInfo = MobileAdTargetingInfo(
     keywords: <String>['flutterio', 'beautiful apps'],

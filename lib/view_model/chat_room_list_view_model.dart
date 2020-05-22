@@ -24,18 +24,21 @@ class ChatRoomListModel extends BaseModel {
     User peer ;
 
     Future<void> getAllUserIformation() async {
-       
-          _loading = true;
+
+
+         _loading = true;
           notifyListeners();
-          var result =   await _dataCenter.getStartForChatList();
-         
+          
+        var result =   await _dataCenter.getStartForChatList();
          if(result) {
-          _user =  _dataCenter.user;
-          _message =_dataCenter.message;
-          _peers = _dataCenter.peers;
+            _user =  _dataCenter.user;
+            _message =_dataCenter.message;
+            _peers = _dataCenter.peers;
          }
+
       _loading = false;
        notifyListeners();
+      
  }
 
 

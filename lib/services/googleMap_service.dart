@@ -2,8 +2,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:realhome/models/place.dart';
+import 'package:realhome/services/secret.dart';
 
-const GOOGLE_API_KEY = 'AIzaSyBzFB6IUpjElHSF8PVBSbtNFV0FsbMqeR0';
+
 
 
 class GoogleMapServices {

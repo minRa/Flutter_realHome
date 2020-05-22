@@ -27,10 +27,9 @@ class DataCenter {
     User peer ;
     User _oldUser;
 
-
   initStart(User currentUser)  async {
       _oldUser = currentUser;
-     await getStartForChatList();
+   //  await getStartForChatList();
   }
 
 
@@ -38,9 +37,8 @@ class DataCenter {
 
 
   Future<bool> getStartForChatList() async {
-
+            
       try {
-
        await _authenticationService.isUserLoggedIn();
          if(_authenticationService.currentUser == null) {
           return false;
@@ -55,12 +53,12 @@ class DataCenter {
           var result =  _oldUser.chattings.toString().compareTo(_user.chattings.toString()) == 0;
           if(result) return true;
           else {
-                _peers.clear();
-               _message.clear();
+                 _peers.clear();
+                _message.clear();
                 _oldUser = _user;
                }
             }
-        var result =  await  _firestoreService.tryFindMessageRoom(_user);;
+        var result =  await  _firestoreService.tryFindMessageRoom(_user);
 
         if(result == null) {
           print(result);

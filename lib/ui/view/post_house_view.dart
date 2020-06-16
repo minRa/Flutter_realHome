@@ -96,9 +96,9 @@ class _PostHouseViewState extends State<PostHouseView> {
       onModelReady: widget._postProperty != null? 
       (model) => model.getPostProperty(widget._postProperty) : null,
       builder: (context, model, child) => 
-       Scaffold(
+      Scaffold(
        body:
-      Stack(
+        Stack(
         children: <Widget>[
           WillPopScope( // blocking if the user cancel button, close the view.
             child: SingleChildScrollView(

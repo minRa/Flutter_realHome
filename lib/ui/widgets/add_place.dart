@@ -5,8 +5,7 @@ import 'package:location/location.dart';
 import 'package:realhome/models/place.dart';
 import 'package:realhome/services/googleMap_service.dart';
 import 'package:realhome/ui/widgets/autocomplete_location.dart';
-import 'package:realhome/locator.dart';
-import 'package:realhome/services/googleAds_service.dart';
+
 
 class AddPlace extends StatefulWidget {
 
@@ -22,7 +21,7 @@ class AddPlace extends StatefulWidget {
   @override
   _AddPlaceState createState() => _AddPlaceState();
 }
-final GoogleAdsService _googleAdsService = locator<GoogleAdsService>(); 
+
 class _AddPlaceState extends State<AddPlace> {
    String _previewImageUrl;
    String _addressDisplay;
@@ -33,14 +32,6 @@ class _AddPlaceState extends State<AddPlace> {
      }
     super.initState();
   }
-
-  // @override
-  // void didChangeDependencies() {
-  //   if(!_googleAdsService.onBanner){
-  //      _googleAdsService.bottomBanner();
-  //   }
-  //   super.didChangeDependencies();
-  // }
 
    void _showPreview(double lat, double lng) {
     final staticMapImageUrl = GoogleMapServices.generateLocationPreviewImage(
@@ -105,7 +96,7 @@ class _AddPlaceState extends State<AddPlace> {
                           children: <Widget>[
                             Container(
                               height: 170,
-                              width: double.infinity,
+                              width: MediaQuery.of(context).size.width,
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
                                // border: Border.all(width: 1, color: Colors.grey),
@@ -122,38 +113,41 @@ class _AddPlaceState extends State<AddPlace> {
                                   width: double.infinity,
                                   ),
                                 ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    FlatButton.icon(
-                                      icon: Icon(
-                                        Icons.location_on,
+                                Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    children: <Widget>[
+                                      FlatButton.icon(
+                                        icon: Icon(
+                                          Icons.location_on,
+                                        ),
+                                        label: Text('Current Location',
+                                        style: GoogleFonts.mcLaren(fontSize: MediaQuery.of(context).size.width <= 320 ? 10 : 13),),
+                                        textColor: Theme.of(context).primaryColor,
+                                        onPressed: _getCurrentUserLocation,
                                       ),
-                                      label: Text('Current Location',
-                                      style: GoogleFonts.mcLaren(fontSize: 13),),
-                                      textColor: Theme.of(context).primaryColor,
-                                      onPressed: _getCurrentUserLocation,
-                                    ),
-                                    FlatButton.icon(
-                                      icon: Icon(
-                                        Icons.map,
-                                      ),
-                                      label: Text('Select on Map',
-                                      style: GoogleFonts.mcLaren(fontSize: 13),
-                                      ),
-                                      textColor: Theme.of(context).primaryColor,
-                                      onPressed: () {
-                                           Navigator.of(context).push(
-                                           MaterialPageRoute(builder: (context) {
-                                           return AutocompleteLocation(
-                                            previewUrl:updatePrivewImageUrl ,
-                                            save: updatePlaceDetail,
-                                          );
-                                            }),); 
-                                           }
-                                         ),
-                                        ],
-                                      ),
+                                      FlatButton.icon(
+                                        icon: Icon(
+                                          Icons.map,
+                                        ),
+                                        label: Text('Select on Map',
+                                        style: GoogleFonts.mcLaren(fontSize: MediaQuery.of(context).size.width <= 320 ? 10 :13),
+                                        ),
+                                        textColor: Theme.of(context).primaryColor,
+                                        onPressed: () {
+                                             Navigator.of(context).push(
+                                             MaterialPageRoute(builder: (context) {
+                                             return AutocompleteLocation(
+                                              previewUrl:updatePrivewImageUrl ,
+                                              save: updatePlaceDetail,
+                                            );
+                                              }),); 
+                                             }
+                                           ),
+                                          ],
+                                        ),
+                                ),
                                     SizedBox(height: 30,),  
                                     ListTile(
                                     leading: Text('Address : ',

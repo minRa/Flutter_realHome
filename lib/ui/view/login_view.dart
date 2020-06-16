@@ -68,7 +68,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    Size screenSize = MediaQuery.of(context).size/ 1;
+    Size screenSize = MediaQuery.of(context).size;
     return ViewModelProvider<LoginViewModel>.withConsumer(
       viewModel: LoginViewModel(),
       builder: (context, model, child) => Scaffold(
@@ -135,8 +135,10 @@ class _LoginViewState extends State<LoginView> {
                     ),
                   ],),
                 SizedBox(height: 20,),
-                        Container(
-                      child: Row(
+                    Container(
+                      child:
+                       MediaQuery.of(context).size.width > 360 ?
+                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                          TextLink(
@@ -151,6 +153,24 @@ class _LoginViewState extends State<LoginView> {
                         ),
                         TextLink(
                           'privacy policy',
+                            onPressed: ()  async {
+                            String privacy = await  getFileData('assets/text/privacy.txt');
+                            showTermOfService(context,privacy, 'Privacy Policy');
+                            } 
+                        )
+                      ],
+                    ) :  Column(
+                      children: [
+                         TextLink(
+                          'term of service',
+                          onPressed: ()async {
+                            String term =  await getFileData('assets/text/term.txt'); 
+                              showTermOfService(context,term,'Terms of Services ');
+                            } 
+                        ),
+
+                        TextLink(
+                          '& privacy policy',
                             onPressed: ()  async {
                             String privacy = await  getFileData('assets/text/privacy.txt');
                             showTermOfService(context,privacy, 'Privacy Policy');
@@ -174,8 +194,7 @@ class _LoginViewState extends State<LoginView> {
                      child: Image.asset('assets/images/google_logo.png',
                        fit: BoxFit.cover,
                        width: screenSize.width > 360 ? 40 :  25,
-                       height: screenSize.width > 360 ? 40 : 25,
-                       
+                       height: screenSize.width > 360 ? 40 : 25,  
                        ),
                      shape: RoundedRectangleBorder(
                      borderRadius: BorderRadius.circular(18.0),
@@ -183,9 +202,9 @@ class _LoginViewState extends State<LoginView> {
                      elevation: 2.0,
                      fillColor: Colors.white,
                      padding: const EdgeInsets.all(18.0),
-                   ),
-                 ),
-              
+                      ),
+                    ),
+                  
                    Container(
                        width: screenSize.width > 360 ?  80 : 70,
                      padding:  EdgeInsets.only(bottom:5),
@@ -204,9 +223,6 @@ class _LoginViewState extends State<LoginView> {
                      padding: const EdgeInsets.all(18.0),
                    ),
                  ),
-
-
-              
                   Container(
                    width: screenSize.width > 360 ?  80 : 70,
                   padding:  EdgeInsets.only(bottom:5),

@@ -87,27 +87,29 @@ class _PickedImages extends State<PickedImages>
           children: <Widget>[
               GestureDetector(
                 onTap: loadAssets,
-                child: Card(
-                margin: EdgeInsets.only(top:30, left: 50, right: 50, bottom: 10),
-                child: ListTile(
-                //contentPadding: EdgeInsets.only(right:0.0),
-                //leading: Icon(Icons.photo_library, size: 30,),
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.photo_library, size: 30,),
-                    SizedBox(width: 10,),
-                    Text('Select Photo',
-                    style: GoogleFonts.mcLaren(fontSize: 25), //TextStyle(fontSize: 26),
-                    textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-                subtitle: Text('Max : 9',
-                style: GoogleFonts.mcLaren(),
-                textAlign: TextAlign.center,
-                ),
-                ),),),
+                child: Container(
+                  child: Card(
+                  margin: EdgeInsets.only(top:30, left: 50, right: 50, bottom: 10),
+                  child: ListTile(
+                  //contentPadding: EdgeInsets.only(right:0.0),
+                  //leading: Icon(Icons.photo_library, size: 30,),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.photo_library, size: 30,),
+                      SizedBox(width: 10,),
+                      Text('Select Photo',
+                      style: GoogleFonts.mcLaren(fontSize: MediaQuery.of(context).size.width <= 320 ? 20 :25), //TextStyle(fontSize: 26),
+                      textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                  subtitle: Text('Max : 9',
+                  style: GoogleFonts.mcLaren(),
+                  textAlign: TextAlign.center,
+                  ),
+                  ),),
+                ),),
                   Expanded(
                     child: buildGridView(),
                   ),

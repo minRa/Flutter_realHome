@@ -68,7 +68,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
   Widget build(BuildContext context) {
     super.build(context);
       double setHeight =5;
-      Size screenSize = MediaQuery.of(context).size/ 1;
+      Size screenSize = MediaQuery.of(context).size;
     return SingleChildScrollView(
           child: Container(
            margin: screenSize.height > 700 ?
@@ -80,7 +80,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
           child: Column(
             children: <Widget>[
               SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child: TextFormField(
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -102,7 +102,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
               ),
               SizedBox(height: setHeight,),
               SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child: TextFormField(
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -124,7 +124,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
               ),
                SizedBox(height: setHeight,),
                SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child: TextFormField(
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -146,7 +146,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
               ),
              SizedBox(height: setHeight,),
               SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child: TextFormField(
                   decoration: InputDecoration(
                       border: InputBorder.none,
@@ -167,84 +167,90 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                 ),
               ),
             //  Divider(),
-              Row(
-              children: <Widget>[
-                Icon(Icons.wc,color: Colors.blueGrey,),
-                Radio(
-                  value: RentTypeEnum.single,
-                  groupValue: _rentType,
-                  onChanged: (RentTypeEnum value) {
-                    setState(() {
-                      _rentType = value;
-                        widget.rentType('Single');
-                    });
-                  },
-                ),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                    //  _passDataToParent('rentType','Single');
-                      _rentType = RentTypeEnum.single;
-                        widget.rentType('Single');
-                    });
-                  },
-                  child: Text('Single',
-                  style: GoogleFonts.mcLaren(fontSize: 12)
+              Container(
+                width: MediaQuery.of(context).size.width,
+                child: Row(
+                children: <Widget>[
+                  Icon(Icons.wc,color: Colors.blueGrey,),
+                  Radio(
+                    value: RentTypeEnum.single,
+                    groupValue: _rentType,
+                    onChanged: (RentTypeEnum value) {
+                      setState(() {
+                        _rentType = value;
+                          widget.rentType('Single');
+                      });
+                    },
                   ),
-                ),
-                SizedBox(width: setHeight,),
-                Radio(
-                  value: RentTypeEnum.ddouble,
-                  groupValue: _rentType,
-                  onChanged: (RentTypeEnum value) {
-                    setState(() {
-                    //  _passDataToParent('rentType','Double');
-                      _rentType = value;
-                        widget.rentType('Double');
-                    });
-                  },
-                ),
-                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                     // _passDataToParent('rentType','Double');
-                      _rentType = RentTypeEnum.ddouble;
-                        widget.rentType('Double');
-                    });
-                  },
-                  child: Text('Double',
-                  style: GoogleFonts.mcLaren(fontSize: 12)
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                      //  _passDataToParent('rentType','Single');
+                        _rentType = RentTypeEnum.single;
+                          widget.rentType('Single');
+                      });
+                    },
+                    child: Text('Single',
+                    style: GoogleFonts.mcLaren(
+                      fontSize: MediaQuery.of(context).size.width <= 320? 10 :12)
+                    ),
                   ),
-                ),
-                   SizedBox(width: setHeight,),
-                Radio(
-                  value: RentTypeEnum.family,
-                  groupValue: _rentType,
-                  onChanged: (RentTypeEnum value) {
-                    setState(() {
-                      //_passDataToParent('rentType','Fmaily');
-                      _rentType = value;
-                      widget.rentType('Fmaily');
-                    });
-                  },
-                ),
-                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                     // _passDataToParent('rentType','Fmaily');
-                      _rentType = RentTypeEnum.family;
-                      widget.rentType('Fmaily');
-                    });
-                  },
-                  child: Text('Fmaily',
-                 style: GoogleFonts.mcLaren(fontSize: 12)
+                  //SizedBox(width: setHeight,),
+                  Radio(
+                    value: RentTypeEnum.ddouble,
+                    groupValue: _rentType,
+                    onChanged: (RentTypeEnum value) {
+                      setState(() {
+                      //  _passDataToParent('rentType','Double');
+                        _rentType = value;
+                          widget.rentType('Double');
+                      });
+                    },
                   ),
+                   GestureDetector(
+                    onTap: () {
+                      setState(() {
+                       // _passDataToParent('rentType','Double');
+                        _rentType = RentTypeEnum.ddouble;
+                          widget.rentType('Double');
+                      });
+                    },
+                    child: Text('Double',
+                    style: GoogleFonts.mcLaren(
+                      fontSize: MediaQuery.of(context).size.width <= 320? 10 :12)
+                    ),
+                  ),
+                   //  SizedBox(width: setHeight,),
+                  Radio(
+                    value: RentTypeEnum.family,
+                    groupValue: _rentType,
+                    onChanged: (RentTypeEnum value) {
+                      setState(() {
+                        //_passDataToParent('rentType','Fmaily');
+                        _rentType = value;
+                        widget.rentType('Fmaily');
+                      });
+                    },
+                  ),
+                   GestureDetector(
+                    onTap: () {
+                      setState(() {
+                       // _passDataToParent('rentType','Fmaily');
+                        _rentType = RentTypeEnum.family;
+                        widget.rentType('Fmaily');
+                      });
+                    },
+                    child: Text('Fmaily',
+                   style: GoogleFonts.mcLaren(
+                     fontSize: MediaQuery.of(context).size.width <= 320? 10 :12)
+                    ),
+                  ),
+                ],
                 ),
-              ],
-                ),               
-              SizedBox(height: setHeight,),
+              ),               
+             // SizedBox(height: setHeight,),
               SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child:
                 Row(
                   children: <Widget>[
@@ -252,7 +258,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
                     Padding(
                       padding: const EdgeInsets.only(left:14.0),
                       child: Container(
-                        width: 260,
+                        width: MediaQuery.of(context).size.width * 0.7,
                         child: RaisedButton(
                           onPressed: () {
                             _selectDate(context);
@@ -269,7 +275,7 @@ class _InputInformationForm extends State<InputInformationForm> with AutomaticKe
               ),
               SizedBox(height: setHeight,),
               SizedBox(
-                width: 360,
+                width: MediaQuery.of(context).size.width,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(0, 4, 0, 4),
                   child: Row(

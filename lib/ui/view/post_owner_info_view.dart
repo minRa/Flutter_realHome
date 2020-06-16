@@ -71,11 +71,11 @@ final GoogleAdsService _googleAdsService = locator<GoogleAdsService>();
                     flex: 3,
                     child: Container()
                     ,),               
-                ],
+                  ],
                 ) : Center(
-                    child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation(
-                    Theme.of(context).primaryColor),
+                child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation(
+                Theme.of(context).primaryColor),
                 ),)
              ),
         )    

@@ -61,9 +61,9 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
     ).showDialog(context);
   }
     super.build(context);
-     Size screenSize = MediaQuery.of(context).size/ 1;
     return SingleChildScrollView(
             child: Container(
+              width:  MediaQuery.of(context).size.width ,
              margin: const EdgeInsets.fromLTRB(14.0,10,14,10),
              padding: const EdgeInsets.fromLTRB(14.0,10,14,10),
             child: Column(
@@ -72,87 +72,86 @@ class _Introduce extends State<Introduce> with AutomaticKeepAliveClientMixin<Int
                   children: <Widget>[
                     SizedBox(height: 50,),
                     SizedBox(
-                      width: 100,
+                      width: MediaQuery.of(context).size.width <= 320?  80 : 100,
                       child: GestureDetector(
-                          onTap: () {
-                            showPickerNumber(context, 'Room');
-                          }, 
-                          child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                          Icon(Icons.hotel, color: Colors.blueGrey,),
-                          SizedBox(width: 15,),
-                          Icon(Icons.arrow_back_ios,
-                          size: 11,
-                          ),
-                          Text(' $room ', 
-                          style :GoogleFonts.mcLaren(fontSize: 18),),
-                          Icon(Icons.arrow_forward_ios,
-                          size: 11,)
-                        ],),
-                      ) 
-                    ),
+                      onTap: () {
+                        showPickerNumber(context, 'Room');
+                      }, 
+                      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                      Icon(Icons.hotel, color: Colors.blueGrey,),
+                     SizedBox(width: MediaQuery.of(context).size.width <= 320?  10 : 15,),
+                      Icon(Icons.arrow_back_ios,
+                      size: 11,
+                      ),
+                      Text(' $room ', 
+                      style :GoogleFonts.mcLaren(fontSize: 18),),
+                      Icon(Icons.arrow_forward_ios,
+                      size: 11,)
+                    ],),
+                  ) 
+                ),
                 SizedBox(
-                  width: 100,
+                  width: MediaQuery.of(context).size.width <= 320?  80 : 100,
                   child: GestureDetector(
-                          onTap: () {
-                            showPickerNumber(context, 'Toilet');
-                          }, 
-                          child: Row(children: <Widget>[
-                          Icon(Icons.airline_seat_legroom_reduced, color: Colors.blueGrey,),
-                          SizedBox(width: 15,),
-                          Icon(Icons.arrow_back_ios,
-                          size: 11,
-                          ),
-                          Text(' $toilet ', 
-                          style :GoogleFonts.mcLaren(fontSize: 18),),
-                          Icon(Icons.arrow_forward_ios,
-                          size: 11,)
-                        ],),
-                      ) 
+                  onTap: () {
+                    showPickerNumber(context, 'Toilet');
+                  }, 
+                  child: Row(children: <Widget>[
+                  Icon(Icons.airline_seat_legroom_reduced, color: Colors.blueGrey,),
+                  SizedBox(width: MediaQuery.of(context).size.width <= 320?  10 : 15,),
+                  Icon(Icons.arrow_back_ios,
+                  size: 11,
+                  ),
+                  Text(' $toilet ', 
+                  style :GoogleFonts.mcLaren(fontSize: 18),),
+                  Icon(Icons.arrow_forward_ios,
+                  size: 11,)
+                  ],),
+                 ) 
                 ),
                 SizedBox(
-                  width: 100,
+                  width: MediaQuery.of(context).size.width <= 320?  80 : 100,
                  child: GestureDetector(
-                          onTap: () {
-                            showPickerNumber(context, 'CarPark');
-                          }, 
-                          child: Row(children: <Widget>[
-                          Icon(Icons.directions_car, color: Colors.blueGrey,),
-                          SizedBox(width: 15,),
-                          Icon(Icons.arrow_back_ios,
-                          size: 11,
-                          ),
-                          Text(' $carpark ', 
-                          style :GoogleFonts.mcLaren(fontSize: 18),),
-                          Icon(Icons.arrow_forward_ios,
-                          size: 11,)
-                        ],),
-                      ) 
+                  onTap: () {
+                    showPickerNumber(context, 'CarPark');
+                  }, 
+                  child: Row(children: <Widget>[
+                  Icon(Icons.directions_car, color: Colors.blueGrey,),
+                SizedBox(width: MediaQuery.of(context).size.width <= 320?  10 : 15,),
+                  Icon(Icons.arrow_back_ios,
+                  size: 11,
+                  ),
+                  Text(' $carpark ', 
+                  style :GoogleFonts.mcLaren(fontSize: 18),),
+                  Icon(Icons.arrow_forward_ios,size: 11,)
+                    ],),
+                  ) 
                 ),       
-                  ],
-                ),
+                ],
+              ),
              Divider(),   
               Container(
-                width: 380,
-                height: screenSize.height > 700 ?
-                410 : 330,
-                child: Card(child:
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Type about Rent House',
-                        hintStyle: GoogleFonts.mcLaren(),
-                      ),
-                        maxLines:10 ,
-                        controller: widget.introduceTextController,
-                    ),
-                  )
-                )
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height > 700 ?
+              410 : 330,
+              child: Card(child:
+              Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextFormField(
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                hintText: 'Type about Rent House',
+                hintStyle: GoogleFonts.mcLaren(),
+                ),
+                maxLines:10 ,
+                controller: widget.introduceTextController,
               ),
-            ],
+              )
+              )
+            ),
+          ],
         ),
       ),
     );

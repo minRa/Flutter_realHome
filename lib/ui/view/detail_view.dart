@@ -179,7 +179,7 @@ class _DetailViewState extends State<DetailView> {
                                 bottom: 0,
                                 child: Container(
                                   height: 35,
-                                  width: 400,
+                                  width: MediaQuery.of(context).size.width ,
                                   decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(3.0),
                                       color: Colors.black.withOpacity(0.5),
@@ -194,9 +194,9 @@ class _DetailViewState extends State<DetailView> {
                                         context: context,
                                        builder: (context) => detailDialog(context, widget.postProperty),
                                        ),
-                                      child: Center(
-                                      child: Text( 'Rent Imformation',
-                                        textAlign: TextAlign.start,
+                                      child: Container(
+                                        alignment: Alignment.center,
+                                        child: Text( 'Rent Imformation',
                                         style: GoogleFonts.mcLaren(
                                           color: Colors.white,
                                           textBaseline: TextBaseline.ideographic                                     
@@ -302,10 +302,7 @@ class _DetailViewState extends State<DetailView> {
                               ), 
                             ],
                           ),
-                        ),                  
-                        ],
-                     ),
-                      ),
+                        ),],),),
                       expandedHeight: 480,
                       backgroundColor: Colors.white,
                     ),
@@ -402,8 +399,8 @@ class _DetailViewState extends State<DetailView> {
     return Container(
       child: Padding(
         padding:  EdgeInsets.symmetric(
-          vertical: 10,
-          horizontal: 15
+          vertical:  10,
+          horizontal:MediaQuery.of(context).size.width <= 320 ? 5 : 15
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -447,22 +444,32 @@ Widget detailDialog(BuildContext context, PostProperty postProperty) {
               children: <Widget>[
                 SizedBox(width: 5,),
                 Container(
-                  width: 120,
-                  child: Text('Information     ',style: GoogleFonts.mcLaren(fontSize: 20),)),
+                  width: MediaQuery.of(context).size.width * 0.37,
+                  child: Text('Information ',style: GoogleFonts.mcLaren(fontSize: 20),)),
                 Container(
-                 width: 155,
-
-
+                 width: MediaQuery.of(context).size.width * 0.35 ,
                 child:Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                  SizedBox(width: 10,),
-                  Icon(Icons.hotel, size: 20,),
-                  Text('   ${postProperty.room}   ',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),                                       
-                  Icon(Icons.airline_seat_legroom_reduced, size: 18,),
-                  Text('   ${postProperty.toilet}   ',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),
-                  Icon(Icons.time_to_leave, size: 18,),
-                  Text('   ${postProperty.carpark}',style: GoogleFonts.mcLaren(fontWeight: FontWeight.bold,fontSize: 15),),          
+                    SizedBox(width: 10,),
+                  Icon(Icons.hotel, 
+                  size: MediaQuery.of(context).size.width <= 320 ? 15 :  20,),
+                  Text('  ${postProperty.room}  ',
+                  style: GoogleFonts.mcLaren(
+                  fontWeight: FontWeight.bold,
+                  fontSize: MediaQuery.of(context).size.width <= 320 ? 12 : 15),),                                       
+                  Icon(Icons.airline_seat_legroom_reduced, 
+                  size: MediaQuery.of(context).size.width <= 320 ? 15 :  18,),
+                  Text('  ${postProperty.toilet}  ',
+                  style: GoogleFonts.mcLaren(
+                  fontWeight: FontWeight.bold,
+                  fontSize: MediaQuery.of(context).size.width <= 320 ? 12 : 15),),
+                  Icon(Icons.time_to_leave, 
+                  size: MediaQuery.of(context).size.width <= 320 ? 15 :  18,),
+                  Text('  ${postProperty.carpark}',
+                  style: GoogleFonts.mcLaren(
+                  fontWeight: FontWeight.bold,
+                  fontSize: MediaQuery.of(context).size.width <= 320 ? 12 : 15),),          
                   ],),       
                 )
               ],
@@ -520,10 +527,10 @@ class Information extends StatelessWidget {
             children: <Widget>[
               SizedBox(width: 10,),
               Container(
-                width: 100,
+                width: MediaQuery.of(context).size.width * 0.26,
                 child: Text('$title    ',style: GoogleFonts.mcLaren(fontSize: 15),)),
               Container(
-              width: 165,
+              width: MediaQuery.of(context).size.width * 0.45,
               child: title =='Price' ?
                Text('\$ $content /\ per week ',style: GoogleFonts.mcLaren(fontSize: 14),)
               :Text(content,style: GoogleFonts.mcLaren(fontSize: 14),)

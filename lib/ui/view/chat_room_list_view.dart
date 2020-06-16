@@ -6,7 +6,7 @@ import 'package:provider_architecture/provider_architecture.dart';
 import 'package:realhome/locator.dart';
 import 'package:realhome/models/message.dart';
 import 'package:realhome/models/user.dart';
-import 'package:realhome/services/dataCenter.dart';
+//import 'package:realhome/services/dataCenter.dart';
 import 'package:realhome/services/googleAds_service.dart';
 import 'package:realhome/view_model/chat_room_list_view_model.dart';
 
@@ -139,7 +139,7 @@ class _ChatRoomListViewState extends State<ChatRoomListView> {
                                 child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                Text('Chat with ${model.peers[index].fullName}',
+                                Text('${model.peers[index].fullName}',
                                 style: GoogleFonts.mcLaren(),
                                 ),
                                 ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:realhome/models/dialog_models.dart';
 import 'package:realhome/services/dialog_service.dart';
-
 import '../locator.dart';
 
 class DialogManager extends StatefulWidget {

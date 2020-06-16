@@ -15,7 +15,7 @@ class LodingWidget extends StatelessWidget {
             children: <Widget>[
               RotateAnimatedTextKit(
                 onTap: onTap ,
-                text: ["Hey guys...","Now Loading..."," if you are stuck" , "In this page", "Jsut click me"],
+                text: ["Hey guys...","Now Loading..."," Loading..." , " Humm ...", "Jsut click me"],
                 textStyle: TextStyle(fontSize: 40.0, color: Colors.white, fontFamily: "Horizon"),
                 textAlign: TextAlign.start,
                 alignment: AlignmentDirectional.topStart // or Alignment.topLeft

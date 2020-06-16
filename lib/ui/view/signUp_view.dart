@@ -86,8 +86,8 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           SizedBox(width: 5,),
                           Container(
-                             width: screenSize.width > 360 ?
-                              230 : 200,
+                             width: screenSize.width <= 320 ? 160 :
+                             screenSize.width <= 375 ? 200 : 250 ,
                             child: Text('I read term of service and privacy policy, I agree with the term of service and privacy policy',
                             style: GoogleFonts.mcLaren(),
                             ),
@@ -95,8 +95,10 @@ class _SignUpViewState extends State<SignUpView> {
                      ],
                    ),
                 verticalSpaceSmall,
-                    Container(
-                      child: Row(
+                  Container(
+                      child:
+                       MediaQuery.of(context).size.width >= 360 ?
+                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                          TextLink(
@@ -117,8 +119,29 @@ class _SignUpViewState extends State<SignUpView> {
                             } 
                         )
                       ],
+                    ) : Row (
+                      children: [
+                         TextLink(
+                          'term of service',
+                          onPressed: ()async {
+                            String term =  await getFileData('assets/text/term.txt'); 
+                              showTermOfService(context,term,'Terms of Services ');
+                            } 
+                        ),
+                        Text('&',
+                        style: GoogleFonts.mcLaren(),
+                        ),
+                        TextLink(
+                          'privacy policy',
+                            onPressed: ()  async {
+                            String privacy = await  getFileData('assets/text/privacy.txt');
+                            showTermOfService(context,privacy, 'Privacy Policy');
+                            } 
+                        )
+                      ],
                     ),
                   ),
+
                 verticalSpaceMedium,
                 BusyButton(
                   title: 'Sign Up',

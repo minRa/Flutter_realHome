@@ -24,7 +24,9 @@ class InitialViewModel extends BaseModel {
     
      print(hasLoggedInUser);
     if (hasLoggedInUser) {
-        _dataCenter.initStart(_authenticationService.currentUser);
+
+       _dataCenter.oldUserData = _authenticationService.currentUser;
+
       _navigationService.navigateTo(StartPageRoute);
     } else {
       _navigationService.navigateTo(LoginViewRoute);

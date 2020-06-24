@@ -13,9 +13,9 @@ class DataCenter {
   User _oldUser;
   User get oldUser => _oldUser;
 
-  set oldUserData(User currentUser) => _oldUser = currentUser;
-  set peerData(List<User> peers ) => _peers = peers;
-  set messageData(List<Message> list) => _message = list;
+   void oldUserData(User currentUser) => _oldUser = currentUser;
+   void peerData(List<User> peers ) => _peers = peers;
+   void messageData(List<Message> list) => _message = list;
 
   //  void oldUserData(User currentUser) {
   //   _oldUser = currentUser;

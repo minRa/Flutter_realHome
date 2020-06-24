@@ -20,12 +20,12 @@ class InitialViewModel extends BaseModel {
     await _remoteConfigService.initialise();
     
     var hasLoggedInUser = await _authenticationService.isUserLoggedIn();
-
+  
     
      print(hasLoggedInUser);
     if (hasLoggedInUser) {
 
-       _dataCenter.oldUserData = _authenticationService.currentUser;
+       _dataCenter.oldUserData(_authenticationService.currentUser);
 
       _navigationService.navigateTo(StartPageRoute);
     } else {

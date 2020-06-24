@@ -58,7 +58,7 @@ class ChatRoomListModel extends BaseModel {
           }
           else {
             
-            _dataCenter.oldUserData =_user;
+            _dataCenter.oldUserData(_user);
             var result =  await  _firestoreService.tryFindMessageRoom(_user);
 
             if(result == null) {
@@ -73,8 +73,8 @@ class ChatRoomListModel extends BaseModel {
                   _peers.add(peer);       //_users.singleWhere((e) => e.id == element[0].idFrom );
                 }              
               }); 
-             _dataCenter.messageData = result;
-             _dataCenter.peerData = _peers;
+             _dataCenter.messageData(result);
+             _dataCenter.peerData(_peers);
              _message = result;
                return true;       
             }
